@@ -132,3 +132,4 @@ dmypy.json
 .idea
 _pycache_
 Data
+venv
