@@ -7,7 +7,7 @@ from nltk.tokenize.regexp import RegexpTokenizer
 from nltk.tokenize import WhitespaceTokenizer
 from nltk.tokenize import TweetTokenizer
 import re
-import spacy
+#import spacy
 from collections import defaultdict
 
 
@@ -16,9 +16,10 @@ class Parse:
     def __init__(self):
         self.stop_words = stopwords.words('english') + [",", ";", "`", "/", "~", "\\"]
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
-        self.punctuation_parser = TweetTokenizer()
+      #  self.punctuation_parser = TweetTokenizer(reduce_len=False,strip_handles=False)
+      #  self.punctuation_parser = word_tokenize()
         self.whitespace_tokenizer = WhitespaceTokenizer()
-        self.nlp = spacy.load("en_core_web_sm")
+       # self.nlp = spacy.load("en_core_web_sm")
         self.sign_dictionairy = {
             "#": self.hashtag_parser,
             "@": self.shtrudel_parser,
@@ -27,7 +28,9 @@ class Parse:
         self.number_sizes = {
             "thousand": [1000, "K"],
             "millions": [1000000, "M"],
-            "billion": [1000000000, "B"]
+            "billion": [1000000000, "B"],
+            "percent": [1, "%"],
+            "percentage": [1, "%"]
         }
         # self.number_sizes = defaultdict(lambda num: len(num), Thousand=1000, Millions=1000000, Billion=10000000000)
 
@@ -128,7 +131,8 @@ class Parse:
             words_list.append(word)
 
     def remove_punctuation(self, word):
-        return self.punctuation_parser.tokenize(word)[0]
+        return word_tokenize(word)
+   #     return self.punctuation_parser.tokenize(word)[0]
 
     def regex_parser(self, words) -> list:
         return re.findall(
