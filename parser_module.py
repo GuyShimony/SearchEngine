@@ -33,7 +33,7 @@ class Parse:
             "percentage": [1, "%"]
         }
         self.entity_dictionary = {}
-        self.entity_finder = lambda word: [w.text for w in self.nlp(word) if w.pos_ == 'PROPN'][0]
+       # self.entity_finder = lambda word: [w.text for w in self.nlp(word) if w.pos_ == 'PROPN']
 
     def parse_sentence(self, text):
         """
@@ -48,33 +48,24 @@ class Parse:
         text_tokens = [w for w in all_text_tokens if w not in special_text_tokens]
 
         text_tokens_without_stopwords = []
-        # for word in text_tokens:
-        for i in range(len(text_tokens)):
-            print(self.entity_finder)
 
-            # is_entity = check_for_entity(text_tokens)
-            # if(is_entity):
-            #     continue
-            # if word not in self.stop_words:
+        # for word in text_tokens:
+        for i in self.stableIndex(text_tokens):
+            if i >= len(text_tokens):
+                break
             if text_tokens[i] not in self.stop_words:
                 word = text_tokens[i]
                 word = word.lower()
                 word = self.punctuation_remover(word)
+                self.check_for_entity(text_tokens[i], text_tokens)
                 if word.isdigit():
-                    if i + 1 >= len(text_tokens):  # Prevent out of bound error
-                        self.number_parser(word, "", text_tokens_without_stopwords, text_tokens)
-                        break
-
                     word_after = text_tokens[i + 1]
                     self.punctuation_remover(word_after)
                     self.number_parser(word, word_after, text_tokens_without_stopwords, text_tokens)
-
-                    if i + 2 >= len(text_tokens):  # Prevent out of bound error
-                        break
                 else:
                     text_tokens_without_stopwords.append(word)
 
-        #handle each 'special word' with its function
+        #  handle each 'special word' with its function
         for special_token in special_text_tokens:
             self.sign_dictionary[special_token[0]](special_token, text_tokens_without_stopwords)
 
@@ -154,3 +145,18 @@ class Parse:
                 word = str(number / 1000000000) + "B"
 
         words_list.append(word)
+
+    def check_for_entity(self,word_to_check,words_list):
+        for w in self.nlp(word_to_check):
+            try:
+                if w.pos_ == 'PROPN' and self.entity_dictionary[word_to_check]:
+                    words_list.append(word_to_check)
+
+            except KeyError:
+                self.entity_dictionary[word_to_check]=1
+
+    def stableIndex(self,lst):
+        length = len(lst)
+        for i in range(length): yield i -length+len(lst) + 1
+
+

@@ -133,3 +133,4 @@ dmypy.json
 _pycache_
 Data
 venv
+inverted_idx.pkl
