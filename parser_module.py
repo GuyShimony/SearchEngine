@@ -10,12 +10,12 @@ import re
 import spacy
 import string
 
+
 class Parse:
 
     def __init__(self):
         self.stop_words = stopwords.words('english') + [",", ";", "`", "/", "~", "\\"]
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
-      #  self.punctuation_parser = TweetTokenizer(reduce_len=False,strip_handles=
         self.punctuation_dict = dict((ord(char), None) for char in string.punctuation.replace("%", ""))
         self.punctuation_remover = lambda word: word.translate(self.punctuation_dict)
         self.whitespace_tokenizer = WhitespaceTokenizer()
@@ -32,6 +32,8 @@ class Parse:
             "percent": [1, "%"],
             "percentage": [1, "%"]
         }
+        self.entity_dictionary = {}
+        self.entity_finder = lambda word: [w.text for w in self.nlp(word) if w.pos_ == 'PROPN'][0]
 
     def parse_sentence(self, text):
         """
@@ -40,13 +42,19 @@ class Parse:
         :return:
         """
         # text_tokens = word_tokenize(text)
+        # text_tokens_without_stopwords = [w.lower() for w in text_tokens if w not in self.stop_words]
         all_text_tokens = self.whitespace_tokenizer.tokenize(text)
         special_text_tokens = self.regex_parser(text)
         text_tokens = [w for w in all_text_tokens if w not in special_text_tokens]
-        # text_tokens_without_stopwords = [w.lower() for w in text_tokens if w not in self.stop_words]
+
         text_tokens_without_stopwords = []
         # for word in text_tokens:
         for i in range(len(text_tokens)):
+            print(self.entity_finder)
+
+            # is_entity = check_for_entity(text_tokens)
+            # if(is_entity):
+            #     continue
             # if word not in self.stop_words:
             if text_tokens[i] not in self.stop_words:
                 word = text_tokens[i]
@@ -65,13 +73,8 @@ class Parse:
                         break
                 else:
                     text_tokens_without_stopwords.append(word)
-                # # Add each non stop word to the list of words (includes word with @ or #)
-                # if 'http' in word or 'https' in word:
-                #     self.url_parser(word, text_tokens_without_stopwords)
-                # else:
-                #     word = self.remove_punctuation(word)
-                #     text_tokens_without_stopwords.append(word)
 
+        #handle each 'special word' with its function
         for special_token in special_text_tokens:
             self.sign_dictionary[special_token[0]](special_token, text_tokens_without_stopwords)
 
@@ -129,10 +132,6 @@ class Parse:
         for word in words_to_add:
             words_list.append(word)
 
-    def remove_punctuation(self, word):
-        return word.translate(dict((ord(char), None) for char in string.punctuation)
-)
-   #     return self.punctuation_parser.tokenize(word)[0]
 
     def regex_parser(self, words) -> list:
         return re.findall(
@@ -146,8 +145,8 @@ class Parse:
             all_words.remove(word_after)
         except KeyError:
             if len(number_word) < 4:
-                word = words_list
-            if 4 <= len(number_word) < 6:
+                word = number_word
+            elif 4 <= len(number_word) < 6:
                 word = str(number / 1000) + "K"
             elif 6 <= len(number_word) < 9:
                 word = str(number / 1000000) + "M"
