@@ -27,13 +27,13 @@ class Parse:
         }
         self.number_dictionary = {
             "thousand": [1000, "K"],
-            "millions": [1000000, "M"],
+            "million": [1000000, "M"],
             "billion": [1000000000, "B"],
             "percent": [1, "%"],
             "percentage": [1, "%"]
         }
         self.entity_dictionary = {}
-       # self.entity_finder = lambda word: [w.text for w in self.nlp(word) if w.pos_ == 'PROPN']
+        self.capitals_dictionary = {}
 
     def parse_sentence(self, text):
         """
@@ -49,19 +49,24 @@ class Parse:
 
         text_tokens_without_stopwords = []
 
+        text_tokens_length = len(text_tokens)
         # for word in text_tokens:
-        for i in self.stableIndex(text_tokens):
-            if i >= len(text_tokens):
+        for i in range(text_tokens_length):
+            #TODO need to think of something a lot better than this
+            if i >= text_tokens_length:
                 break
             if text_tokens[i] not in self.stop_words:
                 word = text_tokens[i]
-                word = word.lower()
                 word = self.punctuation_remover(word)
+             #   self.check_for_capital(text_tokens[i], text_tokens)
+                word = word.lower()
                 self.check_for_entity(text_tokens[i], text_tokens)
                 if word.isdigit():
                     word_after = text_tokens[i + 1]
                     self.punctuation_remover(word_after)
-                    self.number_parser(word, word_after, text_tokens_without_stopwords, text_tokens)
+                    was_deleted = self.number_parser(word, word_after, text_tokens_without_stopwords, text_tokens)
+                    if(was_deleted):
+                        text_tokens_length-=1
                 else:
                     text_tokens_without_stopwords.append(word)
 
@@ -102,9 +107,18 @@ class Parse:
 
     def hashtag_parser(self, hashtaged_word, words_list):
 
+        words_list.append(hashtaged_word[0]+hashtaged_word[1:].lower())
+        words_from_hashtag=[]
         # split the hashtagged word into english words without the hashtag
-        word = hashtaged_word[1:]
-        words_list.append(hashtaged_word)
+        if '_' in hashtaged_word:
+            words_from_hashtag_temp = hashtaged_word[1:].split('_')
+            for word in words_from_hashtag_temp:
+                words_from_hashtag = words_from_hashtag+ re.findall('[a-zA-Z][^A-Z]*', word)
+        else:
+            words_from_hashtag= re.findall('[a-zA-Z][^A-Z]*',hashtaged_word)
+
+        for word in words_from_hashtag:
+            words_list.append(word.lower())
 
     def shtrudel_parser(self, word, words_list):
         words_list.append(word)
@@ -130,10 +144,12 @@ class Parse:
             words)
 
     def number_parser(self, number_word, word_after, words_list, all_words):
+        delete= False
         number = int(number_word)
         try:
             word = "{0}{1}".format(number, self.number_dictionary[word_after.lower()][1])
             all_words.remove(word_after)
+            delete = True
         except KeyError:
             if len(number_word) < 4:
                 word = number_word
@@ -145,15 +161,29 @@ class Parse:
                 word = str(number / 1000000000) + "B"
 
         words_list.append(word)
+        return delete
 
     def check_for_entity(self,word_to_check,words_list):
         for w in self.nlp(word_to_check):
             try:
                 if w.pos_ == 'PROPN' and self.entity_dictionary[word_to_check]:
                     words_list.append(word_to_check)
-
             except KeyError:
-                self.entity_dictionary[word_to_check]=1
+                if w.pos_ == 'PROPN':
+                    self.entity_dictionary[word_to_check]=1
+
+   # def check_for_capital(self,word_to_check,words_list):
+            # try:
+            #     if (word_to_check[0]).isupper() and self.capitals_dictionary[word_to_check.upper()] == 1:
+            #         words_list.append(word_to_check.upper())
+            #     elif (word_to_check[0]).islower():
+            #         words_list.append(word_to_check.lower())
+            #         if self.capitals_dictionary[word_to_check.upper()]:
+            #             self.capitals_dictionary[word_to_check.upper()] = -1
+            # except KeyError:
+            #         if self.capitals_dictionary[word_to_check.upper()] and self.capitals_dictionary[word_to_check.upper()] != -1:
+            #             self.capitals_dictionary[word_to_check.upper()]=1
+
 
     def stableIndex(self,lst):
         length = len(lst)
