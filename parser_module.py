@@ -7,32 +7,31 @@ from nltk.tokenize.regexp import RegexpTokenizer
 from nltk.tokenize import WhitespaceTokenizer
 from nltk.tokenize import TweetTokenizer
 import re
-#import spacy
-from collections import defaultdict
-
+import spacy
+import string
 
 class Parse:
 
     def __init__(self):
         self.stop_words = stopwords.words('english') + [",", ";", "`", "/", "~", "\\"]
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
-      #  self.punctuation_parser = TweetTokenizer(reduce_len=False,strip_handles=False)
-      #  self.punctuation_parser = word_tokenize()
+      #  self.punctuation_parser = TweetTokenizer(reduce_len=False,strip_handles=
+        self.punctuation_dict = dict((ord(char), None) for char in string.punctuation.replace("%", ""))
+        self.punctuation_remover = lambda word: word.translate(self.punctuation_dict)
         self.whitespace_tokenizer = WhitespaceTokenizer()
-       # self.nlp = spacy.load("en_core_web_sm")
-        self.sign_dictionairy = {
+        self.nlp = spacy.load("en_core_web_sm")
+        self.sign_dictionary = {
             "#": self.hashtag_parser,
             "@": self.shtrudel_parser,
             "h": self.url_parser
         }
-        self.number_sizes = {
+        self.number_dictionary = {
             "thousand": [1000, "K"],
             "millions": [1000000, "M"],
             "billion": [1000000000, "B"],
             "percent": [1, "%"],
             "percentage": [1, "%"]
         }
-        # self.number_sizes = defaultdict(lambda num: len(num), Thousand=1000, Millions=1000000, Billion=10000000000)
 
     def parse_sentence(self, text):
         """
@@ -52,14 +51,14 @@ class Parse:
             if text_tokens[i] not in self.stop_words:
                 word = text_tokens[i]
                 word = word.lower()
-                word = self.remove_punctuation(word)
+                word = self.punctuation_remover(word)
                 if word.isdigit():
                     if i + 1 >= len(text_tokens):  # Prevent out of bound error
                         self.number_parser(word, "", text_tokens_without_stopwords, text_tokens)
                         break
 
                     word_after = text_tokens[i + 1]
-                    self.remove_punctuation(word_after)
+                    self.punctuation_remover(word_after)
                     self.number_parser(word, word_after, text_tokens_without_stopwords, text_tokens)
 
                     if i + 2 >= len(text_tokens):  # Prevent out of bound error
@@ -74,7 +73,7 @@ class Parse:
                 #     text_tokens_without_stopwords.append(word)
 
         for special_token in special_text_tokens:
-            self.sign_dictionairy[special_token[0]](special_token, text_tokens_without_stopwords)
+            self.sign_dictionary[special_token[0]](special_token, text_tokens_without_stopwords)
 
         return text_tokens_without_stopwords
 
@@ -131,7 +130,8 @@ class Parse:
             words_list.append(word)
 
     def remove_punctuation(self, word):
-        return word_tokenize(word)
+        return word.translate(dict((ord(char), None) for char in string.punctuation)
+)
    #     return self.punctuation_parser.tokenize(word)[0]
 
     def regex_parser(self, words) -> list:
@@ -142,7 +142,7 @@ class Parse:
     def number_parser(self, number_word, word_after, words_list, all_words):
         number = int(number_word)
         try:
-            word = "{0}{1}".format(number, self.number_sizes[word_after.lower()][1])
+            word = "{0}{1}".format(number, self.number_dictionary[word_after.lower()][1])
             all_words.remove(word_after)
         except KeyError:
             if len(number_word) < 4:
