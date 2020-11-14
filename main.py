@@ -8,4 +8,4 @@ if __name__ == '__main__':
 #    reader.read_file("covid19_07-09.snappy.parquet")
    # search_engine.main()
     parser = parser_module.Parse()
-    parser.parse_sentence("You stupid, @fucker #smartass ; https://www.instagram.co.il/p/CD7fAPWs3WM/?igshid=o9kf0ugp1l8x")
+    parser.parse_sentence("HELLO You stupid, 12345, 123 Thousand @fucker #smartass ; https://www.instagram.co.il/p/CD7fAPWs3WM/?igshid=o9kf0ugp1l8x")
