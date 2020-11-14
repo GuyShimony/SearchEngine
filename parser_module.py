@@ -106,19 +106,13 @@ class Parse:
         return document
 
     def hashtag_parser(self, hashtaged_word, words_list):
+        """
+        Parse a word containing # to a list of its words split by Upper case letters or '_' + the original
+        hashtag word
+        """
+        words_list += [w.lower() for w in re.findall('[a-z|A-Z][^A-Z|_]*', hashtaged_word)] + \
+                      [hashtaged_word[0] + hashtaged_word[1:].lower()]
 
-        words_list.append(hashtaged_word[0]+hashtaged_word[1:].lower())
-        words_from_hashtag=[]
-        # split the hashtagged word into english words without the hashtag
-        if '_' in hashtaged_word:
-            words_from_hashtag_temp = hashtaged_word[1:].split('_')
-            for word in words_from_hashtag_temp:
-                words_from_hashtag = words_from_hashtag+ re.findall('[a-zA-Z][^A-Z]*', word)
-        else:
-            words_from_hashtag= re.findall('[a-zA-Z][^A-Z]*',hashtaged_word)
-
-        for word in words_from_hashtag:
-            words_list.append(word.lower())
 
     def shtrudel_parser(self, word, words_list):
         words_list.append(word)
