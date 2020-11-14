@@ -10,6 +10,7 @@ import re
 import spacy
 from collections import defaultdict
 
+
 class Parse:
 
     def __init__(self):
@@ -24,10 +25,11 @@ class Parse:
             "h": self.url_parser
         }
         self.number_sizes = {
-            "Thousand": 1000,
-            "Millions": 1000000,
-            "Billion": 10000000000
+            "thousand": [1000, "K"],
+            "millions": [1000000, "M"],
+            "billion": [1000000000, "B"]
         }
+        # self.number_sizes = defaultdict(lambda num: len(num), Thousand=1000, Millions=1000000, Billion=10000000000)
 
     def parse_sentence(self, text):
         """
@@ -38,19 +40,27 @@ class Parse:
         # text_tokens = word_tokenize(text)
         all_text_tokens = self.whitespace_tokenizer.tokenize(text)
         special_text_tokens = self.regex_parser(text)
-        text_tokens = list(set(all_text_tokens) - set(special_text_tokens))
+        text_tokens = [w for w in all_text_tokens if w not in special_text_tokens]
         # text_tokens_without_stopwords = [w.lower() for w in text_tokens if w not in self.stop_words]
         text_tokens_without_stopwords = []
-        #for word in text_tokens:
+        # for word in text_tokens:
         for i in range(len(text_tokens)):
-            #if word not in self.stop_words:
+            # if word not in self.stop_words:
             if text_tokens[i] not in self.stop_words:
                 word = text_tokens[i]
                 word = word.lower()
                 word = self.remove_punctuation(word)
                 if word.isdigit():
-                    word_after = text_tokens[i+1]
-                    self.number_parser(word, word_after, text_tokens)
+                    if i + 1 >= len(text_tokens):  # Prevent out of bound error
+                        self.number_parser(word, "", text_tokens_without_stopwords, text_tokens)
+                        break
+
+                    word_after = text_tokens[i + 1]
+                    self.remove_punctuation(word_after)
+                    self.number_parser(word, word_after, text_tokens_without_stopwords, text_tokens)
+
+                    if i + 2 >= len(text_tokens):  # Prevent out of bound error
+                        break
                 else:
                     text_tokens_without_stopwords.append(word)
                 # # Add each non stop word to the list of words (includes word with @ or #)
@@ -100,7 +110,6 @@ class Parse:
         word = hashtaged_word[1:]
         words_list.append(hashtaged_word)
 
-
     def shtrudel_parser(self, word, words_list):
         words_list.append(word)
 
@@ -126,5 +135,19 @@ class Parse:
             r'#\w*|@\w*|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))',
             words)
 
-    def number_parser(self, number_word, word_after, words_list):
+    def number_parser(self, number_word, word_after, words_list, all_words):
         number = int(number_word)
+        try:
+            word = "{0}{1}".format(number, self.number_sizes[word_after.lower()][1])
+            all_words.remove(word_after)
+        except KeyError:
+            if len(number_word) < 4:
+                word = words_list
+            if 4 <= len(number_word) < 6:
+                word = str(number / 1000) + "K"
+            elif 6 <= len(number_word) < 9:
+                word = str(number / 1000000) + "M"
+            else:
+                word = str(number / 1000000000) + "B"
+
+        words_list.append(word)
