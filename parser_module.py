@@ -81,7 +81,7 @@ class Parse:
 
         # handle each number word
         for word in number_tokens:
-            self.number_parser2(word, text_tokens_without_stopwords)
+            self.number_parser(word, text_tokens_without_stopwords)
         return text_tokens_without_stopwords
 
     def parse_doc(self, doc_as_list):
@@ -160,30 +160,30 @@ class Parse:
             r'#\w*|@\w*|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))',
             words)
 
-    def number_parser(self, number_word, word_after, words_list, all_words):
-        """
-        Parse a string containing a number. The number can be followed by its plural, meaning 123 Thousands can appear
-        and mean 123000.
-        The numbers will be saved as 123K or 1.23M (for millions) etc.
-        """
-        delete = False
-        number = int(number_word)
-        try:
-            word = "{0}{1}".format(number, self.number_dictionary[word_after.lower()][1])
-            all_words.remove(word_after)
-            delete = True
-        except KeyError:
-            if len(number_word) < 4:
-                word = number_word
-            elif 4 <= len(number_word) < 6:
-                word = str(number / 1000) + "K"
-            elif 6 <= len(number_word) < 9:
-                word = str(number / 1000000) + "M"
-            else:
-                word = str(number / 1000000000) + "B"
-
-        words_list.append(word)
-        return delete
+    # def number_parser(self, number_word, word_after, words_list, all_words):
+    #     """
+    #     Parse a string containing a number. The number can be followed by its plural, meaning 123 Thousands can appear
+    #     and mean 123000.
+    #     The numbers will be saved as 123K or 1.23M (for millions) etc.
+    #     """
+    #     delete = False
+    #     number = int(number_word)
+    #     try:
+    #         word = "{0}{1}".format(number, self.number_dictionary[word_after.lower()][1])
+    #         all_words.remove(word_after)
+    #         delete = True
+    #     except KeyError:
+    #         if len(number_word) < 4:
+    #             word = number_word
+    #         elif 4 <= len(number_word) < 6:
+    #             word = str(number / 1000) + "K"
+    #         elif 6 <= len(number_word) < 9:
+    #             word = str(number / 1000000) + "M"
+    #         else:
+    #             word = str(number / 1000000000) + "B"
+    #
+    #     words_list.append(word)
+    #     return delete
 
     def check_for_entity(self, word_to_check, words_list):
         """
@@ -224,14 +224,14 @@ class Parse:
         return re.findall("[0-9]+[%]*\s[a-zA-Z]*|[0-9]+[%]*[^a-zA-z]",text)
 
 
-    def number_parser2(self, number_word, words_list):
+    def number_parser(self, number_word, words_list):
         """
         Parse a string containing a number. The number can be followed by its plural, meaning 123 Thousands can appear
         and mean 123000.
         The numbers will be saved as 123K or 1.23M (for millions) etc.
         """
         number_word, word_after = number_word.split(" ") if len(number_word.split(" ")) == 2 else (number_word, "")
-        number_word, word_after= self.punctuation_remover(number_word), self.punctuation_remover(word_after)
+        number_word, word_after =  self.punctuation_remover(number_word), self.punctuation_remover(word_after)
         try:
             number = int(number_word)
             word = "{0}{1}".format(number, self.number_dictionary[word_after.lower()][1])
