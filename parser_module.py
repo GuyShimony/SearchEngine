@@ -15,7 +15,8 @@ class Parse:
         self.stop_words = stopwords.words('english') + [",", ";", "`", "/", "~", "\\"]
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
         self.punctuation_dict = dict((ord(char), None) for char in string.punctuation.replace("%", ""))
-        self.punctuation_remover = lambda word: word.translate(self.punctuation_dict)
+        self.punctuation_remover = lambda word: word[0].translate(self.punctuation_dict) + word[1:-1] +\
+                                                word[-1].translate(self.punctuation_dict)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.nlp = spacy.load("en_core_web_sm")
         self.sign_dictionary = {
@@ -229,7 +230,9 @@ class Parse:
 
     def numbers_tokenizer(self, text):
         return re.findall("[0-9]+[0-9]*\s+\d+/\d+|[0-9]+[%]*\s[a-zA-Z]*|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|^[0-9]+[%]*"
-                          "[^a-zA-z]*", text)
+                          "[^a-zA-z]*", text), [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|[0-9]+[0-9]*\s+"
+                                                                                "[a-zA-Z]+", text) for
+                                                words in segment.split()]
 
     def number_parser(self, number_word, words_list):
         """
@@ -238,10 +241,14 @@ class Parse:
         The numbers will be saved as 123K or 1.23M (for millions) etc.
         """
         number_word, word_after = number_word.split(" ") if len(number_word.split(" ")) == 2 else (number_word, "")
-        number_word, word_after = self.punctuation_remover(number_word), self.punctuation_remover(word_after)
+        number_word, word_after = (self.punctuation_remover(number_word), self.punctuation_remover(word_after)) \
+                                 if word_after else (self.punctuation_remover(number_word),"")
         try:
-            number = int(number_word)
-            word = "{0}{1}".format(number, self.number_dictionary[word_after.lower()][1])
+            number = float(number_word) if "." in number_word else int(number_word)
+            if "/" in word_after:
+                word = number_word + " " + word_after
+            else:
+                word = "{0}{1}".format(number, self.number_dictionary[word_after.lower()][1])
         except KeyError:
             if len(number_word) < 4:
                 word = number_word
