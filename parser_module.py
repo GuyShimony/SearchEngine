@@ -21,7 +21,8 @@ class Parse:
         self.sign_dictionary = {
             "#": self.hashtag_parser,
             "@": self.shtrudel_parser,
-            "h": self.url_parser
+            "h": self.url_parser,
+            "w": self.url_parser,
         }
         self.number_dictionary = {
             "thousand": [1000, "K"],
@@ -231,7 +232,7 @@ class Parse:
         The numbers will be saved as 123K or 1.23M (for millions) etc.
         """
         number_word, word_after = number_word.split(" ") if len(number_word.split(" ")) == 2 else (number_word, "")
-        number_word, word_after =  self.punctuation_remover(number_word), self.punctuation_remover(word_after)
+        number_word, word_after = self.punctuation_remover(number_word), self.punctuation_remover(word_after)
         try:
             number = int(number_word)
             word = "{0}{1}".format(number, self.number_dictionary[word_after.lower()][1])
