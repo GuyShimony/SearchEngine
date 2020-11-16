@@ -7,6 +7,8 @@ from nltk.tokenize.regexp import RegexpTokenizer
 from nltk.tokenize import WhitespaceTokenizer
 from nltk.tokenize import TweetTokenizer
 import re, spacy, string, pandas as pd
+from nltk.stem.snowball import SnowballStemmer
+from string import punctuation
 
 
 class Parse:
@@ -14,10 +16,14 @@ class Parse:
     def __init__(self):
         self.stop_words = stopwords.words('english') + [",", ";", "`", "/", "~", "\\"]
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
-        self.punctuation_dict = dict((ord(char), None) for char in string.punctuation.replace("%", ""))
-        self.punctuation_remover = lambda word: word[0].translate(self.punctuation_dict) + word[1:-1] +\
-                                                word[-1].translate(self.punctuation_dict)
+        self.punctuation_dict = dict((ord(char), None) for char in string.punctuation.replace("%", "").replace("@","").replace("#",""))
+        self.punc = string.punctuation.replace("%", "").replace("@", "").replace("#", "").replace("*", "")
+        #self.punctuation_remover = lambda word: word.translate(self.punctuation_dict)
+        self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
+        # word[0].translate(self.punctuation_dict) + word[1:-1] + \
+        #                                         word[-1].translate(self.punctuation_dict)
         self.whitespace_tokenizer = WhitespaceTokenizer()
+        self.stemmer = SnowballStemmer("english")
         self.nlp = spacy.load("en_core_web_sm")
         self.sign_dictionary = {
             "#": self.hashtag_parser,
@@ -36,7 +42,7 @@ class Parse:
         self.capitals_dictionary = {}
         self.capital_df = pd.DataFrame(columns=['Word', 'Lower', 'Upper', 'ToUpper', "Occurrences"]).set_index('Word')
 
-    def parse_sentence(self, text):
+    def parse_sentence(self, text,stem=False):
         """
         This function tokenize, remove stop words and apply lower case for every word within the text
         :param text:
@@ -46,10 +52,15 @@ class Parse:
         # text_tokens_without_stopwords = [w.lower() for w in text_tokens if w not in self.stop_words]
         all_text_tokens = self.whitespace_tokenizer.tokenize(text)
         special_text_tokens = self.regex_parser(text)
-        capital_letters_tokens = self.capital_tokenizer(text)
-        number_tokens = self.numbers_tokenizer(text)
-        text_tokens = [w for w in all_text_tokens if w not in special_text_tokens or w not in capital_letters_tokens
-                       or w not in number_tokens]
+   #     capital_letters_tokens = self.capital_tokenizer(text)
+        number_tokens, irregulars = self.numbers_tokenizer(text)
+        # text_tokens = [w for w in all_text_tokens if w not in special_text_tokens #and w not in capital_letters_tokens
+        #                and w not in number_tokens and w not in irregulars]
+        text_tokens = []
+        for w in all_text_tokens:
+            word = self.punctuation_remover(w)
+            if word not in special_text_tokens and word not in number_tokens and word not in irregulars:
+                text_tokens.append(word)
 
         text_tokens_without_stopwords = []
 
@@ -76,7 +87,7 @@ class Parse:
 
         # handle all regular words
         for word in text_tokens:
-            if word not in self.stop_words:
+            if word not in self.stop_words and word:
                 # word is curse word
                 if "**" in word:
                     self.curse_words(text_tokens_without_stopwords)
@@ -90,6 +101,13 @@ class Parse:
         # handle each number word
         for word in number_tokens:
             self.number_parser(word, text_tokens_without_stopwords)
+        if (stem):
+            text_tokens_without_stopwords_stemmed = []
+            for word in text_tokens_without_stopwords:
+                word = self.stemmer.stem(word)
+                text_tokens_without_stopwords_stemmed.append(word)
+            return text_tokens_without_stopwords_stemmed
+
         return text_tokens_without_stopwords
 
     def parse_doc(self, doc_as_list):
@@ -228,8 +246,9 @@ class Parse:
     def capital_tokenizer(self, text):
         return re.findall('[A-Z][^A-Z\s]*', text)
 
-    def numbers_tokenizer(self, text):
-        return re.findall("[0-9]+[0-9]*\s+\d+/\d+|[0-9]+[%]*\s[a-zA-Z]*|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|^[0-9]+[%]*"
+    def numbers_tokenizer(self, text): #TODO find a way to include just regular numbers with spaces
+        #TODO fix addition of a number when it is part of a word
+        return re.findall("[0-9]+[%]+|[0-9]+[0-9]*\s+\d+/\d+|[0-9]+\s[a-zA-Z]+|[+-]?[0-9]+[.][0-9]+[%]*|[.][0-9]+|^[0-9]+[%]*"
                           "[^a-zA-z]*", text), [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|[0-9]+[0-9]*\s+"
                                                                                 "[a-zA-Z]+", text) for
                                                 words in segment.split()]
@@ -249,8 +268,9 @@ class Parse:
                 word = number_word + " " + word_after
             else:
                 word = "{0}{1}".format(number, self.number_dictionary[word_after.lower()][1])
+
         except KeyError:
-            if len(number_word) < 4:
+            if len(number_word) < 4 or "." in number_word:
                 word = number_word
             elif 4 <= len(number_word) < 6:
                 word = str(number / 1000) + "K"
