@@ -72,9 +72,15 @@ class Parse:
         #                 text_tokens_length -= 1
         #         else:
         #             text_tokens_without_stopwords.append(word)
+
+        # handle all regular words
         for word in text_tokens:
             if word not in self.stop_words:
-                self.parse_english_words(word, text_tokens_without_stopwords)
+                # word is curse word
+                if "**" in word:
+                    self.curse_words(text_tokens_without_stopwords)
+                else:
+                    self.parse_english_words(word, text_tokens_without_stopwords)
 
         #  handle each 'special word' with its function
         for special_token in special_text_tokens:
@@ -218,14 +224,12 @@ class Parse:
         #     if w.pos_ == 'PROPN' and w in self.capital_df.index:
         #         pass
 
-
     def capital_tokenizer(self, text):
         return re.findall('[A-Z][^A-Z\s]*', text)
 
-    def numbers_tokenizer(self,text):
+    def numbers_tokenizer(self, text):
         return re.findall("[0-9]+[0-9]*\s+\d+/\d+|[0-9]+[%]*\s[a-zA-Z]*|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|^[0-9]+[%]*"
-                          "[^a-zA-z]*",text)
-
+                          "[^a-zA-z]*", text)
 
     def number_parser(self, number_word, words_list):
         """
@@ -254,3 +258,7 @@ class Parse:
 
         finally:
             words_list.append(word)
+
+    def curse_words(self, words_list):
+
+        words_list.append("*CENSORED*")

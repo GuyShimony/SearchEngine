@@ -29,7 +29,7 @@ class ReadFile:
                         parquet_files.append(df)
 
             df = pd.concat(parquet_files, sort=False)
-
+        df.to_csv("dat.csv")
         return df.values.tolist()
 
 
