@@ -223,7 +223,7 @@ class Parse:
         return re.findall('[A-Z][^A-Z\s]*', text)
 
     def numbers_tokenizer(self,text):
-        return re.findall("[0-9]+[0-9]*\s+\d+/\d+|[0-9]+[%]*\s[a-zA-Z]*|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|[0-9]+[%]*"
+        return re.findall("[0-9]+[0-9]*\s+\d+/\d+|[0-9]+[%]*\s[a-zA-Z]*|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|^[0-9]+[%]*"
                           "[^a-zA-z]*",text)
 
 
