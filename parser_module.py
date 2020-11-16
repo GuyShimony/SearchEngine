@@ -248,8 +248,8 @@ class Parse:
 
     def numbers_tokenizer(self, text): #TODO find a way to include just regular numbers with spaces
         #TODO fix addition of a number when it is part of a word
-        return re.findall("[0-9]+[%]+|[0-9]+[0-9]*\s+\d+/\d+|[0-9]+\s[a-zA-Z]+|[+-]?[0-9]+[.][0-9]+[%]*|[.][0-9]+|^[0-9]+[%]*"
-                          "[^a-zA-z]*", text), [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|[0-9]+[0-9]*\s+"
+        return re.findall("\d+%|[0-9]+[0-9]*\s+\d+/\d+|[^a-zA-Z\s][0-9]+\s[a-zA-Z]+|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|"
+                          "[^\sa-zA-Z][0-9]+", text), [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|[0-9]+[0-9]*\s+"
                                                                                 "[a-zA-Z]+", text) for
                                                 words in segment.split()]
 
