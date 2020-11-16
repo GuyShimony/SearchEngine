@@ -213,16 +213,18 @@ class Parse:
     #             self.capitals_dictionary[word_to_check.upper()]=1
 
     def parse_english_words(self, word_to_check, words_list):
-        for w in self.nlp(word_to_check):
-            if w.pos_ == 'PROPN' and w in self.capital_df.index:
-                pass
+        words_list.append(word_to_check.lower())
+        # for w in self.nlp(word_to_check):
+        #     if w.pos_ == 'PROPN' and w in self.capital_df.index:
+        #         pass
 
 
     def capital_tokenizer(self, text):
         return re.findall('[A-Z][^A-Z\s]*', text)
 
     def numbers_tokenizer(self,text):
-        return re.findall("[0-9]+[%]*\s[a-zA-Z]*|[0-9]+[%]*[^a-zA-z]",text)
+        return re.findall("[0-9]+[0-9]*\s+\d+/\d+|[0-9]+[%]*\s[a-zA-Z]*|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|[0-9]+[%]*"
+                          "[^a-zA-z]*",text)
 
 
     def number_parser(self, number_word, words_list):
