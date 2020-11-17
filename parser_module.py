@@ -11,7 +11,6 @@ import re, spacy, string, pandas as pd
 from nltk.stem.snowball import SnowballStemmer
 from string import punctuation
 
-
 class Parse:
 
     def __init__(self):
@@ -22,8 +21,6 @@ class Parse:
         self.punc = string.punctuation.replace("%", "").replace("@", "").replace("#", "").replace("*", "")
         # self.punctuation_remover = lambda word: word.translate(self.punctuation_dict)
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
-        # word[0].translate(self.punctuation_dict) + word[1:-1] + \
-        #                                         word[-1].translate(self.punctuation_dict)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.stemmer = SnowballStemmer("english")
         self.nlp = spacy.load("en_core_web_sm")
@@ -219,18 +216,18 @@ class Parse:
             r'https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))',
             text)
 
-    def check_for_entity(self, word_to_check, words_list):
+    def check_for_entity(self, text, words_list):
         """
         The function will get a word_to_check and using spacy package will determine if that word
         is a PROPN. If so it will check if it has already occurred in the parse method until that moment and will
         save that propn if so. Else it will remember it for future references.
         """
-        for w in self.nlp(word_to_check):
+        # Add a list to be returned and be used for removing the entity from the token list
+        for word_to_check in self.nlp(text).ents:
             try:
-                if w.pos_ == 'PROPN' and self.entity_dictionary[word_to_check]:
+                if self.entity_dictionary[word_to_check]:
                     words_list.append(word_to_check)
             except KeyError:
-                if w.pos_ == 'PROPN':
                     self.entity_dictionary[word_to_check] = 1
 
     # def check_for_capital(self,word_to_check,words_list):
@@ -246,6 +243,7 @@ class Parse:
     #             self.capitals_dictionary[word_to_check.upper()]=1
 
     def parse_english_words(self, word_to_check, words_list):
+
         words_list.append(word_to_check.lower())
         # for w in self.nlp(word_to_check):
         #     if w.pos_ == 'PROPN' and w in self.capital_df.index:
