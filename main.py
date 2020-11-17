@@ -6,10 +6,7 @@ if __name__ == '__main__':
 
  #   reader = r.ReadFile("Data")
 #    reader.read_file("covid19_07-09.snappy.parquet")
-    search_engine.main()
+    #search_engine.main()
     parser = parser_module.Parse()
-    parser.parse_sentence("stupid, F*** "
-                          "3.87 34 3/4 12345% 1234567890, 14 percent hello 123 Thousand "
-                          "15 million @fucker #smartAss a ; "
-                          "https://www.instagram.co.il/p/CD7fAPWs3WM/?igshid=o9kf0ugp1l8x "
+    parser.parse_sentence("March 2020 123 march 2030 mar 99 April 1994 JUN 99 dec 75 14 percent 16% guy 125 thousands"
                           ,False)

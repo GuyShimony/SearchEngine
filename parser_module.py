@@ -2,6 +2,7 @@ from nltk.corpus import stopwords
 from nltk.corpus import words
 from nltk.misc.wordfinder import word_finder
 from nltk.tokenize import word_tokenize
+# from pandas.tests.groupby.test_value_counts import df
 from document import Document
 from nltk.tokenize.regexp import RegexpTokenizer
 from nltk.tokenize import WhitespaceTokenizer
@@ -34,10 +35,15 @@ class Parse:
         }
         self.number_dictionary = {
             "thousand": [1000, "K"],
+            "thousands": [1000, "K"],
             "million": [1000000, "M"],
+            "millions": [1000000, "M"],
             "billion": [1000000000, "B"],
+            "billions": [1000000000, "B"],
             "percent": [1, "%"],
-            "percentage": [1, "%"]
+            "percents": [1, "%"],
+            "percentage": [1, "%"],
+            "percentages": [1, "%"]
         }
         self.entity_dictionary = {}
         self.capitals_dictionary = {}
@@ -54,13 +60,15 @@ class Parse:
         all_text_tokens = self.whitespace_tokenizer.tokenize(text)
         special_text_tokens = self.special_cases_tokenizer(text)
         #     capital_letters_tokens = self.capital_tokenizer(text)
-        number_tokens, irregulars = self.numbers_tokenizer(text)
+        number_tokens, irregular_numbers = self.numbers_tokenizer(text)
         # text_tokens = [w for w in all_text_tokens if w not in special_text_tokens #and w not in capital_letters_tokens
         #                and w not in number_tokens and w not in irregulars]
+        date_tokens, irregular_dates = self.date_tokenizer(text)
         text_tokens = []
         for w in all_text_tokens:
             word = self.punctuation_remover(w)
-            if word not in special_text_tokens and word not in number_tokens and word not in irregulars:
+            if word not in special_text_tokens and word not in number_tokens and word not in irregular_numbers \
+                    and word not in irregular_dates:
                 text_tokens.append(word)
 
         text_tokens_without_stopwords = []
@@ -102,6 +110,11 @@ class Parse:
         # handle each number word
         for word in number_tokens:
             self.number_parser(word, text_tokens_without_stopwords)
+
+        # handle each date term
+        for date in date_tokens:
+            text_tokens_without_stopwords.append(date.lower())
+
         if (stem):
             text_tokens_without_stopwords_stemmed = []
             for word in text_tokens_without_stopwords:
@@ -177,7 +190,25 @@ class Parse:
         for word in words_to_add:
             words_list.append(word)
 
-    def special_cases_tokenizer(self, words) -> list:
+    def date_tokenizer(self, text):
+        short_month = "[jJ][aA][nN]\s[0-9][0-9]+|[fF][eE][bB]\s[0-9][0-9]+" \
+                      "|[mM][aA][rR]\s[0-9][0-9]+|[aA][pP][rR]\s[0-9][0-9]+|" \
+                      "[mM][aA][yY]\s[0-9][0-9]+|[jJ][uU][nN]\s[0-9][0-9]+" \
+                      "|[jJ][uU][lL]\s[0-9][0-9]+|[aA][uU][gG]\s[0-9][0-9]+" \
+                      "|[sS][eE][pP]\s[0-9][0-9]+|[oO][cC][tT]\s[0-9][0-9]+" \
+                      "|[nN][oO][vV]\s[0-9][0-9]+|[dD][eE][cC]\s[0-9][0-9]+"
+
+        full_month = "[jJ]anuary\s[0-9][0-9]+|[fF]ebruary\s[0-9][0-9]+|" \
+                     "[mM]arch\s[0-9][0-9]+|[aA]pril\s[0-9][0-9]+|" \
+                     "[mM]ay\s[0-9][0-9]+|[jJ]une\s[0-9][0-9]+|" \
+                     "[jJ]uly\s[0-9][0-9]+|[aA]ugust\s[0-9][0-9]+|" \
+                     "[sS]eptember\s[0-9][0-9]+|[oO]ctober\s[0-9][0-9]+|" \
+                     "[nN]ovember\s[0-9][0-9]+|[dD]ecember\s[0-9][0-9]+"
+        month_year_regex = short_month + "|" + full_month
+        return re.findall(month_year_regex, text), [word for dates in re.findall(month_year_regex, text) for word in
+                                                    dates.split(" ")]  # split for irreuglars to avoid in text_tokens
+
+    def special_cases_tokenizer(self, text) -> list:
         """
         The function will use a special regular expression to identify all special tokens.
         The special tokens are # @ http.
@@ -186,8 +217,7 @@ class Parse:
         return re.findall(
             r'#\w*|@\w*|http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+|'
             r'https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))',
-            words)
-
+            text)
 
     def check_for_entity(self, word_to_check, words_list):
         """
@@ -224,11 +254,16 @@ class Parse:
     def capital_tokenizer(self, text):
         return re.findall('[A-Z][^A-Z\s]*', text)
 
-    def numbers_tokenizer(self, text):  # TODO find a way to include just regular numbers with spaces
-        # TODO fix addition of a number when it is part of a word
-        return re.findall("\d+%|[0-9]+[0-9]*\s+\d+/\d+|[^a-zA-Z\s][0-9]+\s[a-zA-Z]+|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|"
-                          "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+", text), \
-               [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|[0-9]+[0-9]*\s+[a-zA-Z]+", text) for
+    def numbers_tokenizer(self, text):
+        number_and_words = "[^a-zA-Z\s][0-9]+\s[tT]housand[s]*|"\
+                          "[^a-zA-Z\s][0-9]+\s[mM]illion[s]*|"\
+                          "[^a-zA-Z\s][0-9]+\s[bB]illion[s]*|"\
+                          "[^a-zA-Z\s][0-9]+\s[pP]ercent[age]*[s]*"
+
+        return re.findall("\d+%|[0-9]+[0-9]*\s+\d+/\d+|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|"
+                           "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|"+number_and_words
+                          , text), \
+               [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|"+number_and_words, text) for
                 words in segment.split()]
 
     def number_parser(self, number_word, words_list):
