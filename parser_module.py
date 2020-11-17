@@ -52,7 +52,7 @@ class Parse:
         # text_tokens = word_tokenize(text)
         # text_tokens_without_stopwords = [w.lower() for w in text_tokens if w not in self.stop_words]
         all_text_tokens = self.whitespace_tokenizer.tokenize(text)
-        special_text_tokens = self.regex_parser(text)
+        special_text_tokens = self.special_cases_tokenizer(text)
         #     capital_letters_tokens = self.capital_tokenizer(text)
         number_tokens, irregulars = self.numbers_tokenizer(text)
         # text_tokens = [w for w in all_text_tokens if w not in special_text_tokens #and w not in capital_letters_tokens
@@ -177,7 +177,7 @@ class Parse:
         for word in words_to_add:
             words_list.append(word)
 
-    def regex_parser(self, words) -> list:
+    def special_cases_tokenizer(self, words) -> list:
         """
         The function will use a special regular expression to identify all special tokens.
         The special tokens are # @ http.
@@ -188,30 +188,6 @@ class Parse:
             r'https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))',
             words)
 
-    # def number_parser(self, number_word, word_after, words_list, all_words):
-    #     """
-    #     Parse a string containing a number. The number can be followed by its plural, meaning 123 Thousands can appear
-    #     and mean 123000.
-    #     The numbers will be saved as 123K or 1.23M (for millions) etc.
-    #     """
-    #     delete = False
-    #     number = int(number_word)
-    #     try:
-    #         word = "{0}{1}".format(number, self.number_dictionary[word_after.lower()][1])
-    #         all_words.remove(word_after)
-    #         delete = True
-    #     except KeyError:
-    #         if len(number_word) < 4:
-    #             word = number_word
-    #         elif 4 <= len(number_word) < 6:
-    #             word = str(number / 1000) + "K"
-    #         elif 6 <= len(number_word) < 9:
-    #             word = str(number / 1000000) + "M"
-    #         else:
-    #             word = str(number / 1000000000) + "B"
-    #
-    #     words_list.append(word)
-    #     return delete
 
     def check_for_entity(self, word_to_check, words_list):
         """
