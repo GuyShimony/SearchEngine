@@ -184,7 +184,8 @@ class Parse:
         Returns a list of all special tokens with there following words
         """
         return re.findall(
-            r'#\w*|@\w*|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))',
+            r'#\w*|@\w*|http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+|'
+            r'https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))',
             words)
 
     # def number_parser(self, number_word, word_after, words_list, all_words):
