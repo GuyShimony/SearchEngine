@@ -42,8 +42,6 @@ class Parse:
             "percentages": [1, "%"]
         }
         self.entity_dictionary = {}
-        #self. = {}
-        # self.capital_df = pd.DataFrame(columns=['Word', 'Lower', 'Upper', 'ToUpper', "Occurrences"]).set_index('Word')
         self.tweet_id = None
 
 
