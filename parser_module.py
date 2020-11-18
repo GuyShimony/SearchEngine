@@ -206,42 +206,7 @@ class Parse:
                             quote_url, term_dict, doc_length)
         return document
 
-    def hashtag_parser(self, hashtaged_word, words_list):
-        """
-        Parse a word containing # to a list of its words split by Upper case letters or '_' + the original
-        hashtag word
-        """
-        words_list += [w.lower() for w in re.findall('[a-z|A-Z][^A-Z|_]*', hashtaged_word)] + \
-                      [hashtaged_word[0] + hashtaged_word[1:].lower()]
-
-    def shtrudel_parser(self, word, words_list):
-        """
-        Parse a word containing @.
-        The function will return the original word + the prefix @
-        """
-        words_list.append(word)
-
-    def url_parser(self, url, words_list):
-        """
-        Parse a url starting with http(s).
-        The function will extract from the url the http(s), the website host name and all following tokens
-        that are separated by '\'
-        """
-        parsed_url = self.url_tokenizer.tokenize(url)
-        for word in parsed_url:
-            if 'www' in word:
-                word = word.replace("www.", "")
-                words_list.append("www")
-                words_list.append(word)
-            else:
-                words_list.append(word)
-
-    def add_word_to_list(self, words_to_add, words_list):
-        """
-        The function will add the word_to_add to the words_list
-        """
-        for word in words_to_add:
-            words_list.append(word)
+    ######## RULE BASED TOKENIZER FUNCTION #############
 
     def curse_tokenizer(self, text):
         """
@@ -300,24 +265,7 @@ class Parse:
                 self.entity_dictionary[word_to_check] = self.tweet_id
 
         return words_list
-    # def check_for_capital(self,word_to_check,words_list):
-    # try:
-    #     if (word_to_check[0]).isupper() and self.capitals_dictionary[word_to_check.upper()] == 1:
-    #         words_list.append(word_to_check.upper())
-    #     elif (word_to_check[0]).islower():
-    #         words_list.append(word_to_check.lower())
-    #         if self.capitals_dictionary[word_to_check.upper()]:
-    #             self.capitals_dictionary[word_to_check.upper()] = -1
-    # except KeyError:
-    #         if self.capitals_dictionary[word_to_check.upper()] and self.capitals_dictionary[word_to_check.upper()] != -1:
-    #             self.capitals_dictionary[word_to_check.upper()]=1
 
-    def parse_english_words(self, word_to_check, words_list):
-
-        words_list.append(word_to_check.lower())
-        # for w in self.nlp(word_to_check):
-        #     if w.pos_ == 'PROPN' and w in self.capital_df.index:
-        #         pass
 
     def capital_tokenizer(self, text):
         return re.findall('[A-Z][^A-Z\s]*', text)
@@ -333,6 +281,41 @@ class Parse:
                           , text), \
                [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words, text) for
                 words in segment.split()]
+
+
+   ######## RULE BASED PARSER FUNCTION #############
+
+    def hashtag_parser(self, hashtaged_word, words_list):
+        """
+        Parse a word containing # to a list of its words split by Upper case letters or '_' + the original
+        hashtag word
+        """
+        words_list += [w.lower() for w in re.findall('[a-z|A-Z][^A-Z|_]*', hashtaged_word)] + \
+                      [hashtaged_word[0] + hashtaged_word[1:].lower()]
+
+    def shtrudel_parser(self, word, words_list):
+        """
+        Parse a word containing @.
+        The function will return the original word + the prefix @
+        """
+        words_list.append(word)
+
+    def url_parser(self, url, words_list):
+        """
+        Parse a url starting with http(s).
+        The function will extract from the url the http(s), the website host name and all following tokens
+        that are separated by '\'
+        """
+        parsed_url = self.url_tokenizer.tokenize(url)
+        for word in parsed_url:
+            if 'www' in word:
+                word = word.replace("www.", "")
+                words_list.append("www")
+                words_list.append(word)
+            else:
+                words_list.append(word)
+
+
 
     def number_parser(self, number_word, words_list):
         """
@@ -374,3 +357,20 @@ class Parse:
 
         return text
         #words_list.append("*CENSORED*")
+
+    def entity_recognizer(self, text):
+        """
+        The function will get a word_to_check and using spacy package will determine if that word
+        is a Entity. If so it will check if it has already occurred in the parse method until that moment and will
+        save that Entity if so. Else it will remember it for future references.
+        """
+        words_list = []
+        for word_to_check in self.nlp(text).ents:
+            try:
+                if self.entity_dictionary[word_to_check] and \
+                        self.entity_dictionary[word_to_check] != self.tweet_id:
+                    words_list.append(word_to_check)
+            except KeyError:
+                self.entity_dictionary[word_to_check] = self.tweet_id
+
+        return words_list
