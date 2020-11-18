@@ -46,12 +46,15 @@ class Indexer:
                     self.inverted_idx[term] = {"freq": 1, "pointers": []}
                     # self.postingDict[term] = []
                 else:
+                    # freq -> number of occurrences in the whole corpus (for each term)
                     self.inverted_idx[term]["freq"] += 1
 
                 if term not in self.postingDict.keys():
                     self.postingDict[term] = {"df": 1, "tweets":[]}
                 else:
+                    #tuples of tweet id , number of occurrences in the tweet
                     self.postingDict[term]["tweets"].append((document.tweet_id, document_dictionary[term]))
+                    #number of tweets the term appeared in
                     self.postingDict[term]['df'] += 1
 
             except:
