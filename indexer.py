@@ -29,6 +29,8 @@ class Indexer:
         """
 
         document_dictionary = document.term_doc_dictionary
+        max_tf = max(list(document_dictionary.values()))  # Get the most frequent used value
+
         # Go over each term in the doc
         for term in document_dictionary.keys():
             print(self.term_counter)
@@ -50,11 +52,11 @@ class Indexer:
                     self.inverted_idx[term]["freq"] += 1
 
                 if term not in self.postingDict.keys():
-                    self.postingDict[term] = {"df": 1, "tweets":[]}
+                    self.postingDict[term] = {"df": 1, "tweets": []}
                 else:
-                    #tuples of tweet id , number of occurrences in the tweet
-                    self.postingDict[term]["tweets"].append((document.tweet_id, document_dictionary[term]))
-                    #number of tweets the term appeared in
+                    # tuples of tweet id , number of occurrences in the tweet
+                    self.postingDict[term]["tweets"].append((document.tweet_id, document_dictionary[term], max_tf))
+                    # number of tweets the term appeared in
                     self.postingDict[term]['df'] += 1
 
             except:

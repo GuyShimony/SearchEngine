@@ -2,14 +2,13 @@ from nltk.corpus import stopwords
 from nltk.corpus import words
 from nltk.misc.wordfinder import word_finder
 from nltk.tokenize import word_tokenize
-# from pandas.tests.groupby.test_value_counts import df
 from document import Document
 from nltk.tokenize.regexp import RegexpTokenizer
 from nltk.tokenize import WhitespaceTokenizer
 from nltk.tokenize import TweetTokenizer
 import re, spacy, string, pandas as pd
 from nltk.stem.snowball import SnowballStemmer
-from string import punctuation
+
 
 class Parse:
 
@@ -23,7 +22,7 @@ class Parse:
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.stemmer = SnowballStemmer("english")
-        self.nlp = spacy.load("en_core_web_sm")
+        self.nlp = spacy.load("en_core_web_sm") # Used for entity recognition
         self.sign_dictionary = {
             "#": self.hashtag_parser,
             "@": self.shtrudel_parser,
@@ -43,8 +42,10 @@ class Parse:
             "percentages": [1, "%"]
         }
         self.entity_dictionary = {}
-        self.capitals_dictionary = {}
-        self.capital_df = pd.DataFrame(columns=['Word', 'Lower', 'Upper', 'ToUpper', "Occurrences"]).set_index('Word')
+        #self. = {}
+        # self.capital_df = pd.DataFrame(columns=['Word', 'Lower', 'Upper', 'ToUpper', "Occurrences"]).set_index('Word')
+        self.tweet_id = None
+
 
     def parse_sentence(self, text, stem=False):
         """
@@ -62,6 +63,7 @@ class Parse:
         #                and w not in number_tokens and w not in irregulars]
         date_tokens, irregular_dates = self.date_tokenizer(text)
         text_tokens = []
+        self.check_for_entity(text, text_tokens)
         for w in all_text_tokens:
             word = self.punctuation_remover(w)
             if word not in special_text_tokens and word not in number_tokens and word not in irregular_numbers \
@@ -128,6 +130,7 @@ class Parse:
         :return: Document object with corresponding fields.
         """
         tweet_id = doc_as_list[0]
+        self.tweet_id = tweet_id
         tweet_date = doc_as_list[1]
         full_text = doc_as_list[2]
         url = doc_as_list[3]
@@ -225,10 +228,11 @@ class Parse:
         # Add a list to be returned and be used for removing the entity from the token list
         for word_to_check in self.nlp(text).ents:
             try:
-                if self.entity_dictionary[word_to_check]:
+                if self.entity_dictionary[word_to_check] and \
+                        self.entity_dictionary[word_to_check] != self.tweet_id:
                     words_list.append(word_to_check)
             except KeyError:
-                    self.entity_dictionary[word_to_check] = 1
+                self.entity_dictionary[word_to_check] = self.tweet_id
 
     # def check_for_capital(self,word_to_check,words_list):
     # try:
@@ -253,15 +257,15 @@ class Parse:
         return re.findall('[A-Z][^A-Z\s]*', text)
 
     def numbers_tokenizer(self, text):
-        number_and_words = "[^a-zA-Z\s][0-9]+\s[tT]housand[s]*|"\
-                          "[^a-zA-Z\s][0-9]+\s[mM]illion[s]*|"\
-                          "[^a-zA-Z\s][0-9]+\s[bB]illion[s]*|"\
-                          "[^a-zA-Z\s][0-9]+\s[pP]ercent[age]*[s]*"
+        number_and_words = "[^a-zA-Z\s][0-9]+\s[tT]housand[s]*|" \
+                           "[^a-zA-Z\s][0-9]+\s[mM]illion[s]*|" \
+                           "[^a-zA-Z\s][0-9]+\s[bB]illion[s]*|" \
+                           "[^a-zA-Z\s][0-9]+\s[pP]ercent[age]*[s]*"
 
         return re.findall("\d+%|[0-9]+[0-9]*\s+\d+/\d+|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|"
-                           "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|"+number_and_words
+                          "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words
                           , text), \
-               [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|"+number_and_words, text) for
+               [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words, text) for
                 words in segment.split()]
 
     def number_parser(self, number_word, words_list):
