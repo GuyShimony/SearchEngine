@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from threading import Thread
 
 
 class ReadFile:
@@ -16,28 +17,29 @@ class ReadFile:
         """
         parquet_files = []
         full_path = os.path.join(self.corpus_path, file_name)
-
-        if ".parquet" in file_name: # Load the single file given
+        threads = []
+        if ".parquet" in file_name:  # Load the single file given
             df = pd.read_parquet(full_path, engine="pyarrow")
 
-        else: # Read all .parquet files from the directory given
+        else:  # Read all .parquet files from the directory given
             for root, dirs, files in os.walk(full_path):
                 for file in files:
                     if file.endswith(".parquet"):
-                        full_path = os.path.join(root,file)
-                        df = pd.read_parquet(full_path, engine="pyarrow")
-                        parquet_files.append(df)
+                        full_path = os.path.join(root, file)
+                        #  Load each parquet file in a separate thread for performance enhancing
+                        threads.append(Thread(target=self.load_file, args=(full_path, parquet_files)))
+                        # df = pd.read_parquet(full_path, engine="pyarrow")
+                        # parquet_files.append(df)
+            for thread in threads:
+                thread.start()
+
+            for thread in threads:
+                thread.join()
 
             df = pd.concat(parquet_files, sort=False)
+
         return df.values.tolist()
 
-
-    def generatorRead(self, filename):
-        parquet_files = []
-        full_path = os.path.join(self.corpus_path, filename)
-        for root, dirs, files in os.walk(full_path):
-            for file in files:
-                if file.endswith(".parquet"):
-                    full_path = os.path.join(root, file)
-                    yield pd.read_parquet(full_path, engine="pyarrow")
-
+    def load_file(self, filename, df_list):
+        df = pd.read_parquet(filename, engine="pyarrow")
+        df_list.append(df)
