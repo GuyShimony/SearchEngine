@@ -53,24 +53,93 @@ class Parse:
         :param text:
         :return:
         """
+        # Preprocessing - Apply the curse rule first to replace each curse word with the word CENSORED
+        text = self.curse_parser(text)
+        text_tokens_without_stopwords = {}
+
         # text_tokens = word_tokenize(text)
         # text_tokens_without_stopwords = [w.lower() for w in text_tokens if w not in self.stop_words]
         all_text_tokens = self.whitespace_tokenizer.tokenize(text)
+        # First step - add each word (that was separated by white space) to the dictionary as a token
+        for word in all_text_tokens:
+            try:
+                if word[0] not in self.sign_dictionary.keys():
+                    word = self.punctuation_remover(word).lower()
+                if word not in self.stop_words:
+                    text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
+            except KeyError:
+                text_tokens_without_stopwords[word] = 1
+        # Second step - apply all the tokenizing rules on the text
         special_text_tokens = self.special_cases_tokenizer(text)
-        #     capital_letters_tokens = self.capital_tokenizer(text)
-        number_tokens, irregular_numbers = self.numbers_tokenizer(text)
-        # text_tokens = [w for w in all_text_tokens if w not in special_text_tokens #and w not in capital_letters_tokens
-        #                and w not in number_tokens and w not in irregulars]
-        date_tokens, irregular_dates = self.date_tokenizer(text)
-        text_tokens = []
-        self.check_for_entity(text, text_tokens)
-        for w in all_text_tokens:
-            word = self.punctuation_remover(w)
-            if word not in special_text_tokens and word not in number_tokens and word not in irregular_numbers \
-                    and word not in irregular_dates:
-                text_tokens.append(word)
+        number_tokens, irregulars = self.numbers_tokenizer(text)
+        date_tokens = self.date_tokenizer(text)
 
-        text_tokens_without_stopwords = []
+        # Third step - delete all the words that were processed in the rules.
+        # For example '123 Thousand' was turned to '123K' -> Need to delete  '123', 'Thousand'
+
+        for irregular in irregulars:
+            try:
+                irregular = irregular.lower()
+                text_tokens_without_stopwords.pop(irregular)
+            except KeyError:
+                pass
+
+        # Fourth step - Apply all the parsing rules/
+        # For example - turn '123 Thousand' to
+        # handle all regular words
+
+        rule_generated_tokens = []
+        #  handle each 'special word' with its function
+        for special_token in special_text_tokens:
+            self.sign_dictionary[special_token[0]](special_token, rule_generated_tokens)
+
+        # handle each number word
+        for word in number_tokens:
+            self.number_parser(word, rule_generated_tokens)
+
+        # Fifth step - add all the newly generated tokens to the dict
+
+        for word in rule_generated_tokens:
+            try:
+                text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
+            except KeyError:
+                text_tokens_without_stopwords[word] = 1
+
+        for date in date_tokens:
+            try:
+                text_tokens_without_stopwords[date.lower()] = text_tokens_without_stopwords[date.lower()] + 1
+            except KeyError:
+                text_tokens_without_stopwords[date.lower()] = 1
+
+        # Six step - Apply Entity Recognition on the text and add the entities
+        # If the entity 'Donald Trump" was recognize as an entity we won't delete the existing tokens:
+        # 'donlad', 'trump' from the dictionary. The reason is for queries like "Mr Trump".
+        # Queries like this will not be matched if only 'donald trump' will be in the doc
+        for entity in self.entity_recognizer(text):
+            try:
+                text_tokens_without_stopwords[entity] = text_tokens_without_stopwords[entity] + 1
+            except KeyError:
+                text_tokens_without_stopwords[entity] = 1
+
+
+        if (stem):
+            text_tokens_without_stopwords_stemmed = []
+            for word in text_tokens_without_stopwords:
+                word = self.stemmer.stem(word)
+                text_tokens_without_stopwords_stemmed.append(word)
+            return text_tokens_without_stopwords_stemmed
+
+        return text_tokens_without_stopwords
+
+        # text_tokens = []
+        # self.check_for_entity(text, text_tokens)
+        # for w in all_text_tokens:
+        #     word = self.punctuation_remover(w)
+        #     if word not in special_text_tokens and word not in number_tokens and word not in irregular_numbers \
+        #             and word not in irregular_dates:
+        #         text_tokens.append(word)
+        #
+        # text_tokens_without_stopwords = []
 
         # text_tokens_length = len(text_tokens)
         # # for word in text_tokens:
@@ -93,35 +162,17 @@ class Parse:
         #         else:
         #             text_tokens_without_stopwords.append(word)
 
+        # Fourth step - Apply all the parsing rules/
+        # For example - turn '123 Thousand' to
         # handle all regular words
-        for word in text_tokens:
-            if word not in self.stop_words and word:
-                # word is curse word
-                if "**" in word:
-                    self.curse_words(text_tokens_without_stopwords)
-                else:
-                    self.parse_english_words(word, text_tokens_without_stopwords)
+        # for word in text_tokens:
+        #     if word not in self.stop_words and word:
+        #         # word is curse word
+        #         if "**" in word:
+        #             self.curse_words(text_tokens_without_stopwords)
+        #         else:
+        #             self.parse_english_words(word, text_tokens_without_stopwords)
 
-        #  handle each 'special word' with its function
-        for special_token in special_text_tokens:
-            self.sign_dictionary[special_token[0]](special_token, text_tokens_without_stopwords)
-
-        # handle each number word
-        for word in number_tokens:
-            self.number_parser(word, text_tokens_without_stopwords)
-
-        # handle each date term
-        for date in date_tokens:
-            text_tokens_without_stopwords.append(date.lower())
-
-        if (stem):
-            text_tokens_without_stopwords_stemmed = []
-            for word in text_tokens_without_stopwords:
-                word = self.stemmer.stem(word)
-                text_tokens_without_stopwords_stemmed.append(word)
-            return text_tokens_without_stopwords_stemmed
-
-        return text_tokens_without_stopwords
 
     def parse_doc(self, doc_as_list):
         """
@@ -138,16 +189,18 @@ class Parse:
         retweet_url = doc_as_list[5]
         quote_text = doc_as_list[6]
         quote_url = doc_as_list[7]
-        term_dict = {}
-        tokenized_text = self.parse_sentence(full_text)
 
-        doc_length = len(tokenized_text)  # after text operations.
+        # tokenized_text = self.parse_sentence(full_text)
+        term_dict = self.parse_sentence(full_text)
 
-        for term in tokenized_text:
-            if term not in term_dict.keys():
-                term_dict[term] = 1
-            else:
-                term_dict[term] += 1
+        # doc_length = len(tokenized_text)  # after text operations.
+        doc_length = len(term_dict.keys())  # after text operations.
+
+        # for term in tokenized_text:
+        #     if term not in term_dict.keys():
+        #         term_dict[term] = 1
+        #     else:
+        #         term_dict[term] += 1
 
         document = Document(tweet_id, tweet_date, full_text, url, retweet_text, retweet_url, quote_text,
                             quote_url, term_dict, doc_length)
@@ -190,7 +243,20 @@ class Parse:
         for word in words_to_add:
             words_list.append(word)
 
+    def curse_tokenizer(self, text):
+        """
+        Custom rule 1 - Identify curser in the text with the format of F**k.
+        Return each curse as a token
+        """
+        return re.findall("[a-zA-Z][**]+[a-zA-z]*", text)
+
     def date_tokenizer(self, text):
+        """
+        Custom rule 2 - Add each date in the format of Jun 2008 or Jun 08
+        As a token.
+        Reason: Docs with the phrase Jun 2008 will be returned immediately without the need
+        to merge Docs that contain 'Jun' and Docs that contains '2008'
+        """
         short_month = "[jJ][aA][nN]\s[0-9][0-9]+|[fF][eE][bB]\s[0-9][0-9]+" \
                       "|[mM][aA][rR]\s[0-9][0-9]+|[aA][pP][rR]\s[0-9][0-9]+|" \
                       "[mM][aA][yY]\s[0-9][0-9]+|[jJ][uU][nN]\s[0-9][0-9]+" \
@@ -205,8 +271,7 @@ class Parse:
                      "[sS]eptember\s[0-9][0-9]+|[oO]ctober\s[0-9][0-9]+|" \
                      "[nN]ovember\s[0-9][0-9]+|[dD]ecember\s[0-9][0-9]+"
         month_year_regex = short_month + "|" + full_month
-        return re.findall(month_year_regex, text), [word for dates in re.findall(month_year_regex, text) for word in
-                                                    dates.split(" ")]  # split for irreuglars to avoid in text_tokens
+        return re.findall(month_year_regex, text)
 
     def special_cases_tokenizer(self, text) -> list:
         """
@@ -219,13 +284,13 @@ class Parse:
             r'https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))',
             text)
 
-    def check_for_entity(self, text, words_list):
+    def entity_recognizer(self, text):
         """
         The function will get a word_to_check and using spacy package will determine if that word
-        is a PROPN. If so it will check if it has already occurred in the parse method until that moment and will
-        save that propn if so. Else it will remember it for future references.
+        is a Entity. If so it will check if it has already occurred in the parse method until that moment and will
+        save that Entity if so. Else it will remember it for future references.
         """
-        # Add a list to be returned and be used for removing the entity from the token list
+        words_list = []
         for word_to_check in self.nlp(text).ents:
             try:
                 if self.entity_dictionary[word_to_check] and \
@@ -234,6 +299,7 @@ class Parse:
             except KeyError:
                 self.entity_dictionary[word_to_check] = self.tweet_id
 
+        return words_list
     # def check_for_capital(self,word_to_check,words_list):
     # try:
     #     if (word_to_check[0]).isupper() and self.capitals_dictionary[word_to_check.upper()] == 1:
@@ -301,6 +367,10 @@ class Parse:
         finally:
             words_list.append(word)
 
-    def curse_words(self, words_list):
+    def curse_parser(self, text):
+        curse_tokens = self.curse_tokenizer(text)
+        for word in curse_tokens:
+            text.replace(word, "*CENSORED*")
 
-        words_list.append("*CENSORED*")
+        return text
+        #words_list.append("*CENSORED*")
