@@ -22,7 +22,7 @@ class Parse:
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.stemmer = SnowballStemmer("english")
-        self.nlp = spacy.load("en_core_web_sm") # Used for entity recognition
+        self.nlp = spacy.load("en_core_web_sm")  # Used for entity recognition
         self.sign_dictionary = {
             "#": self.hashtag_parser,
             "@": self.shtrudel_parser,
@@ -42,10 +42,9 @@ class Parse:
             "percentages": [1, "%"]
         }
         self.entity_dictionary = {}
-        #self. = {}
+        # self. = {}
         # self.capital_df = pd.DataFrame(columns=['Word', 'Lower', 'Upper', 'ToUpper', "Occurrences"]).set_index('Word')
         self.tweet_id = None
-
 
     def parse_sentence(self, text, stem=False):
         """
@@ -61,12 +60,15 @@ class Parse:
         # text_tokens_without_stopwords = [w.lower() for w in text_tokens if w not in self.stop_words]
         all_text_tokens = self.whitespace_tokenizer.tokenize(text)
         # First step - add each word (that was separated by white space) to the dictionary as a token
+        # Do not add special toekn words like @XX #YY
         for word in all_text_tokens:
             try:
-                if word[0] not in self.sign_dictionary.keys():
+               if word not in self.stop_words and word[0] not in self.sign_dictionary.keys():
+
+                    # TODO Talk to guy if needed - sequence of emoji are considered one
                     word = self.punctuation_remover(word).lower()
-                if word not in self.stop_words:
                     text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
+
             except KeyError:
                 text_tokens_without_stopwords[word] = 1
         # Second step - apply all the tokenizing rules on the text
@@ -121,7 +123,6 @@ class Parse:
             except KeyError:
                 text_tokens_without_stopwords[entity] = 1
 
-
         if (stem):
             text_tokens_without_stopwords_stemmed = []
             for word in text_tokens_without_stopwords:
@@ -172,7 +173,6 @@ class Parse:
         #             self.curse_words(text_tokens_without_stopwords)
         #         else:
         #             self.parse_english_words(word, text_tokens_without_stopwords)
-
 
     def parse_doc(self, doc_as_list):
         """
@@ -266,7 +266,6 @@ class Parse:
 
         return words_list
 
-
     def capital_tokenizer(self, text):
         return re.findall('[A-Z][^A-Z\s]*', text)
 
@@ -282,8 +281,7 @@ class Parse:
                [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words, text) for
                 words in segment.split()]
 
-
-   ######## RULE BASED PARSER FUNCTION #############
+    ######## RULE BASED PARSER FUNCTION #############
 
     def hashtag_parser(self, hashtaged_word, words_list):
         """
@@ -315,8 +313,6 @@ class Parse:
             else:
                 words_list.append(word)
 
-
-
     def number_parser(self, number_word, words_list):
         """
         Parse a string containing a number. The number can be followed by its plural, meaning 123 Thousands can appear
@@ -331,14 +327,24 @@ class Parse:
             if "/" in word_after:
                 word = number_word + " " + word_after
             else:
-                word = "{0}{1}".format(number, self.number_dictionary[word_after.lower()][1])
+                number = number * int(self.number_dictionary[word_after.lower()][0])
+                number_word = str(number)
+                # word = "{0}{1}".format(number, self.number_dictionary[word_after.lower()][1])
+                if len(number_word) < 4 or "." in number_word:
+                    word = number_word
+                elif 4 <= len(number_word) <= 6:
+                    word = number_word[:-3] + "K"
+                elif 6 <= len(number_word) <= 9:
+                    word = number_word[:-6] + "M"
+                else:
+                    word = number_word[:-9] + "B"
 
         except KeyError:
             if len(number_word) < 4 or "." in number_word:
                 word = number_word
-            elif 4 <= len(number_word) < 6:
+            elif 4 <= len(number_word) <= 6:
                 word = str(number / 1000) + "K"
-            elif 6 <= len(number_word) < 9:
+            elif 7 <= len(number_word) <= 9:
                 word = str(number / 1000000) + "M"
             else:
                 word = str(number / 1000000000) + "B"
@@ -356,7 +362,7 @@ class Parse:
             text.replace(word, "*CENSORED*")
 
         return text
-        #words_list.append("*CENSORED*")
+        # words_list.append("*CENSORED*")
 
     def entity_recognizer(self, text):
         """
