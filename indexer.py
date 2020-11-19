@@ -30,6 +30,13 @@ class Indexer:
 
         document_dictionary = document.term_doc_dictionary
         max_tf = max(list(document_dictionary.values()))  # Get the most frequent used value
+        terms_with_one_occurrence = 0
+        number_of_curses = 0
+        for term in document_dictionary:
+            if document_dictionary[term] == 1: 
+                terms_with_one_occurrence += 1
+            if term == "*CENSORED*":
+                number_of_curses+=1
 
         # Go over each term in the doc
         for term in document_dictionary.keys():
@@ -55,7 +62,8 @@ class Indexer:
                     self.postingDict[term] = {"df": 1, "tweets": []}
                 else:
                     # tuples of tweet id , number of occurrences in the tweet
-                    self.postingDict[term]["tweets"].append((document.tweet_id, document_dictionary[term], max_tf))
+                    self.postingDict[term]["tweets"].append((document.tweet_id, document_dictionary[term], max_tf,
+                                                             terms_with_one_occurrence, number_of_curses))
                     # number of tweets the term appeared in
                     self.postingDict[term]['df'] += 1
 
@@ -69,3 +77,4 @@ class Indexer:
     def update_posting_in_dict(self):
         for term in list(self.posting_copy_for_saving.keys()):
             self.inverted_idx[term]['pointers'].append(f"{self.posting_dir_path}\\posting{self.posting_file_counter}")
+

@@ -42,7 +42,7 @@ class Parse:
             "percentages": [1, "%"]
         }
         self.entity_dictionary = {}
-        # self. = {}
+        #self. = {}
         # self.capital_df = pd.DataFrame(columns=['Word', 'Lower', 'Upper', 'ToUpper', "Occurrences"]).set_index('Word')
         self.tweet_id = None
 
@@ -60,17 +60,16 @@ class Parse:
         # text_tokens_without_stopwords = [w.lower() for w in text_tokens if w not in self.stop_words]
         all_text_tokens = self.whitespace_tokenizer.tokenize(text)
         # First step - add each word (that was separated by white space) to the dictionary as a token
-        # Do not add special toekn words like @XX #YY
         for word in all_text_tokens:
             try:
-               if word not in self.stop_words and word[0] not in self.sign_dictionary.keys():
-
+                if word not in self.stop_words and word[0] not in self.sign_dictionary.keys():
                     # TODO Talk to guy if needed - sequence of emoji are considered one
                     word = self.punctuation_remover(word).lower()
                     text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
 
             except KeyError:
                 text_tokens_without_stopwords[word] = 1
+
         # Second step - apply all the tokenizing rules on the text
         special_text_tokens = self.special_cases_tokenizer(text)
         number_tokens, irregulars = self.numbers_tokenizer(text)
@@ -173,6 +172,7 @@ class Parse:
         #             self.curse_words(text_tokens_without_stopwords)
         #         else:
         #             self.parse_english_words(word, text_tokens_without_stopwords)
+
 
     def parse_doc(self, doc_as_list):
         """
@@ -281,7 +281,7 @@ class Parse:
                [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words, text) for
                 words in segment.split()]
 
-    ######## RULE BASED PARSER FUNCTION #############
+   ######## RULE BASED PARSER FUNCTION #############
 
     def hashtag_parser(self, hashtaged_word, words_list):
         """
@@ -362,7 +362,7 @@ class Parse:
             text.replace(word, "*CENSORED*")
 
         return text
-        # words_list.append("*CENSORED*")
+        #words_list.append("*CENSORED*")
 
     def entity_recognizer(self, text):
         """
