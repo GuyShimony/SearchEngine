@@ -9,7 +9,13 @@ class ConfigClass:
         print('Project was created successfully..')
 
     def get__corpusPath(self):
+        """
+        Get the corpus path to read the data from
+        """
         return self.corpusPath
 
     def get_output_path(self):
+        """
+        Get the output for the posting files
+        """
         return self.saveFilesWithStem if self.toStem else self.saveFilesWithoutStem
