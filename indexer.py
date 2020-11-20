@@ -1,8 +1,10 @@
 import copy
 from threading import Thread
+from configuration import ConfigClass
 import utils
 import os
 import shutil
+
 
 class Indexer:
 
@@ -12,10 +14,10 @@ class Indexer:
         self.config = config
         self.k = 200
         self.term_counter = 0
-        self.posting_dir_path = f'{os.getcwd()}\\Postings'  # Path for posting directory - current working dir + Posting
+        self.posting_dir_path = self.config.get_output_path  # Path for posting directory that was given at runtime
         self.posting_file_counter = 1
         self.posting_copy_for_saving = None
-        shutil.rmtree(self.posting_dir_path) # Remove at the end
+        shutil.rmtree(self.posting_dir_path)  # Remove at the end
         if not os.path.exists(self.posting_dir_path):
             # Create a directory for all posting files
             os.makedirs(self.posting_dir_path)
@@ -33,10 +35,10 @@ class Indexer:
         terms_with_one_occurrence = 0
         number_of_curses = 0
         for term in document_dictionary:
-            if document_dictionary[term] == 1: 
+            if document_dictionary[term] == 1:
                 terms_with_one_occurrence += 1
             if term == "*CENSORED*":
-                number_of_curses+=1
+                number_of_curses += 1
 
         # Go over each term in the doc
         for term in document_dictionary.keys():
@@ -77,4 +79,3 @@ class Indexer:
     def update_posting_in_dict(self):
         for term in list(self.posting_copy_for_saving.keys()):
             self.inverted_idx[term]['pointers'].append(f"{self.posting_dir_path}\\posting{self.posting_file_counter}")
-

@@ -10,3 +10,6 @@ class ConfigClass:
 
     def get__corpusPath(self):
         return self.corpusPath
+
+    def get_output_path(self):
+        return self.saveFilesWithStem if self.toStem else self.saveFilesWithoutStem

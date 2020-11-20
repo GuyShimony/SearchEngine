@@ -6,7 +6,7 @@ from searcher import Searcher
 import utils
 
 
-def run_engine():
+def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None, num_docs_to_retrieve=None):
     """
 
     :return:
@@ -14,12 +14,16 @@ def run_engine():
     number_of_documents = 0
 
     config = ConfigClass()
+    config.corpusPath = corpus_path
+    config.savedFileMainFolder = output_path
+    config.toStem = stemming
+
     r = ReadFile(corpus_path=config.get__corpusPath())
     p = Parse()
     indexer = Indexer(config)
 
-    documents_list = r.read_file(file_name='sample2.parquet')
-    #documents_list = r.read_file(file_name='Data')
+    documents_list = r.read_file(file_name=corpus_path)
+    # documents_list = r.read_file(file_name='sample2.parquet')
     # Iterate over every document in the file
     for idx, document in enumerate(documents_list):
         # parse the document
@@ -30,7 +34,7 @@ def run_engine():
     print('Finished parsing and indexing. Starting to export files')
 
     utils.save_obj(indexer.inverted_idx, "inverted_idx")
-    #utils.save_obj(indexer.postingDict, "posting")
+    # utils.save_obj(indexer.postingDict, "posting")
 
 
 def load_index():
@@ -48,8 +52,8 @@ def search_and_rank_query(query, inverted_index, k):
     return searcher.ranker.retrieve_top_k(ranked_docs, k)
 
 
-def main():
-    run_engine()
+def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
+    run_engine(corpus_path, output_path, stemming, queries, num_docs_to_retrieve)
     query = input("Please enter a query: ")
     k = int(input("Please enter number of docs to retrieve: "))
     inverted_index = load_index()
