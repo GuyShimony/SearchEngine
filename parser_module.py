@@ -52,6 +52,12 @@ class Parse:
         :param text:
         :return:
         """
+
+        #preprocessing - remove all 'RT' (retweet mention doesnt aid in the retrieval process)
+        #only if RT is appeared alone .. not as part of a word
+        if text is None:
+            return
+        text = text.replace(" RT ", " ")
         # Preprocessing - Apply the curse rule first to replace each curse word with the word CENSORED
         text = self.curse_parser(text)
         text_tokens_without_stopwords = {}
@@ -192,6 +198,15 @@ class Parse:
 
         # tokenized_text = self.parse_sentence(full_text)
         term_dict = self.parse_sentence(full_text)
+        term_dict2 = self.parse_sentence(quote_url)
+
+        #check url dictionary is not empty then add its tokens to the main term_dict
+        if term_dict2:
+            for term in term_dict2:
+                try:
+                    term_dict[term] = term_dict[term] + 1
+                except KeyError:
+                    term_dict[term] = 1
 
         # doc_length = len(tokenized_text)  # after text operations.
         doc_length = len(term_dict.keys())  # after text operations.
