@@ -288,8 +288,13 @@ class Parse:
         Parse a word containing # to a list of its words split by Upper case letters or '_' + the original
         hashtag word
         """
-        words_list += [w.lower() for w in re.findall('[a-z|A-Z][^A-Z|_]*', hashtaged_word)] + \
-                      [hashtaged_word[0] + hashtaged_word[1:].lower()]
+        if hashtaged_word[1].isupper():
+            words_list.append(hashtaged_word)
+            words_list.append(hashtaged_word[1:])
+
+        else:
+            words_list += [w.lower() for w in re.findall('[a-z|A-Z][^A-Z|_]*', hashtaged_word)] + \
+                          [hashtaged_word[0] + hashtaged_word[1:].lower()]
 
     def shtrudel_parser(self, word, words_list):
         """
