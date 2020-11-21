@@ -68,8 +68,8 @@ class Parse:
         all_text_tokens = self.whitespace_tokenizer.tokenize(text)
         # First step - add each word (that was separated by white space) to the dictionary as a token
         for word in all_text_tokens:
-            try:
-                if word not in self.stop_words and word[0] != "#" and word[0] != "@":
+            try:  #TODO check if words exist starting with 'ht' and 'ww' to add to the if for special tokens remove
+                if word not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:1] != "ht" and word[:1] != "ww":
                     # TODO Talk to guy if needed - sequence of emoji are considered one
                     word = self.punctuation_remover(word).lower()
                     text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
