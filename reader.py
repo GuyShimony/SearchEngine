@@ -33,6 +33,4 @@ class ReadFile:
 
         return df.values.tolist()
 
-    def load_file(self, filename, df_list):
-        df = pd.read_parquet(filename, engine="pyarrow")
-        df_list.append(df)
+

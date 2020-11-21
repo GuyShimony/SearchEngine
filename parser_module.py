@@ -69,7 +69,7 @@ class Parse:
         # First step - add each word (that was separated by white space) to the dictionary as a token
         for word in all_text_tokens:
             try:
-                if word not in self.stop_words and word[0] not in self.sign_dictionary.keys():
+                if word not in self.stop_words and word[0] != "#" and word[0] != "@":
                     # TODO Talk to guy if needed - sequence of emoji are considered one
                     word = self.punctuation_remover(word).lower()
                     text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
@@ -92,8 +92,8 @@ class Parse:
             except KeyError:
                 pass
 
-        # Fourth step - Apply all the parsing rules/
-        # For example - turn '123 Thousand' to
+        # Fourth step - Apply all the parsing rules
+        # For example - turn '123 Thousand' to '123K'
         # handle all regular words
 
         rule_generated_tokens = []
@@ -138,48 +138,6 @@ class Parse:
 
         return text_tokens_without_stopwords
 
-        # text_tokens = []
-        # self.check_for_entity(text, text_tokens)
-        # for w in all_text_tokens:
-        #     word = self.punctuation_remover(w)
-        #     if word not in special_text_tokens and word not in number_tokens and word not in irregular_numbers \
-        #             and word not in irregular_dates:
-        #         text_tokens.append(word)
-        #
-        # text_tokens_without_stopwords = []
-
-        # text_tokens_length = len(text_tokens)
-        # # for word in text_tokens:
-        # for i in range(text_tokens_length):
-        #     # TODO need to think of something a lot better than this
-        #     if i >= text_tokens_length:
-        #         break
-        #     if text_tokens[i] not in self.stop_words:
-        #         word = text_tokens[i]
-        #         word = self.punctuation_remover(word)
-        #         #   self.check_for_capital(text_tokens[i], text_tokens)
-        #         word = word.lower()
-        #         # self.check_for_entity(text_tokens[i], text_tokens)
-        #         if word.isdigit():
-        #             word_after = text_tokens[i + 1]
-        #             self.punctuation_remover(word_after)
-        #             was_deleted = self.number_parser(word, word_after, text_tokens_without_stopwords, text_tokens)
-        #             if (was_deleted):
-        #                 text_tokens_length -= 1
-        #         else:
-        #             text_tokens_without_stopwords.append(word)
-
-        # Fourth step - Apply all the parsing rules/
-        # For example - turn '123 Thousand' to
-        # handle all regular words
-        # for word in text_tokens:
-        #     if word not in self.stop_words and word:
-        #         # word is curse word
-        #         if "**" in word:
-        #             self.curse_words(text_tokens_without_stopwords)
-        #         else:
-        #             self.parse_english_words(word, text_tokens_without_stopwords)
-
     def parse_doc(self, doc_as_list):
         """
         This function takes a tweet document as list and break it into different fields
@@ -197,13 +155,14 @@ class Parse:
         quote_url = doc_as_list[7]
 
         # tokenized_text = self.parse_sentence(full_text)
+        if "and working from home" in full_text:
+            print("faf")
         full_text_dict = self.parse_sentence(full_text)
         quote_url_dict = self.parse_sentence(quote_url)
         retweet_url_dict = self.parse_sentence(retweet_url)
 
         # Merge all dict objects to one with dictionaries unpacking
         term_dict = {**full_text_dict, **quote_url_dict, **retweet_url_dict}
-
 
         # doc_length = len(tokenized_text)  # after text operations.
         doc_length = len(term_dict)  # after text operations.
@@ -251,7 +210,7 @@ class Parse:
         Returns a list of all special tokens with there following words
         """
         return re.findall(
-            r'#\w*|@\w*|http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+|'
+            r'#\w+|@\w*|http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+|'
             r'https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))',
             text)
 
@@ -277,13 +236,16 @@ class Parse:
         Parse a word containing # to a list of its words split by Upper case letters or '_' + the original
         hashtag word
         """
-        if hashtaged_word[1].isupper():
-            words_list.append(hashtaged_word)
-            words_list.append(hashtaged_word[1:])
+        try:
+            if hashtaged_word[1].isupper():
+                words_list.append(hashtaged_word)
+                words_list.append(hashtaged_word[1:])
 
-        else:
-            words_list += [w.lower() for w in re.findall('[a-z|A-Z][^A-Z|_]*', hashtaged_word)] + \
-                          [hashtaged_word[0] + hashtaged_word[1:].lower()]
+            else:
+                words_list += [w.lower() for w in re.findall('[a-z|A-Z][^A-Z|_]*', hashtaged_word)] + \
+                              [hashtaged_word[0] + hashtaged_word[1:].lower()]
+        except IndexError as i:
+            print(str(i))
 
     def shtrudel_parser(self, word, words_list):
         """
