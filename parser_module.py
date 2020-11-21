@@ -255,23 +255,6 @@ class Parse:
             r'https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))',
             text)
 
-    def entity_recognizer(self, text):
-        """
-        The function will get a word_to_check and using spacy package will determine if that word
-        is a Entity. If so it will check if it has already occurred in the parse method until that moment and will
-        save that Entity if so. Else it will remember it for future references.
-        """
-        words_list = []
-        for word_to_check in self.nlp(text).ents:
-            try:
-                if self.entity_dictionary[word_to_check] and \
-                        self.entity_dictionary[word_to_check] != self.tweet_id:
-                    words_list.append(word_to_check)
-            except KeyError:
-                self.entity_dictionary[word_to_check] = self.tweet_id
-
-        return words_list
-
     def capital_tokenizer(self, text):
         return re.findall('[A-Z][^A-Z\s]*', text)
 
