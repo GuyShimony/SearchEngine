@@ -5,6 +5,7 @@ from indexer import Indexer, os
 from searcher import Searcher
 import utils
 from time import time
+import re
 
 def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None, num_docs_to_retrieve=None):
     """
@@ -64,7 +65,7 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
     run_engine(corpus_path, output_path, stemming)
     # query = input("Please enter a query: ")
     # k = int(input("Please enter number of docs to retrieve: "))
-    if os.path.isfile(queries):  # If the queries are stored in a file
+    if os.path.isfile(queries):  # If the queries are stored in a file #TODO: check
         with open(queries, encoding="utf8") as file:
             queries = file.readlines()
 
@@ -72,5 +73,7 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
     inverted_index = load_index()
     for query in queries:
         if query != '\n':
+            if re.search(r'\d', query): # remove number query and "." from query if exists
+                query = query.replace(re.findall("\d.[\s]*", query)[0], "")
             for doc_tuple in search_and_rank_query(query, inverted_index, k):
                 print('tweet id: {}, score (unique common words with query): {}'.format(doc_tuple[0], doc_tuple[1]))
