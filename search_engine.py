@@ -15,15 +15,14 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
 
     config = ConfigClass()
     config.corpusPath = corpus_path
-    config.savedFileMainFolder = output_path
+    config.set_output_path(output_path)
     config.toStem = stemming
 
     r = ReadFile(corpus_path=config.get__corpusPath())
     p = Parse()
     indexer = Indexer(config)
 
-    documents_list = r.read_file(file_name=corpus_path)
-    # documents_list = r.read_file(file_name='sample2.parquet')
+    documents_list = r.read_file(file_name='sample2.parquet')
     # Iterate over every document in the file
     for idx, document in enumerate(documents_list):
         # parse the document
@@ -53,9 +52,18 @@ def search_and_rank_query(query, inverted_index, k):
 
 
 def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
+    if corpus_path is None or output_path is None or stemming is None \
+            or queries is None or num_docs_to_retrieve is None:
+        raise ValueError("Arguments can't be None")
+
+    if corpus_path == '' or output_path == '':
+        raise ValueError("A valid path should be given")
+
     run_engine(corpus_path, output_path, stemming, queries, num_docs_to_retrieve)
-    query = input("Please enter a query: ")
-    k = int(input("Please enter number of docs to retrieve: "))
+    # query = input("Please enter a query: ")
+    # k = int(input("Please enter number of docs to retrieve: "))
+    query = queries
+    k = num_docs_to_retrieve
     inverted_index = load_index()
     for doc_tuple in search_and_rank_query(query, inverted_index, k):
         print('tweet id: {}, score (unique common words with query): {}'.format(doc_tuple[0], doc_tuple[1]))

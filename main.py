@@ -1,8 +1,8 @@
 import search_engine
 import parser_module
-
+import os
 if __name__ == '__main__':
-    # search_engine.main("sample2.parquet", "Postings", False)
+    search_engine.main(f"{os.getcwd()}", f"{os.getcwd()}\\Postings", False, "", 1)
     parser = parser_module.Parse()
     parser.parse_sentence("#HelloBitch #heyThere 1000 Million"
                           , False)

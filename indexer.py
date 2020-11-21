@@ -14,10 +14,10 @@ class Indexer:
         self.config = config
         self.k = 200
         self.term_counter = 0
-        self.posting_dir_path = self.config.get_output_path  # Path for posting directory that was given at runtime
+        self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
         self.posting_file_counter = 1
         self.posting_copy_for_saving = None
-        shutil.rmtree(self.posting_dir_path)  # Remove at the end
+        # shutil.rmtree(self.posting_dir_path)  # Remove at the end
         if not os.path.exists(self.posting_dir_path):
             # Create a directory for all posting files
             os.makedirs(self.posting_dir_path)
@@ -42,7 +42,6 @@ class Indexer:
 
         # Go over each term in the doc
         for term in document_dictionary.keys():
-            print(self.term_counter)
             self.term_counter += 1
             if self.term_counter > self.k:
                 self.term_counter = 0
@@ -61,7 +60,8 @@ class Indexer:
                     self.inverted_idx[term]["freq"] += 1
 
                 if term not in self.postingDict.keys():
-                    self.postingDict[term] = {"df": 1, "tweets": []}
+                    self.postingDict[term] = {"df": 1, "tweets": [(document.tweet_id, document_dictionary[term], max_tf,
+                                                                   terms_with_one_occurrence, number_of_curses)]}
                 else:
                     # tuples of tweet id , number of occurrences in the tweet
                     self.postingDict[term]["tweets"].append((document.tweet_id, document_dictionary[term], max_tf,
@@ -73,7 +73,7 @@ class Indexer:
                 print('problem with the following key {}'.format(term[0]))
 
     def posting_save(self):
-        utils.save_obj(self.postingDict, f"{self.posting_dir_path}\\posting{self.posting_file_counter}")
+        utils.save_obj(self.posting_copy_for_saving, f"{self.posting_dir_path}\\posting{self.posting_file_counter}")
         self.posting_file_counter += 1
 
     def update_posting_in_dict(self):

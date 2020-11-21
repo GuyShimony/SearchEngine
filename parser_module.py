@@ -6,7 +6,7 @@ from document import Document
 from nltk.tokenize.regexp import RegexpTokenizer
 from nltk.tokenize import WhitespaceTokenizer
 from nltk.tokenize import TweetTokenizer
-import re, spacy, string, pandas as pd
+import re, spacy, string
 from nltk.stem.snowball import SnowballStemmer
 
 
@@ -42,24 +42,25 @@ class Parse:
             "percentages": [1, "%"]
         }
         self.entity_dictionary = {}
-        #self. = {}
-        # self.capital_df = pd.DataFrame(columns=['Word', 'Lower', 'Upper', 'ToUpper', "Occurrences"]).set_index('Word')
         self.tweet_id = None
 
     def parse_sentence(self, text, stem=False):
         """
         This function tokenize, remove stop words and apply lower case for every word within the text
-        :param text:
+        :param text: The text to parse. Representation in string
+        :param stem: To use or not to use stemming on the text
         :return:
         """
+        if text is None or text == '[]':
+            return {}  # Return an empty dict
 
-        #preprocessing - remove all 'RT' (retweet mention doesnt aid in the retrieval process)
-        #only if RT is appeared alone .. not as part of a word
-        if text is None:
-            return
-        text = text.replace(" RT ", " ")
+        # Preprocessing - remove all 'RT' (retweet mention doesnt aid in the retrieval process)
+        # only if RT is appeared alone .. not as part of a word
+        text = text.replace(" RT ", "")
+        text = text[0:3].replace("RT ", "") + text[3:]  # Remove RT at the beginning of the tweet
         # Preprocessing - Apply the curse rule first to replace each curse word with the word CENSORED
         text = self.curse_parser(text)
+
         text_tokens_without_stopwords = {}
 
         # text_tokens = word_tokenize(text)
@@ -179,7 +180,6 @@ class Parse:
         #         else:
         #             self.parse_english_words(word, text_tokens_without_stopwords)
 
-
     def parse_doc(self, doc_as_list):
         """
         This function takes a tweet document as list and break it into different fields
@@ -197,25 +197,16 @@ class Parse:
         quote_url = doc_as_list[7]
 
         # tokenized_text = self.parse_sentence(full_text)
-        term_dict = self.parse_sentence(full_text)
-        term_dict2 = self.parse_sentence(quote_url)
+        full_text_dict = self.parse_sentence(full_text)
+        quote_url_dict = self.parse_sentence(quote_url)
+        retweet_url_dict = self.parse_sentence(retweet_url)
 
-        #check url dictionary is not empty then add its tokens to the main term_dict
-        if term_dict2:
-            for term in term_dict2:
-                try:
-                    term_dict[term] = term_dict[term] + 1
-                except KeyError:
-                    term_dict[term] = 1
+        # Merge all dict objects to one with dictionaries unpacking
+        term_dict = {**full_text_dict, **quote_url_dict, **retweet_url_dict}
+
 
         # doc_length = len(tokenized_text)  # after text operations.
-        doc_length = len(term_dict.keys())  # after text operations.
-
-        # for term in tokenized_text:
-        #     if term not in term_dict.keys():
-        #         term_dict[term] = 1
-        #     else:
-        #         term_dict[term] += 1
+        doc_length = len(term_dict)  # after text operations.
 
         document = Document(tweet_id, tweet_date, full_text, url, retweet_text, retweet_url, quote_text,
                             quote_url, term_dict, doc_length)
@@ -296,7 +287,7 @@ class Parse:
                [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words, text) for
                 words in segment.split()]
 
-   ######## RULE BASED PARSER FUNCTION #############
+    ######## RULE BASED PARSER FUNCTION #############
 
     def hashtag_parser(self, hashtaged_word, words_list):
         """
@@ -382,7 +373,7 @@ class Parse:
             text.replace(word, "*CENSORED*")
 
         return text
-        #words_list.append("*CENSORED*")
+        # words_list.append("*CENSORED*")
 
     def entity_recognizer(self, text):
         """
