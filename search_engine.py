@@ -1,10 +1,10 @@
 from reader import ReadFile
 from configuration import ConfigClass
 from parser_module import Parse
-from indexer import Indexer
+from indexer import Indexer, os
 from searcher import Searcher
 import utils
-
+from time import time
 
 def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None, num_docs_to_retrieve=None):
     """
@@ -24,6 +24,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
 
     documents_list = r.read_file(file_name='sample2.parquet')
     # Iterate over every document in the file
+    start = time()
     for idx, document in enumerate(documents_list):
         # parse the document
         parsed_document = p.parse_doc(document)
@@ -31,7 +32,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
         # index the document data
         indexer.add_new_doc(parsed_document)
     print('Finished parsing and indexing. Starting to export files')
-
+    print(time() - start)
     utils.save_obj(indexer.inverted_idx, "inverted_idx")
     # utils.save_obj(indexer.postingDict, "posting")
 
@@ -59,11 +60,16 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
     if corpus_path == '' or output_path == '':
         raise ValueError("A valid path should be given")
 
-    run_engine(corpus_path, output_path, stemming, queries, num_docs_to_retrieve)
+    run_engine(corpus_path, output_path, stemming)
     # query = input("Please enter a query: ")
     # k = int(input("Please enter number of docs to retrieve: "))
-    query = queries
+    if os.path.isfile(queries):  # If the queries are stored in a file
+        with open(queries, encoding="utf8") as file:
+            queries = file.readlines()
+
     k = num_docs_to_retrieve
     inverted_index = load_index()
-    for doc_tuple in search_and_rank_query(query, inverted_index, k):
-        print('tweet id: {}, score (unique common words with query): {}'.format(doc_tuple[0], doc_tuple[1]))
+    for query in queries:
+        if query != '\n':
+            for doc_tuple in search_and_rank_query(query, inverted_index, k):
+                print('tweet id: {}, score (unique common words with query): {}'.format(doc_tuple[0], doc_tuple[1]))
