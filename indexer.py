@@ -20,9 +20,8 @@ class Indexer:
             # Create a directory for all posting files
             os.makedirs(self.posting_dir_path)
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=6)
-        # TODO: Do it in a thread?
-        #self.create_postings_AtoZ()  # create all postings -- > init with None
-        self.executor.submit(self.create_postings_AtoZ)
+        self.executor.submit(self.create_postings_AtoZ)  # create all postings -- > init with None
+
     def add_new_doc(self, document):
         """
         This function perform indexing process for a document object.
@@ -46,10 +45,10 @@ class Indexer:
             if self.term_counter > self.k:
                 self.term_counter = 0
                 self.posting_copy_for_saving = copy.deepcopy(self.postingDict)
-                self.update_pointers()
-                self.posting_save()
+                #self.update_pointers()
+                #self.posting_save()
                 # self.executor.submit(self.update_pointers)
-                # self.executor.submit(self.posting_save)
+                self.executor.submit(self.posting_save)
                 # Thread(target=self.update_posting_in_dict).start()
                 # Thread(target=self.posting_save).start()  # Start each posting file saving process in a new thread
                 self.postingDict.clear()
@@ -65,12 +64,12 @@ class Indexer:
 
                 if term not in self.postingDict.keys():
                     self.postingDict[term] = {"df": 1, "docs": [(document.tweet_id, document_dictionary[term],
-                                                                   max_tf, # TODO: Add a second param
-                                                                   terms_with_one_occurrence, number_of_curses)]}
+                                                                 max_tf,  # TODO: Add a second param
+                                                                 terms_with_one_occurrence, number_of_curses)]}
                 else:
                     # tuples of tweet id , number of occurrences in the tweet
                     self.postingDict[term]["docs"].append((document.tweet_id, document_dictionary[term], max_tf,
-                                                             terms_with_one_occurrence, number_of_curses))
+                                                           terms_with_one_occurrence, number_of_curses))
                     # number of tweets the term appeared in
                     self.postingDict[term]['df'] += 1
 
@@ -79,7 +78,7 @@ class Indexer:
                 print(str(e))
 
     def posting_save(self):
-        terms_for_saving ={}
+        terms_for_saving = {}
         for term in self.posting_copy_for_saving:
             if term[0] in terms_for_saving:
                 terms_for_saving[term[0]].append(term)
@@ -87,10 +86,10 @@ class Indexer:
                 terms_for_saving[term[0]] = [term]
 
         posting_file = ''
-        posting_file_name=''
+        posting_file_name = ''
         for letter in terms_for_saving:
             if letter not in string.ascii_letters:
-                posting_file_name='SPECIALS'
+                posting_file_name = 'SPECIALS'
                 posting_file = utils.load_obj(f"{self.posting_dir_path}\\postingSPECIALS")
             else:
                 upper_letter = letter.upper()
@@ -104,7 +103,8 @@ class Indexer:
             for term in terms_for_saving[letter]:
                 if term in posting_file:
                     try:
-                        posting_file[term]["docs"] = posting_file[term]["docs"] + self.posting_copy_for_saving[term]["docs"]
+                        posting_file[term]["docs"] = posting_file[term]["docs"] + self.posting_copy_for_saving[term][
+                            "docs"]
                     except TypeError:
                         print("FUcKKKKKKK")
                 else:
@@ -114,6 +114,7 @@ class Indexer:
             except Exception as e:
                 print(str(e))
         print("YAY")
+
     def update_pointers(self):
         for term in list(self.posting_copy_for_saving.keys()):
             self.inverted_idx[term]['pointers'].append(f"{self.posting_dir_path}\\posting{self.posting_file_counter}")

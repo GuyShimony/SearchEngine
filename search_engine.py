@@ -7,6 +7,7 @@ import utils
 from time import time
 import re
 
+
 def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None, num_docs_to_retrieve=None):
     """
 
@@ -24,7 +25,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
     indexer = Indexer(config)
 
     documents_list = r.read_file(file_name='sample2.parquet')
-    #documents_list = r.read_file(file_name='Data')
+    # documents_list = r.read_file(file_name='Data')
     # Iterate over every document in the file
     start = time()
     for idx, document in enumerate(documents_list):
@@ -73,7 +74,7 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
     inverted_index = load_index()
     for query in queries:
         if query != '\n':
-            if re.search(r'\d', query): # remove number query and "." from query if exists
+            if re.search(r'\d', query):  # remove number query and "." from query if exists
                 query = query.replace(re.findall("\d.[\s]*", query)[0], "")
             for doc_tuple in search_and_rank_query(query, inverted_index, k):
                 print('tweet id: {}, score (unique common words with query): {}'.format(doc_tuple[0], doc_tuple[1]))
