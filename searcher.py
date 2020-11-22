@@ -14,8 +14,9 @@ class Searcher:
         self.inverted_index = inverted_index
 
         self.config = config
-        self.relevant_docs = 0
+        self.number_of_docs = 0
         self.upper_limit = 2000
+
 
     def relevant_docs_from_posting(self, query):
         """
@@ -53,14 +54,23 @@ class Searcher:
 
                 for doc_tuple in posting_doc[term]["docs"]:
                     term_df = posting_doc[term]["df"]
+                    term_tf = doc_tuple[1]
                     doc_id = doc_tuple[0]
+                    max_tf = doc_tuple[2]
+                    doc_len = doc_tuple[3]
+                    curses_per_doc = doc_tuple[5]
                     if doc_id not in relevant_docs.keys():
-                        relevant_docs[doc_id] = 1
-                        self.relevant_docs += 1
-                        if self.relevant_docs > self.upper_limit:
+                        # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,
+                        #                            document length, number of docs that the appeared in,
+                        #                                       number of curses in the doc
+                        relevant_docs[doc_id] = (1, [term_tf], max_tf, doc_len, [term_df], curses_per_doc)
+                        self.number_of_docs += 1
+                        if self.number_of_docs > self.upper_limit:
                             break
                     else:
-                        relevant_docs[doc_id] += 1
+                        relevant_docs[doc_id][0] += 1
+                        relevant_docs[doc_id][1].append(term_tf)
+                        relevant_docs[doc_id][4].append(term_df)
 
             except:
                 print('term {} not found in posting'.format(term))

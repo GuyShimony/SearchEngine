@@ -173,7 +173,8 @@ class Parse:
         term_dict = {**full_text_dict, **quote_url_dict, **retweet_url_dict}
 
         # doc_length = len(tokenized_text)  # after text operations.
-        doc_length = len(term_dict)  # after text operations.
+        #doc_length = len(term_dict)  # after text operations.
+        doc_length = sum(term_dict.values())  # after text operations.
         # To avoid tweets that do not follow any parsing rule. For example the full text is 'same' (stop word)
         document = Document(tweet_id, tweet_date, full_text, url, retweet_text, retweet_url, quote_text,
                             quote_url, term_dict, doc_length)

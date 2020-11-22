@@ -8,14 +8,14 @@ from time import time
 import re
 
 conifg = None
-
+number_of_documents = 0
 
 def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None, num_docs_to_retrieve=None):
     """
 
     :return:
     """
-    global config
+    global config, number_of_documents
 
     number_of_documents = 0
 
@@ -56,7 +56,7 @@ def search_and_rank_query(query, inverted_index, k):
     query_as_list = p.parse_sentence(query)
     searcher = Searcher(inverted_index, config)
     relevant_docs = searcher.relevant_docs_from_posting(query_as_list)
-    ranked_docs = searcher.ranker.rank_relevant_doc(relevant_docs)
+    ranked_docs = searcher.ranker.rank_relevant_doc(relevant_docs, number_of_documents)
     return searcher.ranker.retrieve_top_k(ranked_docs, k)
 
 

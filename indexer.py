@@ -11,7 +11,7 @@ class Indexer:
         self.inverted_idx = {}
         self.postingDict = {}
         self.config = config
-        self.k = 10000
+        self.k = 200
         self.term_counter = 0
         self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
         self.posting_file_counter = 25  # postings a-z and (q,x,z) as 1  + specials file
@@ -42,7 +42,7 @@ class Indexer:
                 number_of_curses += 1
 
         # Go over each term in the doc
-        for term in document_dictionary.keys():
+        for term in document_dictionary.keys(): #TODO: check how to update postings when k not reached yet (last words)
             self.term_counter += 1
             if self.term_counter > self.k:
                 self.term_counter = 0
@@ -66,12 +66,13 @@ class Indexer:
 
                 if term not in self.postingDict.keys():
                     self.postingDict[term] = {"df": 1, "docs": [(document.tweet_id, document_dictionary[term],
-                                                                 max_tf,  # TODO: Add a second param
+                                                                 max_tf, document.doc_length, # TODO: Add a second param
                                                                  terms_with_one_occurrence, number_of_curses)]}
                 else:
                     # tuples of tweet id , number of occurrences in the tweet
                     self.postingDict[term]["docs"].append((document.tweet_id, document_dictionary[term], max_tf,
-                                                           terms_with_one_occurrence, number_of_curses))
+                                                           document.doc_length, terms_with_one_occurrence,
+                                                           number_of_curses))
                     # number of tweets the term appeared in
                     self.postingDict[term]['df'] += 1
 
