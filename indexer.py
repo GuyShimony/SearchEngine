@@ -2,6 +2,7 @@ import copy
 import concurrent.futures
 import utils
 import os
+import string
 
 
 class Indexer:
@@ -19,6 +20,7 @@ class Indexer:
             # Create a directory for all posting files
             os.makedirs(self.posting_dir_path)
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=6)
+        self.create_postings_AtoZ() # create all postings
 
     def add_new_doc(self, document):
         """
@@ -82,6 +84,10 @@ class Indexer:
     def update_pointers(self):
         for term in list(self.posting_copy_for_saving.keys()):
             self.inverted_idx[term]['pointers'].append(f"{self.posting_dir_path}\\posting{self.posting_file_counter}")
+
+    def create_postings_AtoZ(self):
+        for letter in string.ascii_uppercase:
+            utils.save_obj(None, f"{self.posting_dir_path}\\posting{letter}")
 
     def __del__(self):
         self.executor.shutdown()
