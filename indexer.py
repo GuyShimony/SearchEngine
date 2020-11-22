@@ -14,13 +14,13 @@ class Indexer:
         self.k = 10000
         self.term_counter = 0
         self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
-        self.posting_file_counter = 1
+        self.posting_file_counter = 25 #postings a-z and (q,x,z) as 1  + specials file
         self.posting_copy_for_saving = None
         if not os.path.exists(self.posting_dir_path):
             # Create a directory for all posting files
             os.makedirs(self.posting_dir_path)
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=6)
-        self.create_postings_AtoZ() # create all postings
+        self.create_postings_AtoZ() # create all postings -- > init with None
 
     def add_new_doc(self, document):
         """
@@ -77,17 +77,21 @@ class Indexer:
                 print('problem with the following key {}'.format(term))
                 print(str(e))
 
-    def posting_save(self):
-        utils.save_obj(self.posting_copy_for_saving, f"{self.posting_dir_path}\\posting{self.posting_file_counter}")
-        self.posting_file_counter += 1
+    # def posting_save(self):
+    #     utils.save_obj(self.posting_copy_for_saving, f"{self.posting_dir_path}\\posting{self.posting_file_counter}")
+    #     self.posting_file_counter += 1
 
     def update_pointers(self):
         for term in list(self.posting_copy_for_saving.keys()):
             self.inverted_idx[term]['pointers'].append(f"{self.posting_dir_path}\\posting{self.posting_file_counter}")
 
     def create_postings_AtoZ(self):
+
         for letter in string.ascii_uppercase:
-            utils.save_obj(None, f"{self.posting_dir_path}\\posting{letter}")
+            if letter != 'Q' and letter != 'X' and letter != 'Z': #least common letters at the beginning of a word
+                utils.save_obj(None, f"{self.posting_dir_path}\\posting{letter}")
+        utils.save_obj(None, f"{self.posting_dir_path}\\postingQXZ")
+        utils.save_obj(None, f"{self.posting_dir_path}\\postingSPECIALS")
 
     def __del__(self):
         self.executor.shutdown()
