@@ -12,7 +12,7 @@ from nltk.stem.snowball import SnowballStemmer
 
 class Parse:
 
-    def __init__(self, stemming = False):
+    def __init__(self, stemming=False):
         self.stop_words = stopwords.words('english') + [",", ";", "`", "/", "~", "\\", "+", '"', "'", "-", "”",
                                                         "(", ")", "[", "]", "{", "}"]
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
@@ -71,9 +71,10 @@ class Parse:
         # First step - add each word (that was separated by white space) to the dictionary as a token
         for word in all_text_tokens:
             try:
-                if '…' in word: #3 twitter type dots (end of tweet)
+                if '…' in word:  # 3 twitter type dots (end of tweet)
                     continue
-                elif word not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:1] != "ht" and word[:1] != "ww":
+                elif word not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:1] != "ht" and word[
+                                                                                                                :1] != "ww":
                     # TODO Talk to guy if needed - sequence of emoji are considered one
                     word = self.punctuation_remover(word).lower()
                     if word != '':
@@ -173,9 +174,10 @@ class Parse:
 
         # doc_length = len(tokenized_text)  # after text operations.
         doc_length = len(term_dict)  # after text operations.
-
+        # To avoid tweets that do not follow any parsing rule. For example the full text is 'same' (stop word)
         document = Document(tweet_id, tweet_date, full_text, url, retweet_text, retweet_url, quote_text,
                             quote_url, term_dict, doc_length)
+
         return document
 
     ######## RULE BASED TOKENIZER FUNCTION #############
@@ -316,8 +318,7 @@ class Parse:
                 word = str(number / 1000000000) + "B"
 
         except ValueError:
-            if "%" in number_word:
-                word = number_word
+            word = number_word
 
         finally:
             words_list.append(word)

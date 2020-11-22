@@ -11,7 +11,7 @@ class Indexer:
         self.inverted_idx = {}
         self.postingDict = {}
         self.config = config
-        self.k = 500
+        self.k = 10000
         self.term_counter = 0
         self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
         self.posting_file_counter = 25  # postings a-z and (q,x,z) as 1  + specials file
@@ -30,6 +30,8 @@ class Indexer:
         :return: -
         """
         document_dictionary = document.term_doc_dictionary
+        if not document_dictionary:
+            return
         max_tf = max(list(document_dictionary.values()))  # Get the most frequent used value
         terms_with_one_occurrence = 0
         number_of_curses = 0
