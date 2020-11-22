@@ -13,11 +13,12 @@ from nltk.stem.snowball import SnowballStemmer
 class Parse:
 
     def __init__(self):
-        self.stop_words = stopwords.words('english') + [",", ";", "`", "/", "~", "\\"]
+        self.stop_words = stopwords.words('english') + [",", ";", "`", "/", "~", "\\", "+", '"', "'", "-", "”",
+                                                        "(", ")", "[", "]", "{", "}"]
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
         self.punctuation_dict = dict(
             (ord(char), None) for char in string.punctuation.replace("%", "").replace("@", "").replace("#", ""))
-        self.punc = string.punctuation.replace("%", "").replace("@", "").replace("#", "").replace("*", "")
+        self.punc = string.punctuation.replace("%", "").replace("@", "").replace("#", "").replace("*", "") + "”"
         # self.punctuation_remover = lambda word: word.translate(self.punctuation_dict)
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
@@ -68,11 +69,14 @@ class Parse:
         all_text_tokens = self.whitespace_tokenizer.tokenize(text)
         # First step - add each word (that was separated by white space) to the dictionary as a token
         for word in all_text_tokens:
-            try:  #TODO check if words exist starting with 'ht' and 'ww' to add to the if for special tokens remove
-                if word not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:1] != "ht" and word[:1] != "ww":
+            try:
+                if '…' in word: #3 twitter type dots (end of tweet)
+                    continue
+                elif word not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:1] != "ht" and word[:1] != "ww":
                     # TODO Talk to guy if needed - sequence of emoji are considered one
                     word = self.punctuation_remover(word).lower()
-                    text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
+                    if word != '':
+                        text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
 
             except KeyError:
                 text_tokens_without_stopwords[word] = 1
@@ -130,10 +134,13 @@ class Parse:
                 text_tokens_without_stopwords[entity] = 1
 
         if (stem):
-            text_tokens_without_stopwords_stemmed = []
+            text_tokens_without_stopwords_stemmed = {}
             for word in text_tokens_without_stopwords:
                 word = self.stemmer.stem(word)
-                text_tokens_without_stopwords_stemmed.append(word)
+                if word not in text_tokens_without_stopwords_stemmed:
+                    text_tokens_without_stopwords_stemmed[word] = 1
+                else:
+                    text_tokens_without_stopwords_stemmed[word] += 1
             return text_tokens_without_stopwords_stemmed
 
         return text_tokens_without_stopwords
@@ -155,8 +162,7 @@ class Parse:
         quote_url = doc_as_list[7]
 
         # tokenized_text = self.parse_sentence(full_text)
-        if "and working from home" in full_text:
-            print("faf")
+
         full_text_dict = self.parse_sentence(full_text)
         quote_url_dict = self.parse_sentence(quote_url)
         retweet_url_dict = self.parse_sentence(retweet_url)
@@ -260,6 +266,9 @@ class Parse:
         The function will extract from the url the http(s), the website host name and all following tokens
         that are separated by '\'
         """
+        if "..." in url:
+            return
+
         parsed_url = self.url_tokenizer.tokenize(url)
         for word in parsed_url:
             if 'www' in word:
