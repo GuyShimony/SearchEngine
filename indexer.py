@@ -14,13 +14,14 @@ class Indexer:
         self.k = 10000
         self.term_counter = 0
         self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
-        self.posting_file_counter = 25 #postings a-z and (q,x,z) as 1  + specials file
+        self.posting_file_counter = 25  # postings a-z and (q,x,z) as 1  + specials file
         self.posting_copy_for_saving = None
         if not os.path.exists(self.posting_dir_path):
             # Create a directory for all posting files
             os.makedirs(self.posting_dir_path)
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=6)
-        self.create_postings_AtoZ() # create all postings -- > init with None
+        # TODO: Do it in a thread?
+        self.create_postings_AtoZ()  # create all postings -- > init with None
 
     def add_new_doc(self, document):
         """
@@ -29,8 +30,6 @@ class Indexer:
         :param document: a document need to be indexed.
         :return: -
         """
-        #  TODO: Make posting file for each letter and for the special tokens (url, #, @, numbers)
-        #  TODO: Check the option to merge posting of letters with low numbers of words like x and y
         document_dictionary = document.term_doc_dictionary
         max_tf = max(list(document_dictionary.values()))  # Get the most frequent used value
         terms_with_one_occurrence = 0
@@ -64,7 +63,7 @@ class Indexer:
 
                 if term not in self.postingDict.keys():
                     self.postingDict[term] = {"df": 1, "tweets": [(document.tweet_id, document_dictionary[term],
-                                                                   max_tf,
+                                                                   max_tf, # TODO: Add a second param
                                                                    terms_with_one_occurrence, number_of_curses)]}
                 else:
                     # tuples of tweet id , number of occurrences in the tweet
@@ -77,7 +76,9 @@ class Indexer:
                 print('problem with the following key {}'.format(term))
                 print(str(e))
 
-    # def posting_save(self):
+    def posting_save(self):
+        pass
+
     #     utils.save_obj(self.posting_copy_for_saving, f"{self.posting_dir_path}\\posting{self.posting_file_counter}")
     #     self.posting_file_counter += 1
 
@@ -88,10 +89,10 @@ class Indexer:
     def create_postings_AtoZ(self):
 
         for letter in string.ascii_uppercase:
-            if letter != 'Q' and letter != 'X' and letter != 'Z': #least common letters at the beginning of a word
-                utils.save_obj(None, f"{self.posting_dir_path}\\posting{letter}")
-        utils.save_obj(None, f"{self.posting_dir_path}\\postingQXZ")
-        utils.save_obj(None, f"{self.posting_dir_path}\\postingSPECIALS")
+            if letter != 'Q' and letter != 'X' and letter != 'Z':  # least common letters at the beginning of a word
+                utils.save_obj({}, f"{self.posting_dir_path}\\posting{letter}")
+        utils.save_obj({}, f"{self.posting_dir_path}\\postingQXZ")
+        utils.save_obj({}, f"{self.posting_dir_path}\\postingSPECIALS")
 
     def __del__(self):
         self.executor.shutdown()
