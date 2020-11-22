@@ -21,8 +21,8 @@ class Indexer:
             os.makedirs(self.posting_dir_path)
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=6)
         # TODO: Do it in a thread?
-        self.create_postings_AtoZ()  # create all postings -- > init with None
-
+        #self.create_postings_AtoZ()  # create all postings -- > init with None
+        self.executor.submit(self.create_postings_AtoZ)
     def add_new_doc(self, document):
         """
         This function perform indexing process for a document object.
