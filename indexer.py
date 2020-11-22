@@ -102,22 +102,17 @@ class Indexer:
 
             for term in terms_for_saving[letter]:
                 if term in posting_file:
-                    try:
-                        posting_file[term]["docs"] = posting_file[term]["docs"] + self.posting_copy_for_saving[term][
-                            "docs"]
-                    except TypeError:
-                        print("FUcKKKKKKK")
+                    posting_file[term]["docs"] = posting_file[term]["docs"] + self.posting_copy_for_saving[term]["docs"]
                 else:
                     posting_file[term] = self.posting_copy_for_saving[term]
             try:
                 utils.save_obj(posting_file, f"{self.posting_dir_path}\\posting{posting_file_name}")
             except Exception as e:
                 print(str(e))
-        print("YAY")
 
-    def update_pointers(self):
-        for term in list(self.posting_copy_for_saving.keys()):
-            self.inverted_idx[term]['pointers'].append(f"{self.posting_dir_path}\\posting{self.posting_file_counter}")
+    # def update_pointers(self):
+    #     for term in list(self.posting_copy_for_saving.keys()):
+    #         self.inverted_idx[term]['pointers'].append(f"{self.posting_dir_path}\\posting{self.posting_file_counter}")
 
     def create_postings_AtoZ(self):
 

@@ -7,12 +7,16 @@ import utils
 from time import time
 import re
 
+conifg = None
+
 
 def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None, num_docs_to_retrieve=None):
     """
 
     :return:
     """
+    global config
+
     number_of_documents = 0
 
     config = ConfigClass()
@@ -21,7 +25,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
     config.toStem = stemming
 
     r = ReadFile(corpus_path=config.get__corpusPath())
-    p = Parse()
+    p = Parse(config.toStem)
     indexer = Indexer(config)
 
     documents_list = r.read_file(file_name='sample2.parquet')
@@ -47,9 +51,10 @@ def load_index():
 
 
 def search_and_rank_query(query, inverted_index, k):
-    p = Parse()
+    global config
+    p = Parse(config.toStem)
     query_as_list = p.parse_sentence(query)
-    searcher = Searcher(inverted_index)
+    searcher = Searcher(inverted_index, config)
     relevant_docs = searcher.relevant_docs_from_posting(query_as_list)
     ranked_docs = searcher.ranker.rank_relevant_doc(relevant_docs)
     return searcher.ranker.retrieve_top_k(ranked_docs, k)

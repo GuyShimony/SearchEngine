@@ -12,7 +12,7 @@ from nltk.stem.snowball import SnowballStemmer
 
 class Parse:
 
-    def __init__(self):
+    def __init__(self, stemming = False):
         self.stop_words = stopwords.words('english') + [",", ";", "`", "/", "~", "\\", "+", '"', "'", "-", "”",
                                                         "(", ")", "[", "]", "{", "}"]
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
@@ -44,8 +44,9 @@ class Parse:
         }
         self.entity_dictionary = {}
         self.tweet_id = None
+        self.stem = stemming
 
-    def parse_sentence(self, text, stem=False):
+    def parse_sentence(self, text):
         """
         This function tokenize, remove stop words and apply lower case for every word within the text
         :param text: The text to parse. Representation in string
@@ -133,7 +134,7 @@ class Parse:
             except KeyError:
                 text_tokens_without_stopwords[entity] = 1
 
-        if (stem):
+        if self.stem:
             text_tokens_without_stopwords_stemmed = {}
             for word in text_tokens_without_stopwords:
                 word = self.stemmer.stem(word)
