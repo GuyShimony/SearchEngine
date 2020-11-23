@@ -18,7 +18,7 @@ class Parse:
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
         self.punctuation_dict = dict(
             (ord(char), None) for char in string.punctuation.replace("%", "").replace("@", "").replace("#", ""))
-        self.punc = string.punctuation.replace("%", "").replace("@", "").replace("#", "").replace("*", "") + "”"
+        self.punc = string.punctuation.replace("%", "").replace("@", "").replace("#", "").replace("*", "") + "”" + "“"
         # self.punctuation_remover = lambda word: word.translate(self.punctuation_dict)
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
@@ -77,7 +77,6 @@ class Parse:
                     continue
                 elif word not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:1] != "ht" and word[
                                                                                                                 :1] != "ww":
-                    # TODO Talk to guy if needed - sequence of emoji are considered one
                     word = self.punctuation_remover(word).lower()
                     if word != '':
                         text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
@@ -92,7 +91,6 @@ class Parse:
 
         # Third step - delete all the words that were processed in the rules.
         # For example '123 Thousand' was turned to '123K' -> Need to delete  '123', 'Thousand'
-
         for irregular in irregulars:
             try:
                 irregular = irregular.lower()
@@ -103,7 +101,6 @@ class Parse:
         # Fourth step - Apply all the parsing rules
         # For example - turn '123 Thousand' to '123K'
         # handle all regular words
-
         rule_generated_tokens = []
         #  handle each 'special word' with its function
         for special_token in special_text_tokens:
@@ -114,7 +111,6 @@ class Parse:
             self.number_parser(word, rule_generated_tokens)
 
         # Fifth step - add all the newly generated tokens to the dict
-
         for word in rule_generated_tokens:
             try:
                 text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
