@@ -1,5 +1,6 @@
 import pickle
 
+import json
 
 def save_obj(obj, name):
     """
@@ -10,7 +11,8 @@ def save_obj(obj, name):
     """
     with open(name + '.pkl', 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
-
+    # with open(name + ".json", "w") as f:
+    #     json.dump(obj, f)
 
 def load_obj(name):
     """
@@ -20,3 +22,5 @@ def load_obj(name):
     """
     with open(name + '.pkl', 'rb') as f:
         return pickle.load(f)
+    # with open(name + ".json", "r") as f:
+    #     return json.load(f)

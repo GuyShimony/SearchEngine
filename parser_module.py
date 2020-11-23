@@ -55,11 +55,13 @@ class Parse:
         """
         if text is None or text == '[]':
             return {}  # Return an empty dict
-
-        # Preprocessing - remove all 'RT' (retweet mention doesnt aid in the retrieval process)
-        # only if RT is appeared alone .. not as part of a word
-        text = text.replace(" RT ", "")
-        text = text[0:3].replace("RT ", "") + text[3:]  # Remove RT at the beginning of the tweet
+        try:
+            # Preprocessing - remove all 'RT' (retweet mention doesnt aid in the retrieval process)
+            # only if RT is appeared alone .. not as part of a word
+            text = text.replace(" RT ", "")
+            text = text[0:3].replace("RT ", "") + text[3:]  # Remove RT at the beginning of the tweet
+        except AttributeError:
+            return {}
         # Preprocessing - Apply the curse rule first to replace each curse word with the word CENSORED
         text = self.curse_parser(text)
 
@@ -129,11 +131,11 @@ class Parse:
         # If the entity 'Donald Trump" was recognize as an entity we won't delete the existing tokens:
         # 'donlad', 'trump' from the dictionary. The reason is for queries like "Mr Trump".
         # Queries like this will not be matched if only 'donald trump' will be in the doc
-        for entity in self.entity_recognizer(text):
-            try:
-                text_tokens_without_stopwords[entity] = text_tokens_without_stopwords[entity] + 1
-            except KeyError:
-                text_tokens_without_stopwords[entity] = 1
+        # for entity in self.entity_recognizer(text):
+        #     try:
+        #         text_tokens_without_stopwords[entity] = text_tokens_without_stopwords[entity] + 1
+        #     except KeyError:
+        #         text_tokens_without_stopwords[entity] = 1
 
         if self.stem:
             text_tokens_without_stopwords_stemmed = {}
@@ -164,7 +166,8 @@ class Parse:
         quote_url = doc_as_list[7]
 
         # tokenized_text = self.parse_sentence(full_text)
-
+        if tweet_id == "1280947323581927424":
+            print("a")
         full_text_dict = self.parse_sentence(full_text)
         quote_url_dict = self.parse_sentence(quote_url)
         retweet_url_dict = self.parse_sentence(retweet_url)
@@ -241,19 +244,19 @@ class Parse:
 
     ######## RULE BASED PARSER FUNCTION #############
 
-    def hashtag_parser(self, hashtaged_word, words_list):
+    def hashtag_parser(self, hashtag_word, words_list):
         """
         Parse a word containing # to a list of its words split by Upper case letters or '_' + the original
         hashtag word
         """
         try:
-            if hashtaged_word[1].isupper():
-                words_list.append(hashtaged_word)
-                words_list.append(hashtaged_word[1:])
+            if len(hashtag_word) == 2 or hashtag_word[1].isupper() and hashtag_word[2].isupper():
+                words_list.append(hashtag_word)
+                words_list.append(hashtag_word[1:])
 
             else:
-                words_list += [w.lower() for w in re.findall('[a-z|A-Z][^A-Z|_]*', hashtaged_word)] + \
-                              [hashtaged_word[0] + hashtaged_word[1:].lower()]
+                words_list += [w.lower() for w in re.findall('[a-z|A-Z][^A-Z|_]*', hashtag_word)] + \
+                              [hashtag_word[0] + hashtag_word[1:].lower()]
         except IndexError as i:
             print(str(i))
 
