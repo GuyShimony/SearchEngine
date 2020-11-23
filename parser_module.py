@@ -23,7 +23,7 @@ class Parse:
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.stemmer = SnowballStemmer("english")
-        self.nlp = spacy.load("en_core_web_sm")  # Used for entity recognition
+        self.nlp = spacy.load("en_core_web_sm", disable=["parser", "tagger", "vectors", "textcat"])  # Used for entity recognition
         self.sign_dictionary = {
             "#": self.hashtag_parser,
             "@": self.shtrudel_parser,
@@ -131,11 +131,11 @@ class Parse:
         # If the entity 'Donald Trump" was recognize as an entity we won't delete the existing tokens:
         # 'donlad', 'trump' from the dictionary. The reason is for queries like "Mr Trump".
         # Queries like this will not be matched if only 'donald trump' will be in the doc
-        # for entity in self.entity_recognizer(text):
-        #     try:
-        #         text_tokens_without_stopwords[entity] = text_tokens_without_stopwords[entity] + 1
-        #     except KeyError:
-        #         text_tokens_without_stopwords[entity] = 1
+        for entity in self.entity_recognizer(text):
+            try:
+                text_tokens_without_stopwords[entity] = text_tokens_without_stopwords[entity] + 1
+            except KeyError:
+                text_tokens_without_stopwords[entity] = 1
 
         if self.stem:
             text_tokens_without_stopwords_stemmed = {}
@@ -166,8 +166,7 @@ class Parse:
         quote_url = doc_as_list[7]
 
         # tokenized_text = self.parse_sentence(full_text)
-        if tweet_id == "1280947323581927424":
-            print("a")
+
         full_text_dict = self.parse_sentence(full_text)
         quote_url_dict = self.parse_sentence(quote_url)
         retweet_url_dict = self.parse_sentence(retweet_url)

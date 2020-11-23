@@ -10,6 +10,7 @@ import re
 conifg = None
 number_of_documents = 0
 
+
 def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None, num_docs_to_retrieve=None):
     """
 
@@ -28,7 +29,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
     p = Parse(config.toStem)
     indexer = Indexer(config)
 
-    documents_list = r.read_file(file_name='sample2.parquet')
+    documents_list = r.read_file(file_name='samples')
     # documents_list = r.read_file(file_name='Data')
     # Iterate over every document in the file
     start = time()

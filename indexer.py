@@ -2,8 +2,8 @@ import copy
 import concurrent.futures
 import utils
 import os
-import string
-
+from threading import Thread
+import time
 from posting_file_factory import PostingFilesFactory
 
 
@@ -23,7 +23,7 @@ class Indexer:
             # Create a directory for all posting files
             os.makedirs(self.posting_dir_path)
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=6)
-
+        self.futures = []
     def add_new_doc(self, document):
         """
         This function perform indexing process for a document object.
@@ -45,15 +45,16 @@ class Indexer:
                 number_of_curses += 1
 
         # Go over each term in the doc
-        for term in document_dictionary.keys(): #TODO: check how to update postings when k not reached yet (last words)
+        for term in document_dictionary.keys():
             self.term_counter += 1
-            if self.term_counter > self.k:
+            #if self.term_counter > self.k:
+            if len(self.postingDict) > self.k:
                 self.term_counter = 0
                 self.posting_copy_for_saving = copy.deepcopy(self.postingDict)
                 #self.update_pointers()
-                self.posting_save()
+                #self.posting_save()
                 # self.executor.submit(self.update_pointers)
-                # self.executor.submit(self.posting_save)
+                self.executor.submit(self.posting_save)
                 # Thread(target=self.update_posting_in_dict).start()
                 # Thread(target=self.posting_save).start()  # Start each posting file saving process in a new thread
                 self.postingDict.clear()
@@ -61,7 +62,7 @@ class Indexer:
             try:
                 # Update inverted index and posting
                 if term not in self.inverted_idx.keys():
-                    self.inverted_idx[term] = {"freq": 1, "pointers": ""}
+                    self.inverted_idx[term] = {"freq": 1, "pointers": f"{self.postings_factory.get_file_path(term)}"}
                     # self.postingDict[term] = []
                 else:
                     # freq -> number of occurrences in the whole corpus (for each term)
@@ -98,7 +99,7 @@ class Indexer:
 
             for term in terms_for_saving[letter]:
                 #update term's pointer
-                self.inverted_idx[term]['pointers'] = posting_file_name
+                #self.inverted_idx[term]['pointers'] = posting_file_name
                 if term in posting_file:
                     posting_file[term]["docs"] = posting_file[term]["docs"] + self.posting_copy_for_saving[term]["docs"]
                 else:
@@ -110,4 +111,8 @@ class Indexer:
                 print(str(e))
 
     def __del__(self):
-        self.executor.shutdown()
+        if len(self.postingDict) > 0 and len(self.postingDict) < self.k:
+            self.posting_save()
+            self.postingDict.clear()
+        #sorted(self.inverted_idx.items(), key=lambda item: item[0], reverse=True)
+        #self.executor.shutdown()

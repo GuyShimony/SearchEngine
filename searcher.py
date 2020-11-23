@@ -32,6 +32,7 @@ class Searcher:
         postings_loaded ={}
 
         for term in query:
+
             if term not in self.inverted_index:
                 continue
 
@@ -42,6 +43,7 @@ class Searcher:
                     posting_to_load["SPECIALS"] = utils.load_obj(self.inverted_index[term]["pointers"])
             else:
                 if self.inverted_index[term]["pointers"] not in postings_loaded:
+
                     posting_to_load[term[0]] = utils.load_obj(self.inverted_index[term]["pointers"])
                     postings_loaded[self.inverted_index[term]["pointers"]] = posting_to_load[term[0]]
                 else:

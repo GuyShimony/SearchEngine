@@ -1,6 +1,6 @@
 import string
 import utils
-
+from threading import Thread
 
 class PostingFilesFactory:
     instance = None
@@ -12,9 +12,8 @@ class PostingFilesFactory:
             self.posting_paths = {}
             self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
             PostingFilesFactory.instance = self
-            self.create_postings()
-            for key in self.posting_paths:
-                utils.save_obj({}, self.posting_paths[key])
+            Thread(target=self.create_postings).start()
+
 
     def get_file_path(self, word):
 
@@ -51,6 +50,8 @@ class PostingFilesFactory:
             if letter is not self.posting_paths:
                 self.posting_paths[letter] = f"{self.posting_dir_path}\\posting{letter}"
         self.posting_paths["SPECIALS"] = f"{self.posting_dir_path}\\postingSPECIALS"
+        for key in self.posting_paths:
+            utils.save_obj({}, self.posting_paths[key])
 
     @staticmethod
     def get_instance(config):
