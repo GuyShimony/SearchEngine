@@ -2,6 +2,7 @@ from parser_module import Parse
 from ranker import Ranker
 import utils
 import string
+from posting_file_factory import PostingFilesFactory
 
 
 class Searcher:
@@ -26,19 +27,26 @@ class Searcher:
         """
         relevant_docs = {}
         posting_to_load = {}
+        self.postings_factory = PostingFilesFactory.get_instance(self.config)
+
+        postings_loaded ={}
 
         for term in query:
             if term not in self.inverted_index:
                 continue
-            utils.load_obj(self.inverted_index[term]["pointers"])
 
-            if term[0] not in string.ascii_letters:
+            posting_file_name = self.postings_factory.get_file_path(term)
+
+            if "SPECIALS" in posting_file_name:
                 if "SPECIALS" not in posting_to_load:
-                    posting_to_load["SPECIALS"] = utils.load_obj(
-                         f"{self.config.get_output_path()}\\postingSPECIALS")
+                    posting_to_load["SPECIALS"] = utils.load_obj(self.inverted_index[term]["pointers"])
             else:
-                if term[0] not in posting_to_load:
+                if self.inverted_index[term]["pointers"] not in postings_loaded:
                     posting_to_load[term[0]] = utils.load_obj(self.inverted_index[term]["pointers"])
+                    postings_loaded[self.inverted_index[term]["pointers"]] = posting_to_load[term[0]]
+                else:
+                    posting_to_load[term[0]] = postings_loaded[self.inverted_index[term]["pointers"]]
+
                 # elif term[0] != 'q' and term[0] != 'x' and term[0] != 'z':
             #     if term[0] not in posting_to_load:
             #         posting_to_load[term[0].lower()] = utils.load_obj(
@@ -54,7 +62,9 @@ class Searcher:
 
         for term in query:
             try:  # an example of checks that you have to do
-                if term[0] not in string.ascii_letters:
+
+                posting_file_name = self.postings_factory.get_file_path(term)
+                if "SPECIALS" in posting_file_name:
                     posting_doc = posting_to_load["SPECIALS"]
                 else:
                     posting_doc = posting_to_load[term[0].lower()]

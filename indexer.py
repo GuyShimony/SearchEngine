@@ -4,10 +4,13 @@ import utils
 import os
 import string
 
+from posting_file_factory import PostingFilesFactory
+
 
 class Indexer:
 
     def __init__(self, config):
+        self.postings_factory = PostingFilesFactory.get_instance(config)
         self.inverted_idx = {}
         self.postingDict = {}
         self.config = config
@@ -20,7 +23,6 @@ class Indexer:
             # Create a directory for all posting files
             os.makedirs(self.posting_dir_path)
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=6)
-        self.executor.submit(self.create_postings_AtoZ)  # create all postings -- > init with None
 
     def add_new_doc(self, document):
         """
@@ -49,9 +51,9 @@ class Indexer:
                 self.term_counter = 0
                 self.posting_copy_for_saving = copy.deepcopy(self.postingDict)
                 #self.update_pointers()
-                #self.posting_save()
+                self.posting_save()
                 # self.executor.submit(self.update_pointers)
-                self.executor.submit(self.posting_save)
+                # self.executor.submit(self.posting_save)
                 # Thread(target=self.update_posting_in_dict).start()
                 # Thread(target=self.posting_save).start()  # Start each posting file saving process in a new thread
                 self.postingDict.clear()
@@ -92,37 +94,20 @@ class Indexer:
         posting_file = ''
         posting_file_name = ''
         for letter in terms_for_saving:
-            if letter not in string.ascii_letters:
-                posting_file_name = 'SPECIALS'
-                posting_file = utils.load_obj(f"{self.posting_dir_path}\\postingSPECIALS")
-            else:
-                upper_letter = letter.upper()
-                if upper_letter != 'Q' and upper_letter != 'X' and upper_letter != 'Z':
-                    posting_file_name = upper_letter
-                    posting_file = utils.load_obj(f"{self.posting_dir_path}\\posting{upper_letter}")
-                else:
-                    posting_file_name = 'QXZ'
-                    posting_file = utils.load_obj(f"{self.posting_dir_path}\\postingQXZ")
+            posting_file, posting_file_name = self.postings_factory.get_posting_file_and_path(letter)
 
             for term in terms_for_saving[letter]:
                 #update term's pointer
-                self.inverted_idx[term]['pointers'] = f"{self.posting_dir_path}\\posting{posting_file_name}"
+                self.inverted_idx[term]['pointers'] = posting_file_name
                 if term in posting_file:
                     posting_file[term]["docs"] = posting_file[term]["docs"] + self.posting_copy_for_saving[term]["docs"]
                 else:
                     posting_file[term] = self.posting_copy_for_saving[term]
             try:
-                utils.save_obj(posting_file, f"{self.posting_dir_path}\\posting{posting_file_name}")
+                utils.save_obj(posting_file, posting_file_name)
+
             except Exception as e:
                 print(str(e))
-
-    def create_postings_AtoZ(self):
-
-        for letter in string.ascii_uppercase:
-            if letter != 'Q' and letter != 'X' and letter != 'Z':  # least common letters at the beginning of a word
-                utils.save_obj({}, f"{self.posting_dir_path}\\posting{letter}")
-        utils.save_obj({}, f"{self.posting_dir_path}\\postingQXZ")
-        utils.save_obj({}, f"{self.posting_dir_path}\\postingSPECIALS")
 
     def __del__(self):
         self.executor.shutdown()
