@@ -28,22 +28,29 @@ class Searcher:
         posting_to_load = {}
 
         for term in query:
+            if term not in self.inverted_index:
+                continue
+            utils.load_obj(self.inverted_index[term]["pointers"])
+
             if term[0] not in string.ascii_letters:
                 if "SPECIALS" not in posting_to_load:
                     posting_to_load["SPECIALS"] = utils.load_obj(
-                        f"{self.config.get_output_path()}\\postingSPECIALS")
-            elif term[0] != 'q' and term[0] != 'x' and term[0] != 'z':
-                if term[0] not in posting_to_load:
-                    posting_to_load[term[0].lower()] = utils.load_obj(
-                        f"{self.config.get_output_path()}\\posting{term[0]}")
+                         f"{self.config.get_output_path()}\\postingSPECIALS")
             else:
-                if "QXZ" not in posting_to_load:
-                    posting_to_load["q"] = utils.load_obj(
-                        f"{self.config.get_output_path()}\\postingQXZ")
-                    posting_to_load["x"] = utils.load_obj(
-                        f"{self.config.get_output_path()}\\postingQXZ")
-                    posting_to_load["z"] = utils.load_obj(
-                        f"{self.config.get_output_path()}\\postingQXZ")
+                if term[0] not in posting_to_load:
+                    posting_to_load[term[0]] = utils.load_obj(self.inverted_index[term]["pointers"])
+                # elif term[0] != 'q' and term[0] != 'x' and term[0] != 'z':
+            #     if term[0] not in posting_to_load:
+            #         posting_to_load[term[0].lower()] = utils.load_obj(
+            #             f"{self.config.get_output_path()}\\posting{term[0]}")
+            # else:
+            #     if "QXZ" not in posting_to_load:
+            #         posting_to_load["q"] = utils.load_obj(
+            #             f"{self.config.get_output_path()}\\postingQXZ")
+            #         posting_to_load["x"] = utils.load_obj(
+            #             f"{self.config.get_output_path()}\\postingQXZ")
+            #         posting_to_load["z"] = utils.load_obj(
+            #             f"{self.config.get_output_path()}\\postingQXZ")
 
         for term in query:
             try:  # an example of checks that you have to do
@@ -63,7 +70,7 @@ class Searcher:
                         # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,
                         #                            document length, number of docs that the appeared in,
                         #                                       number of curses in the doc
-                        relevant_docs[doc_id] = (1, [term_tf], max_tf, doc_len, [term_df], curses_per_doc)
+                        relevant_docs[doc_id] = [1, [term_tf], max_tf, doc_len, [term_df], curses_per_doc]
                         self.number_of_docs += 1
                         if self.number_of_docs > self.upper_limit:
                             break
@@ -72,6 +79,7 @@ class Searcher:
                         relevant_docs[doc_id][1].append(term_tf)
                         relevant_docs[doc_id][4].append(term_df)
 
-            except:
+            except Exception as e:
                 print('term {} not found in posting'.format(term))
+
         return relevant_docs

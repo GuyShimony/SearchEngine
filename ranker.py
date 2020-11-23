@@ -16,7 +16,7 @@ class Ranker:
         for document_id in relevant_docs:
             score = 0
             for term_tf, term_df in zip(relevant_docs[document_id][1], relevant_docs[document_id][4]):
-                score += (term_tf/relevant_docs[document_id][2]) * math.log10(number_of_documents/term_df)  #tfi * idf
+                score += (term_tf/relevant_docs[document_id][3]) * math.log10(number_of_documents/term_df)  #tfi * idf
                 document_scores[document_id] = score
         return sorted(document_scores.items(), key=lambda item: item[1], reverse=True)
 
