@@ -139,11 +139,9 @@ class Indexer:
 
     def capital_letters(self, document_dictionary):
         """
-        1-> the term was seen once with a capital letter
-        0-> the term was already seen with a small letter
-        how_to_save to inverted index: false -- lower , true -- upper
         :param document_dictionary: dictionary holding the tokenized term and the amount of its appearances
-        :return:
+        :return: document_dictionary_new: will hold the same terms as the original only with caps or lower letters
+        accordingly
         """
         document_dictionary_new = {}  # dictionary with words saved correctly by capitals
         for term in document_dictionary:
@@ -158,6 +156,8 @@ class Indexer:
                     document_dictionary_new[term.lower()] = document_dictionary[term]
                 else:  # giving it a chance as upper case
                     document_dictionary_new[term.upper()] = document_dictionary[term]
+        if not document_dictionary_new:
+            return document_dictionary
         return document_dictionary_new
 
     def __del__(self):
