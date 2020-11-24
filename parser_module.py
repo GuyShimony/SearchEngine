@@ -54,7 +54,6 @@ class Parse:
             "covid19": "coronavirus",
             "covid_19": "coronavirus",
             "coronavirus": "coronavirus"
-            "corona"
         }
 
     def parse_sentence(self, text):
@@ -150,14 +149,14 @@ class Parse:
         # If the entity 'Donald Trump" was recognize as an entity we won't delete the existing tokens:
         # 'donlad', 'trump' from the dictionary. The reason is for queries like "Mr Trump".
         # Queries like this will not be matched if only 'donald trump' will be in the doc
-        for entity in self.entity_recognizer(text):
-        #entites = self.entity(text)
-         #   if entites:
-               # for entity in self.entity(text):
-            try:
-                text_tokens_without_stopwords[entity] = text_tokens_without_stopwords[entity] + 1
-            except KeyError:
-                text_tokens_without_stopwords[entity] = 1
+        #for entity in self.entity_recognizer(text):
+        entites = self.entity(text)
+        if entites:
+            for entity in self.entity(text):
+                try:
+                    text_tokens_without_stopwords[entity] = text_tokens_without_stopwords[entity] + 1
+                except KeyError:
+                    text_tokens_without_stopwords[entity] = 1
 
         if self.stem:
             text_tokens_without_stopwords_stemmed = {}
@@ -197,7 +196,6 @@ class Parse:
         # Merge all dict objects to one with dictionaries unpacking
         term_dict = {**full_text_dict, **quote_url_dict, **retweet_url_dict}
 
-        # doc_length = len(tokenized_text)  # after text operations.
         #doc_length = len(term_dict)  # after text operations.
         doc_length = sum(term_dict.values())  # after text operations.
         # To avoid tweets that do not follow any parsing rule. For example the full text is 'same' (stop word)
@@ -379,12 +377,23 @@ class Parse:
 
     def entity(self, text):
         words_list = []
-        for word in re.findall("[A-Z]+[a-z]*\s[A-Z]+[a-z]*",text):
+        entries = re.findall("[A-Z]+[a-z]*\s[A-Z]+[a-z]*[’\s-]*[A-Z]+[a-z]*|[A-Z]+\w*[\s-][A-Z]+\w*", text)
+        for word in re.findall("[A-Z]+[a-z]*\s[A-Z]+[a-z]*[’\s-]*[A-Z]+[a-z]*|[A-Z]+\w*[\s-][A-Z]+\w*", text):
             try:
                 if self.entity_dictionary[word] and \
                         self.entity_dictionary[word] != self.tweet_id:
                     words_list.append(word)
+
             except KeyError:
                 self.entity_dictionary[word] = self.tweet_id
 
-            return words_list
+            for entity in word.split(" "):
+                try:
+                    if self.entity_dictionary[entity] and \
+                            self.entity_dictionary[entity] != self.tweet_id:
+                        words_list.append(word)
+
+                except KeyError:
+                    self.entity_dictionary[entity] = self.tweet_id
+
+        return words_list
