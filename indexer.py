@@ -6,6 +6,7 @@ from threading import Thread
 from posting_file_factory import PostingFilesFactory
 import string
 
+
 class Indexer:
 
     def __init__(self, config):
@@ -34,11 +35,9 @@ class Indexer:
         :return: -
         """
         document_dictionary = document.term_doc_dictionary
-        if document.tweet_id == "1280947321790959618" or document.tweet_id == "1280947323401535489":
-            print("Fsfa")
         if not document_dictionary:
             return
-        document_dictionary = self.capital_letters(document_dictionary) # get dictionary according to lower and upper
+        document_dictionary = self.capital_letters(document_dictionary)  # get dictionary according to lower and upper
         # case words
         max_tf = max(list(document_dictionary.values()))  # Get the most frequent used value
         terms_with_one_occurrence = 0
@@ -73,8 +72,9 @@ class Indexer:
                         self.inverted_idx[term] = self.inverted_idx[term.upper()]
                         self.inverted_idx[term]["freq"] += 1
                         self.inverted_idx.pop(term.upper())
-                    else: # term is not in the dictionary in any form (case)
-                        self.inverted_idx[term] = {"freq": 1, "pointers": f"{self.postings_factory.get_file_path(term.lower())}"}
+                    else:  # term is not in the dictionary in any form (case)
+                        self.inverted_idx[term] = {"freq": 1,
+                                                   "pointers": f"{self.postings_factory.get_file_path(term.lower())}"}
                     # self.postingDict[term] = []
                 else:
                     # freq -> number of occurrences in the whole corpus (for each term)
@@ -94,9 +94,9 @@ class Indexer:
                         self.postingDict.pop(term.upper())
                     else:
                         self.postingDict[term] = {"df": 1, "docs": [[document.tweet_id, document_dictionary[term],
-                                                                 max_tf, document.doc_length,
-                                                                 # TODO: Add a second param
-                                                                 terms_with_one_occurrence, number_of_curses]]}
+                                                                     max_tf, document.doc_length,
+                                                                     # TODO: Add a second param
+                                                                     terms_with_one_occurrence, number_of_curses]]}
                 else:
                     # tuples of tweet id , number of occurrences in the tweet
                     self.postingDict[term]["docs"].append([document.tweet_id, document_dictionary[term], max_tf,
@@ -153,10 +153,10 @@ class Indexer:
                 if term not in self.lower_case_words:
                     self.lower_case_words[term] = 0
                 document_dictionary_new[term] = document_dictionary[term]
-            else: # term is upper case
+            else:  # term is upper case
                 if term in self.lower_case_words:  # term was seen in small letters
                     document_dictionary_new[term.lower()] = document_dictionary[term]
-                else: #giving it a chance as upper case
+                else:  # giving it a chance as upper case
                     document_dictionary_new[term.upper()] = document_dictionary[term]
         return document_dictionary_new
 

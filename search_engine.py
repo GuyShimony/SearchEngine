@@ -31,7 +31,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
 
     executer = indexer.get_pool_executer()
 
-    documents_list = r.read_file(file_name='sample2.parquet')
+    documents_list = r.read_file(file_name='samples')
     # documents_list = r.read_file(file_name='Data')
     # Iterate over every document in the file
     start = time()
