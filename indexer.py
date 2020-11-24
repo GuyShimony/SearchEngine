@@ -23,7 +23,7 @@ class Indexer:
             # Create a directory for all posting files
             os.makedirs(self.posting_dir_path)
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=6)
-        self.futures = []
+
     def add_new_doc(self, document):
         """
         This function perform indexing process for a document object.

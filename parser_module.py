@@ -23,7 +23,7 @@ class Parse:
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.stemmer = SnowballStemmer("english")
-        self.nlp = spacy.load("en_core_web_sm", disable=["parser", "tagger", "vectors", "textcat"])  # Used for entity recognition
+        self.nlp = spacy.load("en_core_web_sm", disable=["parser", "tagger", "vectors", "textcat", "tokenizer"])  # Used for entity recognition
         self.sign_dictionary = {
             "#": self.hashtag_parser,
             "@": self.shtrudel_parser,
@@ -67,8 +67,6 @@ class Parse:
 
         text_tokens_without_stopwords = {}
 
-        # text_tokens = word_tokenize(text)
-        # text_tokens_without_stopwords = [w.lower() for w in text_tokens if w not in self.stop_words]
         all_text_tokens = self.whitespace_tokenizer.tokenize(text)
         # First step - add each word (that was separated by white space) to the dictionary as a token
         for word in all_text_tokens:
@@ -222,10 +220,12 @@ class Parse:
             r'https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))',
             text)
 
-    def capital_tokenizer(self, text):
-        return re.findall('[A-Z][^A-Z\s]*', text)
-
     def numbers_tokenizer(self, text):
+        """
+        Used to find all numbers tokens with special words that come after
+        like 'Thousand', 'Percentage' and some more words that can be found in the number rule parsing
+        in the exercise
+        """
         number_and_words = "[^a-zA-Z\s][0-9]+\s[tT]housand[s]*|" \
                            "[^a-zA-Z\s][0-9]+\s[mM]illion[s]*|" \
                            "[^a-zA-Z\s][0-9]+\s[bB]illion[s]*|" \
@@ -328,7 +328,6 @@ class Parse:
             text.replace(word, "*CENSORED*")
 
         return text
-        # words_list.append("*CENSORED*")
 
     def entity_recognizer(self, text):
         """
