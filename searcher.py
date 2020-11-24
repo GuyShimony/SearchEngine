@@ -49,18 +49,6 @@ class Searcher:
                 else:
                     posting_to_load[term[0]] = postings_loaded[self.inverted_index[term]["pointers"]]
 
-                # elif term[0] != 'q' and term[0] != 'x' and term[0] != 'z':
-            #     if term[0] not in posting_to_load:
-            #         posting_to_load[term[0].lower()] = utils.load_obj(
-            #             f"{self.config.get_output_path()}\\posting{term[0]}")
-            # else:
-            #     if "QXZ" not in posting_to_load:
-            #         posting_to_load["q"] = utils.load_obj(
-            #             f"{self.config.get_output_path()}\\postingQXZ")
-            #         posting_to_load["x"] = utils.load_obj(
-            #             f"{self.config.get_output_path()}\\postingQXZ")
-            #         posting_to_load["z"] = utils.load_obj(
-            #             f"{self.config.get_output_path()}\\postingQXZ")
 
         for term in query:
             try:  # an example of checks that you have to do
@@ -78,11 +66,12 @@ class Searcher:
                     max_tf = doc_tuple[2]
                     doc_len = doc_tuple[3]
                     curses_per_doc = doc_tuple[5]
+
                     if doc_id not in relevant_docs.keys():
                         # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,
                         #                            document length, number of docs that the appeared in,
                         #                                       number of curses in the doc
-                        relevant_docs[doc_id] = [1, [term_tf], max_tf, doc_len, [term_df], curses_per_doc]
+                        relevant_docs[doc_id] = [1, [term_tf], max_tf, doc_len, [term_df], curses_per_doc, [term_tf_idf]]
                         self.number_of_docs += 1
                         if self.number_of_docs > self.upper_limit:
                             break
