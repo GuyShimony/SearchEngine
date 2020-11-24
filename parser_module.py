@@ -150,14 +150,14 @@ class Parse:
         # If the entity 'Donald Trump" was recognize as an entity we won't delete the existing tokens:
         # 'donlad', 'trump' from the dictionary. The reason is for queries like "Mr Trump".
         # Queries like this will not be matched if only 'donald trump' will be in the doc
-        #for entity in self.entity_recognizer(text):
-        entites = self.entity(text)
-        if entites:
-            for entity in self.entity(text):
-                try:
-                    text_tokens_without_stopwords[entity] = text_tokens_without_stopwords[entity] + 1
-                except KeyError:
-                    text_tokens_without_stopwords[entity] = 1
+        for entity in self.entity_recognizer(text):
+        #entites = self.entity(text)
+         #   if entites:
+               # for entity in self.entity(text):
+            try:
+                text_tokens_without_stopwords[entity] = text_tokens_without_stopwords[entity] + 1
+            except KeyError:
+                text_tokens_without_stopwords[entity] = 1
 
         if self.stem:
             text_tokens_without_stopwords_stemmed = {}

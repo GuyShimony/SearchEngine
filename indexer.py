@@ -60,12 +60,7 @@ class Indexer:
             if len(self.postingDict) > self.k:
                 self.term_counter = 0
                 self.posting_copy_for_saving = self.postingDict.copy()
-                # self.update_pointers()
-                # self.posting_save()
-                # self.executor.submit(self.update_pointers)
                 self.executor.submit(self.posting_save)
-                # Thread(target=self.update_posting_in_dict).start()
-                # Thread(target=self.posting_save).start()  # Start each posting file saving process in a new thread
                 self.postingDict.clear()
 
             try:
@@ -91,6 +86,7 @@ class Indexer:
                     if term.islower() and term.upper() in self.postingDict:
                         # update the term's data
                         self.postingDict[term] = self.postingDict[term.upper()]
+                        Indexer.word_tf_idf[term] = Indexer.word_tf_idf[term.upper()]
 
                         # update the term --> appeared again
                         self.postingDict[term]["docs"].append([document.tweet_id, document_dictionary[term], max_tf,
@@ -101,6 +97,7 @@ class Indexer:
 
                         # remove the upper case term
                         self.postingDict.pop(term.upper())
+                        Indexer.word_tf_idf.pop(term.upper())
 
                         # update the term's tf and df
                         # self.postingDict[term]['tf-idf'][1] += 1
@@ -127,6 +124,7 @@ class Indexer:
 
             except Exception as e:
                 print('problem with the following key {}'.format(term))
+                print(str(e))
 
     def posting_save(self):
         terms_for_saving = {}
@@ -182,9 +180,11 @@ class Indexer:
     def __del__(self):
         # calculate idf for each word (same for each word and document)
         self.idf = math.log10(self.number_of_docs)  # doc's df always 1 (per document..)
+
+        # insert each word's tf-idf value for each document --> [doc.id, term tf, term tf_idf for doc ^2 ]
         for term in self.word_tf_idf:
             for term_data in self.word_tf_idf[term]:
-                Indexer.append(math.pow(self.idf * term_data[1], 2))
+                term_data.append(self.idf * term_data[1])
 
         if len(self.postingDict) > 0:
             self.posting_copy_for_saving = self.postingDict
