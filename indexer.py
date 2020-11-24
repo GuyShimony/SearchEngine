@@ -38,7 +38,7 @@ class Indexer:
         if not document_dictionary:
             return
         document_dictionary = self.capital_letters(document_dictionary)  # get dictionary according to lower and upper
-        # case words
+
         max_tf = max(list(document_dictionary.values()))  # Get the most frequent used value
         terms_with_one_occurrence = 0
         number_of_curses = 0

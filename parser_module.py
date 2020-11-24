@@ -44,6 +44,18 @@ class Parse:
         self.entity_dictionary = {}
         self.tweet_id = None
         self.stem = stemming
+        self.coronavirus_dictionary = {
+            #  Custom coronavirus rule -> Switch any coronavirus term form to 'coronavirus'
+            #  Used to better IR coronavirus related docs
+            "covid": "coronavirus",
+            "covid-19": "coronavirus",
+            "COVID-19": "coronavirus",
+            "Covid-19": "coronavirus",
+            "covid19": "coronavirus",
+            "covid_19": "coronavirus",
+            "coronavirus": "coronavirus"
+            "corona"
+        }
 
     def parse_sentence(self, text):
         """
@@ -76,11 +88,17 @@ class Parse:
                                                                                                                 :1] != "ww":
                     #word = self.punctuation_remover(word).lower()
                     word = self.punctuation_remover(word)
-                    if word != '':
+                    if word.lower() in self.coronavirus_dictionary:
+                        text_tokens_without_stopwords[self.coronavirus_dictionary[word.lower()]] += 1
+
+                    elif word != '':
                         text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
 
             except KeyError:
-                text_tokens_without_stopwords[word] = 1
+                if word in self.coronavirus_dictionary:
+                    text_tokens_without_stopwords[self.coronavirus_dictionary[word.lower()]] = 1
+                else:
+                    text_tokens_without_stopwords[word] = 1
 
         # Second step - apply all the tokenizing rules on the text
         special_text_tokens = self.special_cases_tokenizer(text)
@@ -112,9 +130,15 @@ class Parse:
         # Fifth step - add all the newly generated tokens to the dict
         for word in rule_generated_tokens:
             try:
-                text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
+                if word in self.coronavirus_dictionary:
+                    text_tokens_without_stopwords[self.coronavirus_dictionary[word]] += 1
+                else:
+                    text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
             except KeyError:
-                text_tokens_without_stopwords[word] = 1
+                if word in self.coronavirus_dictionary:
+                    text_tokens_without_stopwords[self.coronavirus_dictionary[word]] = 1
+                else:
+                    text_tokens_without_stopwords[word] = 1
 
         for date in date_tokens:
             try:
@@ -161,7 +185,8 @@ class Parse:
         quote_url = doc_as_list[7]
 
         # tokenized_text = self.parse_sentence(full_text)
-
+        if tweet_id == "1280966293370425349":
+            print("as")
         full_text_dict = self.parse_sentence(full_text)
         quote_url_dict = self.parse_sentence(quote_url)
         retweet_url_dict = self.parse_sentence(retweet_url)
