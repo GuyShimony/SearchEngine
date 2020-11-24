@@ -72,9 +72,10 @@ class Parse:
             try:
                 if '…' in word:  # 3 twitter type dots (end of tweet)
                     continue
-                elif word not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:1] != "ht" and word[
+                elif word.lower() not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:1] != "ht" and word[
                                                                                                                 :1] != "ww":
-                    word = self.punctuation_remover(word).lower()
+                    #word = self.punctuation_remover(word).lower()
+                    word = self.punctuation_remover(word)
                     if word != '':
                         text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
 
@@ -90,7 +91,8 @@ class Parse:
         # For example '123 Thousand' was turned to '123K' -> Need to delete  '123', 'Thousand'
         for irregular in irregulars:
             try:
-                irregular = irregular.lower()
+                #irregular = irregular.lower()
+                irregular = irregular
                 text_tokens_without_stopwords.pop(irregular)
             except KeyError:
                 pass

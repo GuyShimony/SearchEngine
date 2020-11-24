@@ -5,11 +5,12 @@ import os
 from threading import Thread
 import time
 from posting_file_factory import PostingFilesFactory
-
+import string
 
 class Indexer:
 
     def __init__(self, config):
+
         self.postings_factory = PostingFilesFactory.get_instance(config)
         self.inverted_idx = {}
         self.postingDict = {}
@@ -24,6 +25,8 @@ class Indexer:
             os.makedirs(self.posting_dir_path)
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
 
+        self.lower_case_words = {}
+
     def add_new_doc(self, document):
         """
         This function perform indexing process for a document object.
@@ -32,9 +35,12 @@ class Indexer:
         :return: -
         """
         document_dictionary = document.term_doc_dictionary
+        if document.tweet_id == "1280947321790959618" or document.tweet_id == "1280947323401535489":
+            print("Fsfa")
         if not document_dictionary:
             return
-
+        document_dictionary = self.capital_letters(document_dictionary) # get dictionary according to lower and upper
+        # case words
         max_tf = max(list(document_dictionary.values()))  # Get the most frequent used value
         terms_with_one_occurrence = 0
         number_of_curses = 0
@@ -62,14 +68,33 @@ class Indexer:
             try:
                 # Update inverted index and posting
                 if term not in self.inverted_idx.keys():
-                    self.inverted_idx[term] = {"freq": 1, "pointers": f"{self.postings_factory.get_file_path(term)}"}
+                    # check if term was already added as upper (and should now be lower)
+                    if term.islower() and term.upper() in self.inverted_idx:
+                        # remove upper term and update it as a lower term
+                        self.inverted_idx[term] = self.inverted_idx[term.upper()]
+                        self.inverted_idx[term]["freq"] += 1
+                        self.inverted_idx.pop(term.upper())
+                    else: # term is not in the dictionary in any form (case)
+                        self.inverted_idx[term] = {"freq": 1, "pointers": f"{self.postings_factory.get_file_path(term.lower())}"}
                     # self.postingDict[term] = []
                 else:
                     # freq -> number of occurrences in the whole corpus (for each term)
                     self.inverted_idx[term]["freq"] += 1
 
-                if term not in self.postingDict.keys():
-                    self.postingDict[term] = {"df": 1, "docs": [[document.tweet_id, document_dictionary[term],
+                if term not in self.postingDict:
+
+                    # check if term was already added as upper (and should now be lower)
+                    if term.islower() and term.upper() in self.postingDict:
+                        self.postingDict[term] = self.postingDict[term.upper()]
+                        # update it --> appeared again
+                        self.postingDict[term]["docs"].append([document.tweet_id, document_dictionary[term], max_tf,
+                                                               document.doc_length, terms_with_one_occurrence,
+                                                               number_of_curses])
+                        # number of tweets the term appeared in
+                        self.postingDict[term]['df'] += 1
+                        self.postingDict.pop(term.upper())
+                    else:
+                        self.postingDict[term] = {"df": 1, "docs": [[document.tweet_id, document_dictionary[term],
                                                                  max_tf, document.doc_length,
                                                                  # TODO: Add a second param
                                                                  terms_with_one_occurrence, number_of_curses]]}
@@ -88,17 +113,19 @@ class Indexer:
     def posting_save(self):
         terms_for_saving = {}
         for term in self.posting_copy_for_saving:
-            if term[0] in terms_for_saving:
-                terms_for_saving[term[0]].append(term)
+            lower_term = term.lower()
+            if lower_term[0] in terms_for_saving:
+                terms_for_saving[lower_term[0]].append(term)
             else:
-                terms_for_saving[term[0]] = [term]
+                terms_for_saving[lower_term[0]] = [term]
 
         posting_file = ''
         posting_file_name = ''
         for letter in terms_for_saving:
-            posting_file, posting_file_name = self.postings_factory.get_posting_file_and_path(letter)
+            lower_letter = letter.lower()
+            posting_file, posting_file_name = self.postings_factory.get_posting_file_and_path(lower_letter)
 
-            for term in terms_for_saving[letter]:
+            for term in terms_for_saving[lower_letter]:
                 # update term's pointer
                 # self.inverted_idx[term]['pointers'] = posting_file_name
                 if term in posting_file:
@@ -111,8 +138,32 @@ class Indexer:
             except Exception as e:
                 print(str(e))
 
+    def capital_letters(self, document_dictionary):
+        """
+        1-> the term was seen once with a capital letter
+        0-> the term was already seen with a small letter
+        how_to_save to inverted index: false -- lower , true -- upper
+        :param document_dictionary: dictionary holding the tokenized term and the amount of its appearances
+        :return:
+        """
+        document_dictionary_new = {}  # dictionary with words saved correctly by capitals
+        for term in document_dictionary:
+            if term[0] not in string.ascii_letters:
+                continue
+            if term[0].islower():
+                if term not in self.lower_case_words:
+                    self.lower_case_words[term] = 0
+                document_dictionary_new[term] = document_dictionary[term]
+            else: # term is upper case
+                if term in self.lower_case_words:  # term was seen in small letters
+                    document_dictionary_new[term.lower()] = document_dictionary[term]
+                else: #giving it a chance as upper case
+                    document_dictionary_new[term.upper()] = document_dictionary[term]
+        return document_dictionary_new
+
     def __del__(self):
         if len(self.postingDict) > 0 and len(self.postingDict) < self.k:
+            self.posting_copy_for_saving = self.postingDict
             self.posting_save()
             self.postingDict.clear()
         # sorted(self.inverted_idx.items(), key=lambda item: item[0], reverse=True)
