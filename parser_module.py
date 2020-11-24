@@ -19,11 +19,10 @@ class Parse:
         self.punctuation_dict = dict(
             (ord(char), None) for char in string.punctuation.replace("%", "").replace("@", "").replace("#", ""))
         self.punc = string.punctuation.replace("%", "").replace("@", "").replace("#", "").replace("*", "") + "”" + "“"
-        # self.punctuation_remover = lambda word: word.translate(self.punctuation_dict)
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.stemmer = SnowballStemmer("english")
-        self.nlp = spacy.load("en_core_web_sm", disable=["parser", "tagger", "vectors", "textcat", "tokenizer"])  # Used for entity recognition
+        self.nlp = spacy.load("en_core_web_sm", disable=["parser", "tagger", "vectors", "textcat"]) # Used for entity recognition
         self.sign_dictionary = {
             "#": self.hashtag_parser,
             "@": self.shtrudel_parser,
