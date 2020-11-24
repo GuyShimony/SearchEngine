@@ -40,7 +40,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
         parsed_document = p.parse_doc(document)
         number_of_documents += 1
         # index the document data
-        #indexer.add_new_doc(parsed_document)
+        indexer.add_new_doc(parsed_document)
     print('Finished parsing and indexing. Starting to export files')
     print(time() - start)
     utils.save_obj(indexer.inverted_idx, "inverted_idx")
