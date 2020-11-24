@@ -3,7 +3,6 @@ import concurrent.futures
 import utils
 import os
 from threading import Thread
-import time
 from posting_file_factory import PostingFilesFactory
 import string
 
@@ -56,7 +55,7 @@ class Indexer:
             # if self.term_counter > self.k:
             if len(self.postingDict) > self.k:
                 self.term_counter = 0
-                self.posting_copy_for_saving = copy.deepcopy(self.postingDict)
+                self.posting_copy_for_saving = self.postingDict.copy()
                 # self.update_pointers()
                 # self.posting_save()
                 # self.executor.submit(self.update_pointers)
@@ -162,10 +161,9 @@ class Indexer:
         return document_dictionary_new
 
     def __del__(self):
-        if len(self.postingDict) > 0 and len(self.postingDict) < self.k:
+        if len(self.postingDict) > 0:
             self.posting_copy_for_saving = self.postingDict
             self.posting_save()
-            self.postingDict.clear()
         # sorted(self.inverted_idx.items(), key=lambda item: item[0], reverse=True)
         # self.executor.shutdown()
 

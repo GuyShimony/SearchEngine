@@ -1,7 +1,7 @@
+from multiprocessing import cpu_count
+
 from nltk.corpus import stopwords
 from nltk.corpus import words
-from nltk.misc.wordfinder import word_finder
-from nltk.tokenize import word_tokenize
 from document import Document
 from nltk.tokenize.regexp import RegexpTokenizer
 from nltk.tokenize import WhitespaceTokenizer
@@ -337,12 +337,14 @@ class Parse:
         save that Entity if so. Else it will remember it for future references.
         """
         words_list = []
-        for word_to_check in self.nlp(text).ents:
-            try:
-                if self.entity_dictionary[word_to_check] and \
-                        self.entity_dictionary[word_to_check] != self.tweet_id:
-                    words_list.append(word_to_check)
-            except KeyError:
-                self.entity_dictionary[word_to_check] = self.tweet_id
+        #for word_to_check in self.nlp(text).ents:
+        for doc in self.nlp.pipe(texts=[text]):
+            for word_to_check in doc.ents:
+                try:
+                    if self.entity_dictionary[word_to_check] and \
+                            self.entity_dictionary[word_to_check] != self.tweet_id:
+                        words_list.append(word_to_check)
+                except KeyError:
+                    self.entity_dictionary[word_to_check] = self.tweet_id
 
-        return words_list
+            return words_list
