@@ -8,21 +8,24 @@ from nltk.tokenize import WhitespaceTokenizer
 from nltk.tokenize import TweetTokenizer
 import re, spacy, string
 from nltk.stem.snowball import SnowballStemmer
+from emo_unicode import *
 
 
 class Parse:
 
     def __init__(self, stemming=False):
-        self.stop_words = stopwords.words('english') + [",", ";", "`", "/", "~", "\\", "+", '"', "'", "-", "”",
-                                                        "(", ")", "[", "]", "{", "}"]
+        self.stop_words = stopwords.words('english')  # + [",", ";", "`", "/", "~", "\\", "+", '"', "'", "-", "”",
+        #  "(", ")", "[", "]", "{", "}","•"]
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
         self.punctuation_dict = dict(
             (ord(char), None) for char in string.punctuation.replace("%", "").replace("@", "").replace("#", ""))
-        self.punc = string.punctuation.replace("%", "").replace("@", "").replace("#", "").replace("*", "") + "”" + "“"
+        self.punc = string.punctuation.replace("%", "").replace("@", "").replace("#", "").replace("*", "") + "”" + \
+                    "“" + "•"
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.stemmer = SnowballStemmer("english")
-        self.nlp = spacy.load("en_core_web_sm", disable=["parser", "tagger", "vectors", "textcat"]) # Used for entity recognition
+        self.nlp = spacy.load("en_core_web_sm",
+                              disable=["parser", "tagger", "vectors", "textcat"])  # Used for entity recognition
         self.sign_dictionary = {
             "#": self.hashtag_parser,
             "@": self.shtrudel_parser,
@@ -70,6 +73,7 @@ class Parse:
             # only if RT is appeared alone .. not as part of a word
             text = text.replace(" RT ", "")
             text = text[0:3].replace("RT ", "") + text[3:]  # Remove RT at the beginning of the tweet
+            text = text.replace("[", "").replace("]", "")
         except AttributeError:
             return {}
         # Preprocessing - Apply the curse rule first to replace each curse word with the word CENSORED
@@ -83,9 +87,18 @@ class Parse:
             try:
                 if '…' in word:  # 3 twitter type dots (end of tweet)
                     continue
-                elif word.lower() not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:1] != "ht" and word[
-                                                                                                                :1] != "ww":
-                    #word = self.punctuation_remover(word).lower()
+
+                elif word in self.punc or word in UNICODE_EMO or word in EMOTICONS:
+                    continue
+
+                elif word.lower() not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:2] != "ht" \
+                        and word[:2] != "ww":
+
+                    if "/" in word:  # Special case like 'Reserve/Covid19 - Need to separate the two words
+                        words = word.split("/")
+                        all_text_tokens += words
+                        continue
+
                     word = self.punctuation_remover(word)
                     if word.lower() in self.coronavirus_dictionary:
                         text_tokens_without_stopwords[self.coronavirus_dictionary[word.lower()]] += 1
@@ -108,7 +121,7 @@ class Parse:
         # For example '123 Thousand' was turned to '123K' -> Need to delete  '123', 'Thousand'
         for irregular in irregulars:
             try:
-                #irregular = irregular.lower()
+                # irregular = irregular.lower()
                 irregular = irregular
                 text_tokens_without_stopwords.pop(irregular)
             except KeyError:
@@ -149,9 +162,9 @@ class Parse:
         # If the entity 'Donald Trump" was recognize as an entity we won't delete the existing tokens:
         # 'donlad', 'trump' from the dictionary. The reason is for queries like "Mr Trump".
         # Queries like this will not be matched if only 'donald trump' will be in the doc
-        #for entity in self.entity_recognizer(text):
-        entites = self.entity(text)
-        if entites:
+        # for entity in self.entity_recognizer(text):
+        entities = self.entity(text)
+        if entities:
             for entity in self.entity(text):
                 try:
                     text_tokens_without_stopwords[entity] = text_tokens_without_stopwords[entity] + 1
@@ -196,7 +209,7 @@ class Parse:
         # Merge all dict objects to one with dictionaries unpacking
         term_dict = {**full_text_dict, **quote_url_dict, **retweet_url_dict}
 
-        #doc_length = len(term_dict)  # after text operations.
+        # doc_length = len(term_dict)  # after text operations.
         doc_length = sum(term_dict.values())  # after text operations.
         # To avoid tweets that do not follow any parsing rule. For example the full text is 'same' (stop word)
         document = Document(tweet_id, tweet_date, full_text, url, retweet_text, retweet_url, quote_text,
@@ -363,7 +376,7 @@ class Parse:
         save that Entity if so. Else it will remember it for future references.
         """
         words_list = []
-        #for word_to_check in self.nlp(text).ents:
+        # for word_to_check in self.nlp(text).ents:
         for doc in self.nlp.pipe(texts=[text]):
             for word_to_check in doc.ents:
                 try:
@@ -376,24 +389,33 @@ class Parse:
             return words_list
 
     def entity(self, text):
+        """
+        According to the exercise: "An entity is a pair (or more) of following terms starting with capital letters.
+        That occured in two documents or more".
+        The function will find this pattern and insert it to the entity dictionary.
+        If the entity has already been in another document it will be matched and returned.
+
+        The algorithm - Use Regular expression to find all Capitalized words. Iterate each pair and search the delta
+        of the words in the original text, meaning if they were close words separated by a delimiter.
+        If the delta is -1 it will be considered a match.
+        """
         words_list = []
-        entries = re.findall("[A-Z]+[a-z]*\s[A-Z]+[a-z]*[’\s-]*[A-Z]+[a-z]*|[A-Z]+\w*[\s-][A-Z]+\w*", text)
-        for word in re.findall("[A-Z]+[a-z]*\s[A-Z]+[a-z]*[’\s-]*[A-Z]+[a-z]*|[A-Z]+\w*[\s-][A-Z]+\w*", text):
-            try:
-                if self.entity_dictionary[word] and \
-                        self.entity_dictionary[word] != self.tweet_id:
-                    words_list.append(word)
+        entities = re.findall("[A-Z]+[a-z]*[-’A-za-z]*[19]*", text)
+        if len(entities) > 1:  # Check only lists of more than 1 capital word
+            for i in range(1, len(entities)):
+                if entities[i].lower() in self.stop_words or entities[i - 1] in self.stop_words:  # Ignore stop word
+                    continue
 
-            except KeyError:
-                self.entity_dictionary[word] = self.tweet_id
+                if text.find(entities[i - 1]) + len(entities[i - 1]) - text.find(entities[i]) == -1:
+                    separator = text.find(entities[i]) - 1
+                    word = f"{entities[i - 1]}{text[separator]}{entities[i]}"
+                    try:
+                        #  Search the entity dictionary to see if the term has already been matched by another doc
+                        if self.entity_dictionary[word] and \
+                                self.entity_dictionary[word] != self.tweet_id:
+                            words_list.append(word)
 
-            for entity in word.split(" "):
-                try:
-                    if self.entity_dictionary[entity] and \
-                            self.entity_dictionary[entity] != self.tweet_id:
-                        words_list.append(word)
-
-                except KeyError:
-                    self.entity_dictionary[entity] = self.tweet_id
+                    except KeyError:
+                        self.entity_dictionary[word] = self.tweet_id
 
         return words_list
