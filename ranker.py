@@ -47,15 +47,16 @@ class Ranker:
                 term_weight_query = Ranker.query_terms[term]
                 inner_product += term_weight_doc * term_weight_query
 
-        # denominator left -> term per doc weight squared
+        # denominator left -> term per doc weight squared   -------- TODO:include all words from the doc !!!
     #    for relevant_doc in relevant_docs:
             term_per_doc_w = 0
             for term_index in range(len(relevant_docs[relevant_doc][1])):
                 term_per_doc_w += math.pow(relevant_docs[relevant_doc][5][term_index], 2)
-            # denominator right -> term per query weight squared
-            term_per_query_w = 0
-            for query_term_val in Ranker.query_terms.values():
-                term_per_query_w += math.pow(query_term_val, 2)
+                # denominator right -> term per query weight squared
+                term_per_query_w = 0
+                for query_term in Ranker.query_terms:
+                    if query_term in relevant_docs[relevant_doc][1]:
+                        term_per_query_w += math.pow(Ranker.query_terms[query_term], 2)
             cosin_denominator = math.sqrt(term_per_doc_w * term_per_query_w)
             cosin_score = inner_product / cosin_denominator
             document_scores_cosin[relevant_doc] = cosin_score

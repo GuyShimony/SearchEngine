@@ -74,8 +74,8 @@ class Searcher:
                     term_df = posting_doc[term]["df"]
                     doc_id = doc_tuple[0]
                     max_tf = doc_tuple[2]
-                    term_tf = doc_tuple[1] / max_tf  # tf normalized for ranker
                     doc_len = doc_tuple[3]
+                    term_tf = doc_tuple[1] / max_tf  # tf normalized for ranker
                     curses_per_doc = doc_tuple[5]
                     term_tf_idf = self.words_tf_idf[term][doc_id][1]
 
