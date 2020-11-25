@@ -29,7 +29,6 @@ class Indexer:
 
         self.lower_case_words = {}
         self.number_of_docs = 0
-        self.idf = 0
 
     def add_new_doc(self, document):
         """
@@ -60,7 +59,8 @@ class Indexer:
             if len(self.postingDict) > self.k:
                 self.term_counter = 0
                 self.posting_copy_for_saving = self.postingDict.copy()
-                self.executor.submit(self.posting_save)
+                #self.executor.submit(self.posting_save)
+                self.posting_save()
                 self.postingDict.clear()
 
             try:
@@ -70,23 +70,30 @@ class Indexer:
                     if term.islower() and term.upper() in self.inverted_idx:
                         # remove upper term and update it as a lower term
                         self.inverted_idx[term] = self.inverted_idx[term.upper()]
+                        Indexer.word_tf_idf[term] = Indexer.word_tf_idf[term.upper()]
+
                         self.inverted_idx[term]["freq"] += 1
+                        Indexer.word_tf_idf[term][document.tweet_id] = [document_dictionary[term] / max_tf] # tf normalized
+
                         self.inverted_idx.pop(term.upper())
+                        Indexer.word_tf_idf.pop(term.upper())
                     else:  # term is not in the dictionary in any form (case)
                         self.inverted_idx[term] = {"freq": 1,
                                                    "pointers": f"{self.postings_factory.get_file_path(term.lower())}"}
+                        Indexer.word_tf_idf[term] = {document.tweet_id: [document_dictionary[term] / max_tf]}
+
                     # self.postingDict[term] = []
                 else:
                     # freq -> number of occurrences in the whole corpus (for each term df)
                     self.inverted_idx[term]["freq"] += 1
+                    Indexer.word_tf_idf[term][document.tweet_id] = [document_dictionary[term] / max_tf]
 
                 if term not in self.postingDict:
-
                     # check if term was already added as upper (and should now be lower)
                     if term.islower() and term.upper() in self.postingDict:
                         # update the term's data
                         self.postingDict[term] = self.postingDict[term.upper()]
-                        Indexer.word_tf_idf[term] = Indexer.word_tf_idf[term.upper()]
+                    #    Indexer.word_tf_idf[term] = Indexer.word_tf_idf[term.upper()]
 
                         # update the term --> appeared again
                         self.postingDict[term]["docs"].append([document.tweet_id, document_dictionary[term], max_tf,
@@ -97,11 +104,12 @@ class Indexer:
 
                         # remove the upper case term
                         self.postingDict.pop(term.upper())
-                        Indexer.word_tf_idf.pop(term.upper())
+                   #     Indexer.word_tf_idf.pop(term.upper())
 
                         # update the term's tf and df
                         # self.postingDict[term]['tf-idf'][1] += 1
-                        Indexer.word_tf_idf[term].append([document.tweet_id, document_dictionary[term]])
+                     #   Indexer.word_tf_idf[term][document.tweet_id].append([document_dictionary[term]])
+                    #  Indexer.word_tf_idf[term].append([document.tweet_id, document_dictionary[term]])
 
                     else:  # new term
                         self.postingDict[term] = {"df": 1, "docs": [[document.tweet_id, document_dictionary[term],
@@ -109,7 +117,8 @@ class Indexer:
                                                                      # TODO: Add a second param
                                                                      terms_with_one_occurrence, number_of_curses]]}
 
-                        Indexer.word_tf_idf[term] = [[document.tweet_id, document_dictionary[term]]]
+                        # Indexer.word_tf_idf[term] = [[document.tweet_id, document_dictionary[term]]]
+                      #  Indexer.word_tf_idf[term] = {document.tweet_id: [document_dictionary[term]]}
                 else:
                     # tweet id , number of occurrences in the tweet (tf) ....
                     self.postingDict[term]["docs"].append([document.tweet_id, document_dictionary[term], max_tf,
@@ -120,11 +129,10 @@ class Indexer:
 
                     # update the term's tf and df
                     # self.postingDict[term]['tf-idf'][1] += 1
-                    Indexer.word_tf_idf[term].append([document.tweet_id, document_dictionary[term]])
+                    # .append([document.tweet_id, document_dictionary[term]])
 
             except Exception as e:
                 print('problem with the following key {}'.format(term))
-                print(str(e))
 
     def posting_save(self):
         terms_for_saving = {}
@@ -146,6 +154,7 @@ class Indexer:
                 # self.inverted_idx[term]['pointers'] = posting_file_name
                 if term in posting_file:
                     posting_file[term]["docs"] = posting_file[term]["docs"] + self.posting_copy_for_saving[term]["docs"]
+                    posting_file[term]["df"] += self.posting_copy_for_saving[term]["df"]
                 else:
                     posting_file[term] = self.posting_copy_for_saving[term]
             try:
@@ -169,8 +178,9 @@ class Indexer:
                     self.lower_case_words[term] = 0
                 document_dictionary_new[term] = document_dictionary[term]
             else:  # term is upper case
-                if term in self.lower_case_words:  # term was seen in small letters
-                    document_dictionary_new[term.lower()] = document_dictionary[term]
+                lower_term = term.lower()
+                if lower_term in self.lower_case_words:  # term was seen in small letters
+                    document_dictionary_new[lower_term] = document_dictionary[term]
                 else:  # giving it a chance as upper case
                     document_dictionary_new[term.upper()] = document_dictionary[term]
         if not document_dictionary_new:
@@ -178,17 +188,18 @@ class Indexer:
         return document_dictionary_new
 
     def __del__(self):
-        # calculate idf for each word (same for each word and document)
-        self.idf = math.log10(self.number_of_docs)  # doc's df always 1 (per document..)
-
-        # insert each word's tf-idf value for each document --> [doc.id, term tf, term tf_idf for doc ^2 ]
-        for term in self.word_tf_idf:
-            for term_data in self.word_tf_idf[term]:
-                term_data.append(self.idf * term_data[1])
-
+        # insert each word's tf-idf value for each document --> {doc.id: [term tf, term tf_idf for doc]}
         if len(self.postingDict) > 0:
             self.posting_copy_for_saving = self.postingDict
             self.posting_save()
+
+        for term in self.word_tf_idf:
+            posting_file, posting_file_name = self.postings_factory.get_posting_file_and_path(term)
+            # calculate idf for each word
+            term_df = posting_file[term]["df"]
+            term_idf = math.log10(self.number_of_docs / term_df)
+            for term_doc in self.word_tf_idf[term]:
+                self.word_tf_idf[term][term_doc].append(term_idf * self.word_tf_idf[term][term_doc][0])
         # sorted(self.inverted_idx.items(), key=lambda item: item[0], reverse=True)
         # self.executor.shutdown()
 

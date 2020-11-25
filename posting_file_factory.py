@@ -16,7 +16,7 @@ class PostingFilesFactory:
 
 
     def get_file_path(self, word):
-
+        word = word.lower()
         if word[0] in self.posting_paths:
             return self.posting_paths[word[0]]
         else:

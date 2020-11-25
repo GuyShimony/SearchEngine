@@ -33,7 +33,7 @@ class Searcher:
         relevant_docs = {}
         posting_to_load = {}
         postings_loaded = {}
-        #TODO: FIXXXXXXXX query caps and lowers not recognized
+
         for term in query:
 
             if term.lower() not in self.inverted_index and term.upper() not in self.inverted_index :
@@ -56,12 +56,12 @@ class Searcher:
             else:
                 if self.inverted_index[term]["pointers"] not in postings_loaded:
 
-                    posting_to_load[term[0]] = utils.load_obj(self.inverted_index[term]["pointers"])
-                    postings_loaded[self.inverted_index[term]["pointers"]] = posting_to_load[term[0]]
+                    posting_to_load[term[0].lower()] = utils.load_obj(self.inverted_index[term]["pointers"])
+                    postings_loaded[self.inverted_index[term]["pointers"]] = posting_to_load[term[0].lower()]
                 else:
-                    posting_to_load[term[0]] = postings_loaded[self.inverted_index[term]["pointers"]]
+                    posting_to_load[term[0].lower()] = postings_loaded[self.inverted_index[term]["pointers"]]
 
-        for term in query:
+        for term in Ranker.query_terms:
             try:  # an example of checks that you have to do
 
                 posting_file_name = postings_factory.get_file_path(term)
@@ -72,12 +72,12 @@ class Searcher:
 
                 for doc_tuple in posting_doc[term]["docs"]:
                     term_df = posting_doc[term]["df"]
-                    term_tf = doc_tuple[1]
                     doc_id = doc_tuple[0]
                     max_tf = doc_tuple[2]
+                    term_tf = doc_tuple[1] / max_tf  # tf normalized for ranker
                     doc_len = doc_tuple[3]
                     curses_per_doc = doc_tuple[5]
-                    term_tf_idf = self.words_tf_idf[term][2]
+                    term_tf_idf = self.words_tf_idf[term][doc_id][1]
 
                     if doc_id not in relevant_docs.keys():
                         # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,
