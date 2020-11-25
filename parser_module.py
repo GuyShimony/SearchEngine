@@ -51,6 +51,7 @@ class Parse:
             #  Custom coronavirus rule -> Switch any coronavirus term form to 'coronavirus'
             #  Used to better IR coronavirus related docs
             "covid": "coronavirus",
+            "COVID": "coronavirus",
             "covid-19": "coronavirus",
             "COVID-19": "coronavirus",
             "Covid-19": "coronavirus",
