@@ -220,11 +220,10 @@ class Parse:
         quote_url = doc_as_list[7]
 
         if url:
-            # full_text = self.replace_short_extended_url(full_text, url)
             url = url.replace("{", "").replace("}", "").replace('"', "")
-            urls_index = [m.start() for m in re.finditer('http', url)]
-            urls = [url[:i-1] if i-1 > 0 else url[:i] for i in urls_index] + [url[urls_index[-1]:]]
-            url = "".join(w + " " for w in urls)
+            urls_index = [m.start() for m in re.finditer('http', url)]  # Find all start index of the http word
+            urls = [url[:i - 1] if i - 1 > 0 else url[:i] for i in urls_index] + [url[urls_index[-1]:]]  # Match all url
+            url = "".join(w + " " for w in urls)  # Join on all urls with spaces as a seperator
             url_dict = self.parse_sentence(url)
         else:
             url_dict = {}
