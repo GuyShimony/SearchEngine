@@ -71,8 +71,10 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
             or queries is None or num_docs_to_retrieve is None:
         raise ValueError("Arguments can't be None")
 
-    if corpus_path == '' or output_path == '':
-        corpus_path = os.getcwd()
+    if not corpus_path:
+        raise ValueError("Must pass corpus_path")
+
+    if not output_path:
         output_path = os.getcwd()
 
     run_engine(corpus_path, output_path, stemming)
