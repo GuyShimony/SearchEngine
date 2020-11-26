@@ -60,8 +60,8 @@ class PostingFilesFactory:
     def create_posting_files(self, posting_dict, letter_word_mapping):
 
         for letter in letter_word_mapping:
+            word_data_dict = {}
             try:
-                word_data_dict = {}
                 if letter.isdigit():
                     letter = 'NUM'
                     count = self.posting_files_path_counter[letter]
@@ -92,14 +92,14 @@ class PostingFilesFactory:
             posting_3 = {**posting_1, **posting_2}
             for key, value in posting_3.items():
                 if key in posting_1 and key in posting_2:  # if 2 keys were similar 3 got 2's keys
-                    posting_3[key] = [value, posting_1[key]]
+                    posting_3[key] = value + posting_1[key]
             if self.queue.qsize() == 1:
                 filename_3 = group_id
             else:
                 filename_3 = filename_1 + filename_2
             utils.save_obj(posting_3, f"{self.posting_dir_path}\\{filename_3}")
-            os.remove(f"{self.posting_dir_path}\\{filename_1}")
-            os.remove(f"{self.posting_dir_path}\\{filename_2}")
+            os.remove(f"{self.posting_dir_path}\\{filename_1}.pkl")
+            os.remove(f"{self.posting_dir_path}\\{filename_2}.pkl")
             self.queue.put(filename_3)
         self.queue.get() #empty the queue from last file name
 

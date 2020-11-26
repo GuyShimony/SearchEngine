@@ -29,6 +29,7 @@ class Indexer:
 
         self.lower_case_words = {}
         self.number_of_docs = 0
+        self.letters_appeared = []
 
     def add_new_doc(self, document):
         """
@@ -153,6 +154,7 @@ class Indexer:
             if lower_term[0] in terms_for_saving:
                 terms_for_saving[lower_term[0]].append(term)
             else:
+                self.letters_appeared.append(lower_term[0])
                 terms_for_saving[lower_term[0]] = [term]
         self.postings_factory.create_posting_files(self.posting_copy_for_saving, terms_for_saving)
         # posting_file = ''
@@ -205,7 +207,8 @@ class Indexer:
         if len(self.postingDict) > 0:
             self.posting_copy_for_saving = self.postingDict
             self.posting_save()
-        self.postings_factory.merge_file_group('a')
+        for letter in self.letters_appeared:
+            self.postings_factory.merge_file_group(letter)
         for term in self.word_tf_idf:
             posting_file, posting_file_name = self.postings_factory.get_posting_file_and_path(term)
             # calculate idf for each word

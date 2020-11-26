@@ -219,14 +219,15 @@ class Parse:
         quote_text = doc_as_list[6]
         quote_url = doc_as_list[7]
 
-        if url:
-            url = url.replace("{", "").replace("}", "").replace('"', "")
-            urls_index = [m.start() for m in re.finditer('http', url)]  # Find all start index of the http word
-            urls = [url[:i - 1] if i - 1 > 0 else url[:i] for i in urls_index] + [url[urls_index[-1]:]]  # Match all url
-            url = "".join(w + " " for w in urls)  # Join on all urls with spaces as a seperator
-            url_dict = self.parse_sentence(url)
-        else:
-            url_dict = {}
+        # if url:
+        #     url = url.replace("{", "").replace("}", "").replace('"', "")
+        #     urls_index = [m.start() for m in re.finditer('http', url)]  # Find all start index of the http word
+        #     urls = [url[:i - 1] if i - 1 > 0 else url[:i] for i in urls_index] + [url[urls_index[-1]:]]  # Match all url
+        #     url = "".join(w + " " for w in urls)  # Join on all urls with spaces as a seperator
+        #     url_dict = self.parse_sentence(url)
+        # else:
+        #     url_dict = {}
+        url_dict = {}
         full_text_dict = self.parse_sentence(full_text)
 
         # Merge all dict objects to one with dictionaries unpacking
