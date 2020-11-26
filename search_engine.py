@@ -87,7 +87,11 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
     for query in queries:
         if query != '\n':
             if re.search(r'\d', query):  # remove number query and "." from query if exists
+                query_num = re.findall("\d+", query)[0]
                 query = query.replace(re.findall("\d.[\s]*", query)[0], "")
-            print("Starting to search query: {0}".format(query))
+            #print("Starting to search query: {0}".format(query))
             for doc_tuple in search_and_rank_query(query, inverted_index, k):
-                result.append({"Query_num":re.findall("\d", query)[0], "Tweet_id": doc_tuple[0], "Rank": doc_tuple[1]})
+                result = result.append({"Query_num": query_num, "Tweet_id": doc_tuple[0], "Rank": doc_tuple[1]},
+                              ignore_index=True)
+
+    result.to_csv(os.path.join(output_path, "results.csv"))
