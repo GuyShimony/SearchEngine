@@ -33,7 +33,7 @@ class Searcher:
         relevant_docs = {}
         posting_to_load = {}
         postings_loaded = {}
-
+        Ranker.query_terms = {}
         for term in query:
 
             if term.lower() not in self.inverted_index and term.upper() not in self.inverted_index :
@@ -78,13 +78,14 @@ class Searcher:
                     term_tf = doc_tuple[1] / max_tf  # tf normalized for ranker
                     curses_per_doc = doc_tuple[5]
                     term_tf_idf = self.words_tf_idf[term][doc_id][1]
+                    doc_weight_squared = Indexer.docs_weights[doc_id]
 
                     if doc_id not in relevant_docs.keys():
                         # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,
                         #                            document length, number of docs that the term appeared in,
                         #                                       number of curses in the doc
                         relevant_docs[doc_id] = [1, [term], max_tf, doc_len, curses_per_doc, [term_tf_idf], [term_tf],
-                                                 [term_df]]
+                                                 [term_df], doc_weight_squared]
                         self.number_of_docs += 1
                         if self.number_of_docs > self.upper_limit:
                             break

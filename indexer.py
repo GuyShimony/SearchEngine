@@ -10,7 +10,7 @@ import math
 
 class Indexer:
     word_tf_idf = {}
-
+    docs_weights = {}
     def __init__(self, config):
 
         self.postings_factory = PostingFilesFactory.get_instance(config)
@@ -43,6 +43,7 @@ class Indexer:
         self.number_of_docs += 1
         document_dictionary = self.capital_letters(document_dictionary)  # get dictionary according to lower and upper
 
+        Indexer.docs_weights[document.tweet_id] = 0
         max_tf = max(list(document_dictionary.values()))  # Get the most frequent used value
         terms_with_one_occurrence = 0
         number_of_curses = 0
@@ -200,6 +201,7 @@ class Indexer:
             term_idf = math.log10(self.number_of_docs / term_df)
             for term_doc in self.word_tf_idf[term]:
                 self.word_tf_idf[term][term_doc].append(term_idf * self.word_tf_idf[term][term_doc][0])
+                Indexer.docs_weights[term_doc] += math.pow(self.word_tf_idf[term][term_doc][1], 2)
         # sorted(self.inverted_idx.items(), key=lambda item: item[0], reverse=True)
         # self.executor.shutdown()
 
