@@ -32,7 +32,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
 
     executer = indexer.get_pool_executer()
 
-    documents_list = r.read_file(file_name='samples')
+    documents_list = r.read_file(file_name='sample2.parquet')
     #  documents_list = r.read_file(file_name='Data')
     # Iterate over every document in the file
     start = time()
@@ -87,7 +87,7 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
     run_engine(corpus_path, output_path, stemming)
     # query = input("Please enter a query: ")
     # k = int(input("Please enter number of docs to retrieve: "))
-    if os.path.isfile(queries):  # If the queries are stored in a file #TODO: check
+    if os.path.isfile(queries):  # If the queries are stored in a file
         with open(queries, encoding="utf8") as file:
             queries = file.readlines()
 

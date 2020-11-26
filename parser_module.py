@@ -68,10 +68,7 @@ class Parse:
             "US": "USA",
             "usa": "USA",
             "u.s.a": "USA",
-            "U.S.A": "USA",
-            "united states": "USA",
-            "united states of america": "USA",
-            "United States of America": "USA",
+            "U.S.A": "USA"
         }
         self.excluded_data = ["t.co", "https", "http", "html"]
 

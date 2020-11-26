@@ -10,7 +10,6 @@ import math
 class Indexer:
     word_tf_idf = {}
 
-
     def __init__(self, config):
 
         self.docs_data = {}
@@ -19,10 +18,9 @@ class Indexer:
         self.inverted_idx = {}
         self.postingDict = {}
         self.config = config
-        self.max_documents = 10000
+        self.max_documents = 200
         self.docs_counter = 0
         self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
-        self.posting_file_counter = 28  # postings a-z and (q,x,z) as 1  + specials + num + #, @
         self.posting_copy_for_saving = None
         if not os.path.exists(self.posting_dir_path):
             # Create a directory for all posting files
@@ -55,7 +53,8 @@ class Indexer:
             if term == "*CENSORED*":
                 number_of_curses += 1
         # Indexer.docs_weights[document.tweet_id] = [0, max_tf]
-        self.docs_data[document.tweet_id] = [0, max_tf, document.doc_length, terms_with_one_occurrence, number_of_curses]
+        self.docs_data[document.tweet_id] = [0, max_tf, document.doc_length, terms_with_one_occurrence,
+                                             number_of_curses]
 
         # Go over each term in the doc
         for term in document_dictionary.keys():
@@ -64,8 +63,8 @@ class Indexer:
             if len(self.postingDict) > self.max_documents:
                 self.docs_counter = 0
                 self.posting_copy_for_saving = self.postingDict.copy()
-                self.executor.submit(self.posting_save)
-                # self.posting_save()
+                #self.executor.submit(self.posting_save)
+                self.posting_save()
                 self.postingDict.clear()
 
             try:
@@ -155,26 +154,26 @@ class Indexer:
                 terms_for_saving[lower_term[0]].append(term)
             else:
                 terms_for_saving[lower_term[0]] = [term]
-
-        posting_file = ''
-        posting_file_name = ''
-        for letter in terms_for_saving:
-            lower_letter = letter.lower()
-            posting_file, posting_file_name = self.postings_factory.get_posting_file_and_path(lower_letter)
-
-            for term in terms_for_saving[lower_letter]:
-                # update term's pointer
-                # self.inverted_idx[term]['pointers'] = posting_file_name
-                if term in posting_file:
-                    posting_file[term]["docs"] = posting_file[term]["docs"] + self.posting_copy_for_saving[term]["docs"]
-                    posting_file[term]["df"] += self.posting_copy_for_saving[term]["df"]
-                else:
-                    posting_file[term] = self.posting_copy_for_saving[term]
-            try:
-                utils.save_obj(posting_file, posting_file_name)
-
-            except Exception as e:
-                print(str(e))
+        self.postings_factory.create_posting_files(self.posting_copy_for_saving, terms_for_saving)
+        # posting_file = ''
+        # posting_file_name = ''
+        # for letter in terms_for_saving:
+        #     lower_letter = letter.lower()
+        #     posting_file, posting_file_name = self.postings_factory.get_posting_file_and_path(lower_letter)
+        #
+        #     for term in terms_for_saving[lower_letter]:
+        #         # update term's pointer
+        #         # self.inverted_idx[term]['pointers'] = posting_file_name
+        #         if term in posting_file:
+        #             posting_file[term]["docs"] = posting_file[term]["docs"] + self.posting_copy_for_saving[term]["docs"]
+        #             posting_file[term]["df"] += self.posting_copy_for_saving[term]["df"]
+        #         else:
+        #             posting_file[term] = self.posting_copy_for_saving[term]
+        #     try:
+        #         utils.save_obj(posting_file, posting_file_name)
+        #
+        #     except Exception as e:
+        #         print(str(e))
 
     def capital_letters(self, document_dictionary):
         """
@@ -206,7 +205,7 @@ class Indexer:
         if len(self.postingDict) > 0:
             self.posting_copy_for_saving = self.postingDict
             self.posting_save()
-
+        self.postings_factory.merge_file_group('a')
         for term in self.word_tf_idf:
             posting_file, posting_file_name = self.postings_factory.get_posting_file_and_path(term)
             # calculate idf for each word
@@ -214,7 +213,7 @@ class Indexer:
             term_idf = math.log10(self.number_of_docs / term_df)
             for term_doc in self.word_tf_idf[term]:
                 self.word_tf_idf[term][term_doc].append(term_idf * self.word_tf_idf[term][term_doc][0])
-                Indexer.docs_weights[term_doc][0] += math.pow(self.word_tf_idf[term][term_doc][1], 2)
+                self.docs_data[term_doc][0] += math.pow(self.word_tf_idf[term][term_doc][1], 2)
         # sorted(self.inverted_idx.items(), key=lambda item: item[0], reverse=True)
         # self.executor.shutdown()
 
