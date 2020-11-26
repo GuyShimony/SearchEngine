@@ -70,7 +70,7 @@ class Parse:
             "u.s.a": "USA",
             "U.S.A": "USA"
         }
-        self.excluded_data = ["t.co", "https", "http", "html"]
+        self.excluded_data = ["t.co", "https", "http", "html", "t"]
 
     def parse_sentence(self, text):
         """
@@ -98,7 +98,7 @@ class Parse:
         # First step - add each word (that was separated by white space) to the dictionary as a token
         for word in all_text_tokens:
             try:
-                if '…' in word:  # 3 twitter type dots (end of tweet)
+                if re.search("[…]+", word):  # 3 twitter type dots (end of tweet)
                     continue
 
                 elif word in self.punc or word in UNICODE_EMO or word in EMOTICONS:
@@ -106,11 +106,6 @@ class Parse:
 
                 elif word.lower() not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:2] != "ht" \
                         and word[:2] != "ww":
-
-                    if "/" in word:  # Special case like 'Reserve/Covid19 - Need to separate the two words
-                        words = word.split("/")
-                        all_text_tokens += words
-                        continue
 
                     word = self.punctuation_remover(word)
                     if word.lower() in self.coronavirus_dictionary:
@@ -203,6 +198,9 @@ class Parse:
                     text_tokens_without_stopwords_stemmed[word] += 1
             return text_tokens_without_stopwords_stemmed
 
+        if "" in text_tokens_without_stopwords:
+            print("a")
+
         return text_tokens_without_stopwords
 
     def parse_doc(self, doc_as_list):
@@ -215,18 +213,25 @@ class Parse:
         self.tweet_id = tweet_id
         tweet_date = doc_as_list[1]
         full_text = doc_as_list[2]
-        url = doc_as_list[3]
+        url = doc_as_list[3].replace("{", "").replace("}", "")
         retweet_text = doc_as_list[4]
         retweet_url = doc_as_list[5]
         quote_text = doc_as_list[6]
         quote_url = doc_as_list[7]
 
+        if url:
+            # full_text = self.replace_short_extended_url(full_text, url)
+            url = url.replace("{", "").replace("}", "").replace('"', "")
+            urls_index = [m.start() for m in re.finditer('http', url)]
+            urls = [url[:i-1] if i-1 > 0 else url[:i] for i in urls_index] + [url[urls_index[-1]:]]
+            url = "".join(w + " " for w in urls)
+            url_dict = self.parse_sentence(url)
+        else:
+            url_dict = {}
         full_text_dict = self.parse_sentence(full_text)
-        quote_url_dict = self.parse_sentence(quote_url)
-        retweet_url_dict = self.parse_sentence(retweet_url)
 
         # Merge all dict objects to one with dictionaries unpacking
-        term_dict = {**full_text_dict, **quote_url_dict, **retweet_url_dict}
+        term_dict = {**full_text_dict, **url_dict}
 
         # doc_length = len(term_dict)  # after text operations.
         doc_length = sum(term_dict.values())  # after text operations.
@@ -236,7 +241,18 @@ class Parse:
 
         return document
 
-    ######## RULE BASED TOKENIZER FUNCTION #############
+    def replace_short_extended_url(self, full_text, url):
+        short_urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+|'
+                                r'https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|'
+                                r'https?:\/\/(?:www\.|(?!www))',
+                                full_text)
+        urls = url.replace("[", "").replace("]", "").split(";")
+        for short, extended in zip(short_urls, urls):
+            full_text = full_text.replace(short, extended)
+
+        return full_text
+
+        ######## RULE BASED TOKENIZER FUNCTIONS #############
 
     def curse_tokenizer(self, text):
         """
@@ -296,7 +312,7 @@ class Parse:
                [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words, text) for
                 words in segment.split()]
 
-    ######## RULE BASED PARSER FUNCTION #############
+    ######## RULE BASED PARSER FUNCTIONS #############
 
     def hashtag_parser(self, hashtag_word, words_list):
         """
@@ -327,7 +343,7 @@ class Parse:
         The function will extract from the url the http(s), the website host name and all following tokens
         that are separated by '\'
         """
-        if "..." in url:
+        if "t.co" in url:
             return
 
         parsed_url = self.url_tokenizer.tokenize(url)
