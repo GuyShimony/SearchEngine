@@ -10,13 +10,13 @@ from posting_file_factory import PostingFilesFactory
 
 class Searcher:
 
-    def __init__(self, inverted_index, config=None):
+    def __init__(self, inverted_index, config=None, docs_data = None):
         """
         :param inverted_index: dictionary of inverted index
         """
         self.ranker = Ranker()
         self.inverted_index = inverted_index
-
+        self.docs_data = docs_data
         self.config = config
         self.number_of_docs = 0
         self.upper_limit = 2000
@@ -73,12 +73,12 @@ class Searcher:
                 for doc_tuple in posting_doc[term]["docs"]:
                     term_df = posting_doc[term]["df"]
                     doc_id = doc_tuple[0]
-                    max_tf = doc_tuple[2]
-                    doc_len = doc_tuple[3]
+                    max_tf = self.docs_data[doc_id][1]
+                    doc_len = self.docs_data[doc_id][2]
                     term_tf = doc_tuple[1] / max_tf  # tf normalized for ranker
-                    curses_per_doc = doc_tuple[5]
+                    curses_per_doc = self.docs_data[doc_id][4]
                     term_tf_idf = self.words_tf_idf[term][doc_id][1]
-                    doc_weight_squared = Indexer.docs_weights[doc_id]
+                    doc_weight_squared = self.docs_data[doc_id][0]
 
                     if doc_id not in relevant_docs.keys():
                         # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,

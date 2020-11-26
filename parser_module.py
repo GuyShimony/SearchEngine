@@ -59,6 +59,20 @@ class Parse:
             "covid_19": "coronavirus",
             "coronavirus": "coronavirus"
         }
+        self.USA_dictionary = {
+            #  Custom coronavirus rule -> Switch any coronavirus term form to 'coronavirus'
+            #  Used to better IR coronavirus related docs
+            "u.s": "USA",
+            "U.S": "USA",
+            "us": "USA",
+            "US": "USA",
+            "usa": "USA",
+            "u.s.a": "USA",
+            "U.S.A": "USA",
+            "united states": "USA",
+            "united states of america": "USA",
+            "United States of America": "USA",
+        }
         self.excluded_data = ["t.co", "https", "http", "html"]
 
     def parse_sentence(self, text):
@@ -105,12 +119,17 @@ class Parse:
                     if word.lower() in self.coronavirus_dictionary:
                         text_tokens_without_stopwords[self.coronavirus_dictionary[word.lower()]] += 1
 
+                    elif word.lower() in self.USA_dictionary:
+                        text_tokens_without_stopwords[self.USA_dictionary[word.lower()]] += 1
+
                     elif word != '':
                         text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
 
             except KeyError:
                 if word in self.coronavirus_dictionary:
                     text_tokens_without_stopwords[self.coronavirus_dictionary[word.lower()]] = 1
+                elif word in self.USA_dictionary:
+                    text_tokens_without_stopwords[self.USA_dictionary[word.lower()]] = 1
                 else:
                     text_tokens_without_stopwords[word] = 1
 
@@ -146,11 +165,15 @@ class Parse:
             try:
                 if word in self.coronavirus_dictionary:
                     text_tokens_without_stopwords[self.coronavirus_dictionary[word]] += 1
+                elif word in self.USA_dictionary:
+                    text_tokens_without_stopwords[self.USA_dictionary[word]] += 1
                 else:
                     text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
             except KeyError:
                 if word in self.coronavirus_dictionary:
                     text_tokens_without_stopwords[self.coronavirus_dictionary[word]] = 1
+                elif word in self.USA_dictionary:
+                    text_tokens_without_stopwords[self.USA_dictionary[word]] = 1
                 else:
                     text_tokens_without_stopwords[word] = 1
 
