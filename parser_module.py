@@ -213,14 +213,14 @@ class Parse:
         self.tweet_id = tweet_id
         tweet_date = doc_as_list[1]
         full_text = doc_as_list[2]
-        url = doc_as_list[3].replace("{", "").replace("}", "")
+        url = doc_as_list[3].replace("{", "").replace("}", "").replace('"', "").replace("[", "").replace("]", "")
         retweet_text = doc_as_list[4]
         retweet_url = doc_as_list[5]
         quote_text = doc_as_list[6]
         quote_url = doc_as_list[7]
-
+        
+        url = url.replace("{", "").replace("}", "").replace('"', "").replace("[", "").replace("]","")
         if url:
-            url = url.replace("{", "").replace("}", "").replace('"', "")
             urls_index = [m.start() for m in re.finditer('http', url)]  # Find all start index of the http word
             urls = [url[:i - 1] if i - 1 > 0 else url[:i] for i in urls_index] + [url[urls_index[-1]:]]  # Match all url
             url = "".join(w + " " for w in urls)  # Join on all urls with spaces as a seperator
