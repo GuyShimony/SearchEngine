@@ -59,6 +59,7 @@ class Parse:
             "covid_19": "coronavirus",
             "coronavirus": "coronavirus"
         }
+        self.excluded_data = ["t.co", "https", "http", "html"]
 
     def parse_sentence(self, text):
         """
@@ -200,9 +201,6 @@ class Parse:
         quote_text = doc_as_list[6]
         quote_url = doc_as_list[7]
 
-        # tokenized_text = self.parse_sentence(full_text)
-        if tweet_id == "1280966293370425349":
-            print("as")
         full_text_dict = self.parse_sentence(full_text)
         quote_url_dict = self.parse_sentence(quote_url)
         retweet_url_dict = self.parse_sentence(retweet_url)
@@ -314,12 +312,21 @@ class Parse:
 
         parsed_url = self.url_tokenizer.tokenize(url)
         for word in parsed_url:
-            if 'www' in word:
-                word = word.replace("www.", "")
-                words_list.append("www")
+            if word in self.excluded_data:
+                continue
+
+            elif 'www' in word:
+                #   word = word.replace("www.", "")
+                words_list.append(word[4:])
                 words_list.append(word)
+
             else:
-                words_list.append(word)
+                dot_split = word.split(".")
+                if len(dot_split) == 2:
+                    words_list.append(dot_split[0])
+                    words_list.append(dot_split[1])
+                else:
+                    words_list.append(word)
 
     def number_parser(self, number_word, words_list):
         """

@@ -6,6 +6,7 @@ from searcher import Searcher
 import utils
 from time import time
 import re
+import pandas as pd
 
 conifg = None
 number_of_documents = 0
@@ -31,8 +32,8 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
 
     executer = indexer.get_pool_executer()
 
-    documents_list = r.read_file(file_name='sample2.parquet')
-    # documents_list = r.read_file(file_name='Data')
+    documents_list = r.read_file(file_name='samples')
+    #  documents_list = r.read_file(file_name='Data')
     # Iterate over every document in the file
     start = time()
     for idx, document in enumerate(documents_list):
@@ -41,11 +42,13 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
         number_of_documents += 1
         # index the document data
         indexer.add_new_doc(parsed_document)
+    # indexer.f()
     print('Finished parsing and indexing. Starting to export files')
     print(time() - start)
     utils.save_obj(indexer.inverted_idx, "inverted_idx")
     # utils.save_obj(indexer.postingDict, "posting")
     executer.shutdown()
+
 
 def load_index():
     print('Load inverted index')
@@ -78,11 +81,13 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
         with open(queries, encoding="utf8") as file:
             queries = file.readlines()
 
+    result = pd.DataFrame(columns=['Query_num', 'Tweet_id', 'Rank'])
     k = num_docs_to_retrieve
     inverted_index = load_index()
     for query in queries:
         if query != '\n':
             if re.search(r'\d', query):  # remove number query and "." from query if exists
                 query = query.replace(re.findall("\d.[\s]*", query)[0], "")
+            print("Starting to search query: {0}".format(query))
             for doc_tuple in search_and_rank_query(query, inverted_index, k):
-                print('tweet id: {}, score (unique common words with query): {}'.format(doc_tuple[0], doc_tuple[1]))
+                result.append({"Query_num":re.findall("\d", query)[0], "Tweet_id": doc_tuple[0], "Rank": doc_tuple[1]})

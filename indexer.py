@@ -1,4 +1,3 @@
-import copy
 import concurrent.futures
 import utils
 import os
@@ -17,8 +16,8 @@ class Indexer:
         self.inverted_idx = {}
         self.postingDict = {}
         self.config = config
-        self.k = 200
-        self.term_counter = 0
+        self.max_documents = 10000
+        self.docs_counter = 0
         self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
         self.posting_file_counter = 28  # postings a-z and (q,x,z) as 1  + specials + num + #, @
         self.posting_copy_for_saving = None
@@ -37,6 +36,7 @@ class Indexer:
         :param document: a document need to be indexed.
         :return: -
         """
+        self.docs_counter += 1
         document_dictionary = document.term_doc_dictionary
         if not document_dictionary:
             return
@@ -55,13 +55,13 @@ class Indexer:
 
         # Go over each term in the doc
         for term in document_dictionary.keys():
-            self.term_counter += 1
+            # self.docs_counter += 1
             # if self.term_counter > self.k:
-            if len(self.postingDict) > self.k:
-                self.term_counter = 0
+            if len(self.postingDict) > self.max_documents:
+                self.docs_counter = 0
                 self.posting_copy_for_saving = self.postingDict.copy()
-                #self.executor.submit(self.posting_save)
-                self.posting_save()
+                self.executor.submit(self.posting_save)
+                #self.posting_save()
                 self.postingDict.clear()
 
             try:
@@ -171,8 +171,8 @@ class Indexer:
         accordingly
         """
         document_dictionary_new = {}  # dictionary with words saved correctly by capitals
-        for term in document_dictionary:
-            if term[0] not in string.ascii_letters:
+        for term in document_dictionary: # TODO: Check where does "" comes from
+            if not term or term[0] not in string.ascii_letters:
                 continue
             if term[0].islower():
                 if term not in self.lower_case_words:
@@ -189,6 +189,7 @@ class Indexer:
         return document_dictionary_new
 
     def __del__(self):
+    # def f(self):
         # insert each word's tf-idf value for each document --> {doc.id: [term tf, term tf_idf for doc]}
         if len(self.postingDict) > 0:
             self.posting_copy_for_saving = self.postingDict
