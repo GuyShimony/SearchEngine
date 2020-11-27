@@ -7,11 +7,9 @@ from queue import Queue
 class Merger:
 
     def __init__(self, path_to_files, file_type):
-        # Queue.__init__(self)
         self.queue = Queue()
         self.p1 = None
         self.p2 = None
-        self.start_index = 0
         self.files_name_pattern = None
         self.file_type = file_type
         self.path_to_files = path_to_files
@@ -42,7 +40,9 @@ class Merger:
             utils.save_obj(posting_3, f"{self.path_to_files}\\{combine}")
             os.remove(f"{self.path_to_files}\\{self.p1}.{self.file_type}")
             os.remove(f"{self.path_to_files}\\{self.p2}.{self.file_type}")
-            self.queue.put(combine)
+            os.rename(f"{self.path_to_files}\\{combine}.{self.file_type}",
+                      f"{self.path_to_files}\\{self.p1}.{self.file_type}")
+            self.queue.put(self.p1)
 
         final_name = self.queue.get().replace("." + self.file_type, "") # empty the queue from last file name
         #  Change the name of the last file to 'a.pkl' instead of 'a0_a1_.._ak'

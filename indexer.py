@@ -19,7 +19,7 @@ class Indexer:
         self.inverted_idx = {}
         self.postingDict = {}
         self.config = config
-        self.max_documents = 50000
+        self.max_documents = 10000
         self.docs_counter = 0
         self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
         self.posting_copy_for_saving = None
@@ -159,8 +159,8 @@ class Indexer:
                 self.letters_appeared.append(lower_term[0])
                 terms_for_saving[lower_term[0]] = [term]
 
-        #self.postings_factory.create_posting_files(self.posting_copy_for_saving, terms_for_saving)
-        self.executor.submit(self.postings_factory.create_posting_files, self.posting_copy_for_saving, terms_for_saving)
+        self.postings_factory.create_posting_files(self.posting_copy_for_saving, terms_for_saving)
+        #self.executor.submit(self.postings_factory.create_posting_files, self.posting_copy_for_saving, terms_for_saving)
         # posting_file = ''
         # posting_file_name = ''
         # for letter in terms_for_saving:
@@ -225,7 +225,6 @@ class Indexer:
             for term_doc in self.word_tf_idf[term]:
                 self.word_tf_idf[term][term_doc].append(term_idf * self.word_tf_idf[term][term_doc][0])
                 self.docs_data[term_doc][0] += math.pow(self.word_tf_idf[term][term_doc][1], 2)
-            print(time.time(), term)
         # sorted(self.inverted_idx.items(), key=lambda item: item[0], reverse=True)
         # self.executor.shutdown()
 

@@ -21,7 +21,7 @@ class PostingFilesFactory:
             PostingFilesFactory.instance = self
 
             self.posting_paths = {
-                '#': {"file": f"posting#", "path": f"{self.posting_dir_path}\\Dir_#", "name": "#"},
+                '#': {"file": "posting#", "path": f"{self.posting_dir_path}\\Dir_#", "name": "#"},
                 '@': {"file": "posting@", "path": f"{self.posting_dir_path}\\Dir_@", "name": "@"},
                 '0': {"file": "postingNUM", "path": f"{self.posting_dir_path}\\Dir_num", "name": "NUM"},
                 '1': {"file": "postingNUM", "path": f"{self.posting_dir_path}\\Dir_num", "name": "NUM"},
@@ -145,8 +145,6 @@ class PostingFilesFactory:
         self.executer = threadpool_executor
 
     def merge(self):
-        threads = []
-        flag = False
         for key in self.posting_paths:  # directory is empty
             if os.listdir(self.posting_paths[key]['path']):
                 merger = Merger(self.posting_paths[key]['path'], "pkl")
