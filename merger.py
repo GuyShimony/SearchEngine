@@ -31,8 +31,11 @@ class Merger:
             posting_3 = {**posting_1, **posting_2}
             for key, value in posting_3.items():
                 if key in posting_1 and key in posting_2:  # if 2 keys were similar 3 got 2's keys
-                    posting_3[key]['docs'] = posting_2[key]['docs'] + posting_1[key]['docs']
-                    posting_3[key]['df'] = posting_2[key]['df'] + posting_1[key]['df']
+                    if key == 'ANTHONY':
+                   # posting_3[key]['docs'] = posting_2[key]['docs'] + posting_1[key]['docs']
+                        posting_3[key]['docs'] = value['docs'] + posting_1[key]['docs']
+                        #posting_3[key]['df'] = posting_2[key]['df'] + posting_1[key]['df']
+                        posting_3[key]['df'] = value['df'] + posting_1[key]['df']
 
             combine = f"{self.p1}_{self.p2}"
             # if combine[-1:] == "0":  # Use to prevent to long file name. Every 10 files reset the name

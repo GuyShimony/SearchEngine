@@ -198,8 +198,6 @@ class Parse:
                     text_tokens_without_stopwords_stemmed[word] += 1
             return text_tokens_without_stopwords_stemmed
 
-        #if "" in text_tokens_without_stopwords:
-        #    print("a")
 
         return text_tokens_without_stopwords
 

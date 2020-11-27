@@ -189,7 +189,10 @@ class Indexer:
         """
         document_dictionary_new = {}  # dictionary with words saved correctly by capitals
         for term in document_dictionary:
-            if not term or term[0] not in string.ascii_letters:  #  TODO: Check where the "" comes from
+            if not term:
+                continue
+            if term[0] not in string.ascii_letters:  #  TODO: Check where the "" comes from
+                document_dictionary_new[term] = document_dictionary[term]
                 continue
             if term[0].islower():
                 if term not in self.lower_case_words:

@@ -35,7 +35,8 @@ class PostingFilesFactory:
                 '9': {"file": "postingNUM", "path": f"{self.posting_dir_path}\\Dir_num", "name": "NUM"},
                 'q': {"file": "postingQXZ", "path": f"{self.posting_dir_path}\\Dir_qxz", "name": "QXZ"},
                 'x': {"file": "postingQXZ", "path": f"{self.posting_dir_path}\\Dir_qxz", "name": "QXZ"},
-                'z': {"file": "postingQXZ", "path": f"{self.posting_dir_path}\\Dir_qxz", "name": "QXZ"}
+                'z': {"file": "postingQXZ", "path": f"{self.posting_dir_path}\\Dir_qxz", "name": "QXZ"},
+                'SPECIALS': {"file": "postingSPECIALS", "path": f"{self.posting_dir_path}\\Dir_specials", "name": "SPECIALS"}
             }
             self.create_postings_dirs()
             self.posting_files_path_counter = {}
@@ -91,7 +92,12 @@ class PostingFilesFactory:
     def create_posting_files(self, posting_dict, letter_word_mapping):
         for char in letter_word_mapping:
             word_data_dict = {}
-            name = self.posting_paths[char]['name']
+            if self.posting_paths.get(char) is None:
+                name = "SPECIALS"
+                char_path = "SPECIALS"
+            else:
+                name = self.posting_paths[char]['name']
+                char_path = char
             try:
                 count = self.posting_files_path_counter[name]
                 # if char.isdigit():
@@ -110,7 +116,7 @@ class PostingFilesFactory:
                 for word in letter_word_mapping[char]:
                     word_data_dict[word] = posting_dict[word]
 
-            utils.save_obj(word_data_dict, f"{self.posting_paths[char]['path']}\\{name}{count}")
+            utils.save_obj(word_data_dict, f"{self.posting_paths[char_path]['path']}\\{name}{count}")
 
     def merge_file_group(self, group_id):
         for index in range(self.posting_files_path_counter[group_id]):

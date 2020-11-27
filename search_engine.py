@@ -7,7 +7,7 @@ import utils
 from time import time
 import re
 import pandas as pd
-
+import shutil
 conifg = None
 number_of_documents = 0
 
@@ -25,6 +25,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
     config.corpusPath = corpus_path
     config.set_output_path(output_path)
     config.toStem = stemming
+    shutil.rmtree(config.get_output_path())
 
     r = ReadFile(corpus_path=config.get__corpusPath())
     p = Parse(config.toStem)
@@ -32,7 +33,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
 
     executer = indexer.get_pool_executer()
 
-    documents_list = r.read_file(file_name='samples')
+    documents_list = r.read_file(file_name='sample2.parquet')
     #  documents_list = r.read_file(file_name='Data')
     # Iterate over every document in the file
     start = time()
@@ -63,11 +64,11 @@ def load_docs_data():
     return docs_data
 
 
-def search_and_rank_query(query, inverted_index, k):
+def search_and_rank_query(query, inverted_index, k, docs_data=None):
     global config
     p = Parse(config.toStem)
     query_as_list = p.parse_sentence(query)
-    docs_data = load_docs_data()
+    # docs_data = load_docs_data()
     searcher = Searcher(inverted_index, config, docs_data)
     relevant_docs = searcher.relevant_docs_from_posting(query_as_list)
     ranked_docs = searcher.ranker.rank_relevant_doc(relevant_docs, number_of_documents)
@@ -95,6 +96,8 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
     result = pd.DataFrame(columns=['Query_num', 'Tweet_id', 'Rank'])
     k = num_docs_to_retrieve
     inverted_index = load_index()
+    docs_data = load_docs_data()
+
     for query in queries:
         if query != '\n':
             if re.search(r'\d', query):  # remove number query and "." from query if exists
@@ -103,7 +106,7 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
             else:
                 query_num = 0
             # print("Starting to search query: {0}".format(query))
-            for doc_tuple in search_and_rank_query(query, inverted_index, k):
+            for doc_tuple in search_and_rank_query(query, inverted_index, k, docs_data):
                 result = result.append({"Query_num": query_num, "Tweet_id": doc_tuple[0], "Rank": doc_tuple[1]},
                                        ignore_index=True)
 
