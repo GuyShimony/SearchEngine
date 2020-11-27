@@ -126,7 +126,7 @@ class Parse:
                     text_tokens_without_stopwords[word] = 1
 
         # Second step - apply all the tokenizing rules on the text
-        special_text_tokens = self.special_cases_tokenizer(text)
+        special_text_tokens = self.special_cases_tokenizer(text) # TODO: # parser doe not support #S**Z**A**
         number_tokens, irregulars = self.numbers_tokenizer(text)
         date_tokens = self.date_tokenizer(text)
 
@@ -198,8 +198,8 @@ class Parse:
                     text_tokens_without_stopwords_stemmed[word] += 1
             return text_tokens_without_stopwords_stemmed
 
-        if "" in text_tokens_without_stopwords:
-            print("a")
+        #if "" in text_tokens_without_stopwords:
+        #    print("a")
 
         return text_tokens_without_stopwords
 
@@ -213,7 +213,10 @@ class Parse:
         self.tweet_id = tweet_id
         tweet_date = doc_as_list[1]
         full_text = doc_as_list[2]
-        url = doc_as_list[3].replace("{", "").replace("}", "").replace('"', "").replace("[", "").replace("]", "")
+        url = doc_as_list[3]
+        if type(url) is float:  #  Handle the bug that some urls are read as 'nan' float
+            url = "{}"
+        url = url.replace("{", "").replace("}", "").replace('"', "").replace("[", "").replace("]", "")
         retweet_text = doc_as_list[4]
         retweet_url = doc_as_list[5]
         quote_text = doc_as_list[6]

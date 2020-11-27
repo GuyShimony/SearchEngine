@@ -1,4 +1,6 @@
 import concurrent.futures
+import time
+
 import utils
 import os
 from threading import Thread
@@ -14,11 +16,10 @@ class Indexer:
 
         self.docs_data = {}
 
-        self.postings_factory = PostingFilesFactory.get_instance(config)
         self.inverted_idx = {}
         self.postingDict = {}
         self.config = config
-        self.max_documents = 200
+        self.max_documents = 50000
         self.docs_counter = 0
         self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
         self.posting_copy_for_saving = None
@@ -26,7 +27,8 @@ class Indexer:
             # Create a directory for all posting files
             os.makedirs(self.posting_dir_path)
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
-
+        self.postings_factory = PostingFilesFactory.get_instance(config)
+        self.postings_factory.set_threadpool(self.executor)
         self.lower_case_words = {}
         self.number_of_docs = 0
         self.letters_appeared = []
@@ -156,7 +158,9 @@ class Indexer:
             else:
                 self.letters_appeared.append(lower_term[0])
                 terms_for_saving[lower_term[0]] = [term]
-        self.postings_factory.create_posting_files(self.posting_copy_for_saving, terms_for_saving)
+
+        #self.postings_factory.create_posting_files(self.posting_copy_for_saving, terms_for_saving)
+        self.executor.submit(self.postings_factory.create_posting_files, self.posting_copy_for_saving, terms_for_saving)
         # posting_file = ''
         # posting_file_name = ''
         # for letter in terms_for_saving:
@@ -184,8 +188,8 @@ class Indexer:
         accordingly
         """
         document_dictionary_new = {}  # dictionary with words saved correctly by capitals
-        for term in document_dictionary:  # TODO: Check where does "" comes from
-            if not term or term[0] not in string.ascii_letters:
+        for term in document_dictionary:
+            if not term or term[0] not in string.ascii_letters:  #  TODO: Check where the "" comes from
                 continue
             if term[0].islower():
                 if term not in self.lower_case_words:
@@ -201,15 +205,19 @@ class Indexer:
             return document_dictionary
         return document_dictionary_new
 
-    def __del__(self):
-        # def f(self):
+    #def __del__(self):
+    def cleanup(self):
         # insert each word's tf-idf value for each document --> {doc.id: [term tf, term tf_idf for doc]}
         if len(self.postingDict) > 0:
             self.posting_copy_for_saving = self.postingDict
             self.posting_save()
-        for letter in self.letters_appeared:
-            self.postings_factory.merge_file_group(letter)
-        for term in self.word_tf_idf:
+        # for letter in self.letters_appeared:
+        #     self.postings_factory.merge_file_group(letter)
+        # for thread in self.postings_factory.merge():
+            self.postings_factory.merge()
+        #     thread.join()
+        print(time.time())
+        for term in self.word_tf_idf:  #  TODO: Need to think of speed up - taking too long
             posting_file, posting_file_name = self.postings_factory.get_posting_file_and_path(term)
             # calculate idf for each word
             term_df = posting_file[term]["df"]
@@ -217,6 +225,7 @@ class Indexer:
             for term_doc in self.word_tf_idf[term]:
                 self.word_tf_idf[term][term_doc].append(term_idf * self.word_tf_idf[term][term_doc][0])
                 self.docs_data[term_doc][0] += math.pow(self.word_tf_idf[term][term_doc][1], 2)
+            print(time.time(), term)
         # sorted(self.inverted_idx.items(), key=lambda item: item[0], reverse=True)
         # self.executor.shutdown()
 
