@@ -133,3 +133,7 @@ class PostingFilesFactory:
             if os.listdir(self.posting_paths[key]['path']):  # directory is not empty
                 merger = Merger(self.posting_paths[key]['path'], "pkl", docs_file, corpus_size)
                 merger.merge(self.posting_paths[key]['name'])
+
+        #  The merger udpates the docs data. After the merge of all the letters - all the documents data
+        #  Is updated and need to be saved on disk to reduce the memory load
+        utils.save_obj(docs_file, f"{self.posting_dir_path}\\docs\\docs_index")

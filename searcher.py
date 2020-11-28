@@ -80,9 +80,8 @@ class Searcher:
                     doc_id = doc_tuple[0]
                     max_tf = self.docs_file[doc_id][1]
                     doc_len = self.docs_file[doc_id][2]
-                    term_tf = 0.6 * (posting_doc[term]['docs'][1] / max_tf) + 0.4 * (
-                                posting_doc[term]['docs'][1] / doc_len)
-                    curses_per_doc = self.docs_data[doc_id][4]
+                    term_tf = 0.6 * (doc_tuple[1] / max_tf) + 0.4 * (doc_tuple[1] / doc_len)
+                    curses_per_doc = self.docs_file[doc_id][4]
                     term_tf_idf = term_tf * posting_doc[term]["idf"]  # normalized by max_tf and doc's length
                     doc_weight_squared = self.docs_file[doc_id][0]
 

@@ -37,6 +37,7 @@ class Merger:
                 self.calculate_doc_weight(merged_dict, key)
 
             self.queue.put(merged_dict)
+
         if was_combined:
             utils.save_obj(merged_dict, f"{self.path_to_files}\\{self.files_name}")
         else:
@@ -44,7 +45,6 @@ class Merger:
             for key in file_dict:
                 self.calculate_doc_weight(file_dict, key)
             utils.save_obj(file_dict, f"{self.path_to_files}\\{self.files_name}")
-        utils.save_obj(self.docs_file, f"{self.path_to_files}\\docs_index")
 
     def collect_files(self):
         #for file in sorted(os.listdir(self.path_to_files)):

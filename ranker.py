@@ -25,7 +25,7 @@ class Ranker:
             inner_product_score = Ranker.inner_product(doc)
             total_doc_scores[doc] = 0.6 * document_scores_cosin[doc] + 0.4 * inner_product_score
         print(Ranker.query_terms)
-        return sorted(total_doc_scores.items(), key=lambda item: item[1], reverse=True)
+        return sorted(total_doc_scores.items(), key=lambda item: item[1], reverse=True), relevant_docs
 
     # TODO: check if needed .. already calculated inside each doc
     @staticmethod
@@ -77,7 +77,7 @@ class Ranker:
         return document_scores_cosin
 
     @staticmethod
-    def retrieve_top_k(sorted_relevant_doc, k=1):
+    def retrieve_top_k(sorted_relevant_doc, k=1,total_doc_scores={}):
         """
         return a list of top K tweets based on their ranking from highest to lowest
         :param sorted_relevant_doc: list of all candidates docs.

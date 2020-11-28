@@ -36,7 +36,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
     # executer = indexer.get_pool_executer()
 
     documents_list = r.read_file(file_name='samples')
-    # documents_list = r.read_file(file_name='Data')
+    #documents_list = r.read_file(file_name='Data')
     # Iterate over every document in the file
     start = time()
     print(start)
@@ -76,8 +76,8 @@ def search_and_rank_query(query, inverted_index, k, docs_data=None):
     # docs_data = load_docs_data()
     searcher = Searcher(inverted_index, config, docs_data)
     relevant_docs, query_weight = searcher.relevant_docs_from_posting(query_as_list)
-    ranked_docs = searcher.ranker.rank_relevant_doc(relevant_docs, query_weight, number_of_documents)
-    return searcher.ranker.retrieve_top_k(ranked_docs, k)
+    ranked_docs,doc_scores = searcher.ranker.rank_relevant_doc(relevant_docs, query_weight, number_of_documents)
+    return searcher.ranker.retrieve_top_k(ranked_docs, k,doc_scores)
 
 
 def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
