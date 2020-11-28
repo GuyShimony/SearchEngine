@@ -438,25 +438,6 @@ class Parse:
 
         return text
 
-    def entity_recognizer(self, text):
-        """
-        The function will get a word_to_check and using spacy package will determine if that word
-        is a Entity. If so it will check if it has already occurred in the parse method until that moment and will
-        save that Entity if so. Else it will remember it for future references.
-        """
-        words_list = []
-        # for word_to_check in self.nlp(text).ents:
-        for doc in self.nlp.pipe(texts=[text]):
-            for word_to_check in doc.ents:
-                try:
-                    if self.entity_dictionary[word_to_check] and \
-                            self.entity_dictionary[word_to_check] != self.tweet_id:
-                        words_list.append(word_to_check)
-                except KeyError:
-                    self.entity_dictionary[word_to_check] = self.tweet_id
-
-            return words_list
-
     def entity(self, text):
         """
         According to the exercise: "An entity is a pair (or more) of following terms starting with capital letters.
@@ -473,6 +454,9 @@ class Parse:
         if len(entities) > 1:  # Check only lists of more than 1 capital word
             for i in range(1, len(entities)):
                 if entities[i].lower() in self.stop_words or entities[i - 1] in self.stop_words:  # Ignore stop word
+                    continue
+
+                if len(entities[i]) == 1 and len(entities[i-1]) == 1:
                     continue
 
                 if text.find(entities[i - 1]) + len(entities[i - 1]) - text.find(entities[i]) == -1:
