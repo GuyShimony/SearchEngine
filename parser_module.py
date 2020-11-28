@@ -68,7 +68,9 @@ class Parse:
             "US": "USA",
             "usa": "USA",
             "u.s.a": "USA",
-            "U.S.A": "USA"
+            "U.S.A": "USA",
+            "America": "USA",
+            "AMERICA": "USA"
         }
         self.excluded_data = ["t.co", "https", "http", "html", "t"]
 
@@ -126,7 +128,7 @@ class Parse:
                     text_tokens_without_stopwords[word] = 1
 
         # Second step - apply all the tokenizing rules on the text
-        special_text_tokens = self.special_cases_tokenizer(text) # TODO: # parser doe not support #S**Z**A**
+        special_text_tokens = self.special_cases_tokenizer(text)  # TODO: # parser doe not support #S**Z**A**
         number_tokens, irregulars = self.numbers_tokenizer(text)
         date_tokens = self.date_tokenizer(text)
 
@@ -198,13 +200,12 @@ class Parse:
                     text_tokens_without_stopwords_stemmed[word] += 1
             return text_tokens_without_stopwords_stemmed
 
-
         return text_tokens_without_stopwords
 
     def parse_doc(self, doc_as_list):
         """
         This function takes a tweet document as list and break it into different fields
-        :param doc_as_list: list re-preseting the tweet.
+        :param doc_as_list: list representing the tweet.
         :return: Document object with corresponding fields.
         """
         tweet_id = doc_as_list[0]
@@ -212,15 +213,15 @@ class Parse:
         tweet_date = doc_as_list[1]
         full_text = doc_as_list[2]
         url = doc_as_list[3]
-        if type(url) is float:  #  Handle the bug that some urls are read as 'nan' float
+        if type(url) is float:  # Handle the bug that some urls are read as 'nan' float
             url = "{}"
         url = url.replace("{", "").replace("}", "").replace('"', "").replace("[", "").replace("]", "")
         retweet_text = doc_as_list[4]
         retweet_url = doc_as_list[5]
         quote_text = doc_as_list[6]
         quote_url = doc_as_list[7]
-        
-        url = url.replace("{", "").replace("}", "").replace('"', "").replace("[", "").replace("]","")
+
+        url = url.replace("{", "").replace("}", "").replace('"', "").replace("[", "").replace("]", "")
         if url:
             urls_index = [m.start() for m in re.finditer('http', url)]  # Find all start index of the http word
             urls = [url[:i - 1] if i - 1 > 0 else url[:i] for i in urls_index] + [url[urls_index[-1]:]]  # Match all url
@@ -301,15 +302,15 @@ class Parse:
         like 'Thousand', 'Percentage' and some more words that can be found in the number rule parsing
         in the exercise
         """
-        number_and_words = "[^a-zA-Z\s][0-9]+\s[tT]housand[s]*|" \
-                           "[^a-zA-Z\s][0-9]+\s[mM]illion[s]*|" \
-                           "[^a-zA-Z\s][0-9]+\s[bB]illion[s]*|" \
-                           "[^a-zA-Z\s][0-9]+\s[pP]ercent[age]*[s]*"
+        number_and_words = "[^a-zA-Z\s][0-9]+\s[tT]housand[s]*\s*[a-zA-Z]*|" \
+                           "[^a-zA-Z\s][0-9]+\s[mM]illion[s]*\s*[a-zA-Z]*|" \
+                           "[^a-zA-Z\s][0-9]+\s[bB]illion[s]*\s*[a-zA-Z]*|" \
+                           "[^a-zA-Z\s][0-9]+\s[pP]ercent[age]*[s]*\s*[a-zA-Z]*|"
 
         return re.findall("\d+%|[0-9]+[0-9]*\s+\d+/\d+|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|"
-                          "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words
+                          "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words + "[0-9]+[\s]*[a-zA-Z]*"
                           , text), \
-               [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words, text) for
+               [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words + "[0-9]+[\s]*[a-zA-Z]*", text) for
                 words in segment.split()]
 
     ######## RULE BASED PARSER FUNCTIONS #############
@@ -370,9 +371,23 @@ class Parse:
         and mean 123000.
         The numbers will be saved as 123K or 1.23M (for millions) etc.
         """
-        number_word, word_after = number_word.split(" ") if len(number_word.split(" ")) == 2 else (number_word, "")
-        number_word, word_after = (self.punctuation_remover(number_word), self.punctuation_remover(word_after)) \
-            if word_after else (self.punctuation_remover(number_word), "")
+        word_after = ""
+        word_last = ""
+        # number_word, word_after, word_last = number_word.split(" ") if len(number_word.split(" ")) >= 2 else (number_word, "")
+        if len(number_word.split(" ")) == 3:
+            number_word, word_after, word_last = number_word.split(" ")
+        elif len(number_word.split(" ")) == 2:
+            number_word, word_after = number_word.split(" ")
+
+        if word_last:
+            number_word, word_after, word_last = self.punctuation_remover(number_word), self.punctuation_remover(
+                word_after), \
+                                                 self.punctuation_remover(word_last)
+        elif word_after and not word_last:
+            number_word, word_after = self.punctuation_remover(number_word), self.punctuation_remover(word_after)
+        else:
+            number_word = self.punctuation_remover(number_word, "")
+
         try:
             number = float(number_word) if "." in number_word else int(number_word)
             if "/" in word_after:
@@ -389,7 +404,8 @@ class Parse:
                     word = number_word[:-6] + "M"
                 else:
                     word = number_word[:-9] + "B"
-
+                if word_last:
+                    word = word + " " + word_last
         except KeyError:
             if len(number_word) < 4 or "." in number_word:
                 word = number_word
@@ -399,6 +415,8 @@ class Parse:
                 word = str(number / 1000000) + "M"
             else:
                 word = str(number / 1000000000) + "B"
+            if word_after:
+                word = word + " " + word_after
 
         except ValueError:
             word = number_word
