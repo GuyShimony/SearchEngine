@@ -75,8 +75,8 @@ class Parse:
         :return:
         """
 
-        # added rules: coronavirus, usa, dates, number+identifier, curses into *, emojis, word with / (hello/world ->
-        # hello world)
+        # added rules: 1. coronavirus, 2. usa, 3. dates, 4. number+identifier, 5. curses into *, 6. emojis,
+        # 7. word with / (hello/world -> hello world), 8. remove bold words
 
         if text is None or text == '[]':
             return {}  # Return an empty dict
@@ -101,9 +101,10 @@ class Parse:
                     continue
 
                 # Remove all non ascii chars and punctuations
-                word = ''.join(filter(lambda w: w in self.ascii_words and w not in self.punc.replace("/",""), word))
+                word = ''.join(filter(lambda w: w in self.ascii_words and w not in self.punc.replace("/", ""), word))
 
-                if re.search("[…]+", word) or len(word) == 1 or not word:  # 3 twitter type dots (end of tweet) or single letters
+                if re.search("[…]+", word) or len(
+                        word) == 1 or not word:  # 3 twitter type dots (end of tweet) or single letters
                     continue
 
                 elif word.lower() not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:2] != "ht" \
