@@ -131,7 +131,8 @@ class Indexer:
         # self.postings_factory.create_posting_files(self.posting_copy_for_saving, terms_for_saving)
         self.postings_factory.create_posting_files(self.postingDict, terms_for_saving)
         self.docs_files_counter += 1
-        utils.save_obj(self.docs_data, f"{self.posting_dir_path}\\docs\\docs_index{self.docs_files_counter}")
+
+        utils.append(self.docs_data, f"{self.posting_dir_path}\\docs\\docs_index")
         # self.executor.submit(self.postings_factory.create_posting_files, self.posting_copy_for_saving, terms_for_saving)
 
 

@@ -6,7 +6,7 @@ from threading import Thread
 import os
 from queue import Queue
 from merger import Merger
-from  concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Pool
 
 
@@ -37,7 +37,8 @@ class PostingFilesFactory:
                 'q': {"file": "postingQXZ", "path": f"{self.posting_dir_path}\\Dir_qxz", "name": "QXZ"},
                 'x': {"file": "postingQXZ", "path": f"{self.posting_dir_path}\\Dir_qxz", "name": "QXZ"},
                 'z': {"file": "postingQXZ", "path": f"{self.posting_dir_path}\\Dir_qxz", "name": "QXZ"},
-                'SPECIALS': {"file": "postingSPECIALS", "path": f"{self.posting_dir_path}\\Dir_specials", "name": "SPECIALS"}
+                'SPECIALS': {"file": "postingSPECIALS", "path": f"{self.posting_dir_path}\\Dir_specials",
+                             "name": "SPECIALS"}
             }
             self.create_postings_dirs()
             self.posting_files_path_counter = {}
@@ -104,7 +105,8 @@ class PostingFilesFactory:
                 for word in letter_word_mapping[char]:
                     word_data_dict[word] = posting_dict[word]
             if word_data_dict:
-                utils.save_obj(word_data_dict, f"{self.posting_paths[char_path]['path']}\\{name}{count}")
+                #utils.save_obj(word_data_dict, f"{self.posting_paths[char_path]['path']}\\{name}{count}")
+                utils.append(word_data_dict, f"{self.posting_paths[char_path]['path']}\\{name}")
 
     def merge_file_group(self, group_id):
         for index in range(self.posting_files_path_counter[group_id]):
@@ -135,10 +137,11 @@ class PostingFilesFactory:
             PostingFilesFactory(config)
         return PostingFilesFactory.instance
 
-    def merge(self):
-
+    def merge(self, corpus_size):
+        """
+        The function will merge all the data in the posting files using the BSBI algorithm
+        """
         for key in self.posting_paths:
-            if os.listdir(self.posting_paths[key]['path']): # directory is empty
-                merger = Merger(self.posting_paths[key]['path'], "pkl")
+            if os.listdir(self.posting_paths[key]['path']):  # directory is not empty
+                merger = Merger(self.posting_paths[key]['path'], "pkl", corpus_size)
                 merger.merge(self.posting_paths[key]['name'])
-

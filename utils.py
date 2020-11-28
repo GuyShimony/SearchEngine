@@ -2,6 +2,7 @@ import pickle
 
 import json
 
+
 def save_obj(obj, name):
     """
     This function save an object as a pickle.
@@ -14,6 +15,7 @@ def save_obj(obj, name):
     # with open(name + ".json", "w") as f:
     #     json.dump(obj, f)
 
+
 def load_obj(name):
     """
     This function will load a pickle file
@@ -24,3 +26,37 @@ def load_obj(name):
         return pickle.load(f)
     # with open(name + ".json", "r") as f:
     #     return json.load(f)
+
+
+def open_file(name):
+    """
+    This function will load the pickle file to main memory
+    and return the handle for the file.
+    """
+    return open('filename.pkl', 'rb')
+
+
+def append(obj, name):
+    """
+    This function will append an object to a file.
+    If the file does not exist it will create it first.
+    """
+    with open(name + "pkl", 'ab') as fp:
+        pickle.dump(obj, fp, pickle.HIGHEST_PROTOCOL)
+
+
+def close_file(file_handle):
+    """
+    This function will close the file file pointed by the file_handle
+    """
+    file_handle.close()
+
+def get_next(name):
+    """
+    The function will return the next object stored in the pickle file.
+    If there are no more
+    """
+    try:
+        return pickle.load(f"{name}.pkl")
+    except EOFError:
+        return None

@@ -1,12 +1,12 @@
 import os
-from queue import Queue
 import utils
 from queue import Queue
 
 
 class Merger:
 
-    def __init__(self, path_to_files, file_type):
+    def __init__(self, path_to_files, file_type, corpus_size=0):
+        self.corpus_size = corpus_size
         self.queue = Queue()
         self.p1 = None
         self.p2 = None
