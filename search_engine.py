@@ -49,7 +49,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
     print('Finished parsing and indexing. Starting to export files')
     print(time() - start)
     utils.save_obj(indexer.inverted_idx, "inverted_idx")
-    utils.save_obj(indexer.docs_data, "docs_weights")
+   # utils.save_obj(indexer.docs_data, "docs_weights")
     # utils.save_obj(indexer.postingDict, "posting")
 
 
@@ -59,8 +59,9 @@ def load_index():
     return inverted_index
 
 def load_docs_data():
+    global config
     print('Load docs dictionary')
-    docs_data = utils.load_obj("docs_weights")
+    docs_data = utils.load_obj(f"{config.get_output_path()}\\docs\\postingdocs_index")
     return docs_data
 
 

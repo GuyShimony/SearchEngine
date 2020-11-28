@@ -2,35 +2,34 @@ import concurrent.futures
 import time
 import utils
 import os
-from threading import Thread
 from posting_file_factory import PostingFilesFactory
 import string
 import math
-
+from merger import Merger
 
 class Indexer:
     word_tf_idf = {}
+
     def __init__(self, config):
 
         self.docs_data = {}
-
         self.inverted_idx = {}
         self.postingDict = {}
         self.config = config
         self.max_documents = 100000
         self.docs_counter = 0
         self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
-        self.posting_copy_for_saving = None
+        #self.posting_copy_for_saving = None
         if not os.path.exists(self.posting_dir_path):
             # Create a directory for all posting files
             os.makedirs(self.posting_dir_path)
-       # self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=3)
+            os.makedirs(self.posting_dir_path + "\\docs")
+        # self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=3)
         self.postings_factory = PostingFilesFactory.get_instance(config)
         # self.postings_factory.set_threadpool(self.executor)
         self.lower_case_words = {}
         self.letters_appeared = []
-        self.docs_data_copy = None
-
+        self.docs_files_counter = 0
     def add_new_doc(self, document):
         """
         This function perform indexing process for a document object.
@@ -60,9 +59,9 @@ class Indexer:
         for term in document_dictionary.keys():
             if self.docs_counter > self.max_documents:
                 self.docs_counter = 0
-                #self.posting_copy_for_saving = self.postingDict.copy()
-                #Indexer.executor.submit(self.posting_save)
-                self.posting_save() #  TODO: Not write empty files (specials have too much empty files)
+                # self.posting_copy_for_saving = self.postingDict.copy()
+                # Indexer.executor.submit(self.posting_save)
+                self.posting_save()
                 self.postingDict.clear()
                 self.docs_data.clear()
 
@@ -73,24 +72,24 @@ class Indexer:
                     if term.islower() and term.upper() in self.inverted_idx:
                         # remove upper term and update it as a lower term
                         self.inverted_idx[term] = self.inverted_idx[term.upper()]
-                        #Indexer.word_tf_idf[term] = Indexer.word_tf_idf[term.upper()]
+                        # Indexer.word_tf_idf[term] = Indexer.word_tf_idf[term.upper()]
 
                         self.inverted_idx[term]["freq"] += 1
-                        #Indexer.word_tf_idf[term][document.tweet_id] = [
-                         #   document_dictionary[term] / max_tf]  # tf normalized
+                        # Indexer.word_tf_idf[term][document.tweet_id] = [
+                        #   document_dictionary[term] / max_tf]  # tf normalized
 
                         self.inverted_idx.pop(term.upper())
-                       # Indexer.word_tf_idf.pop(term.upper())
+                    # Indexer.word_tf_idf.pop(term.upper())
                     else:  # term is not in the dictionary in any form (case)
                         self.inverted_idx[term] = {"freq": 1,
                                                    "pointers": f"{self.postings_factory.get_file_path(term.lower())}"}
-                        #Indexer.word_tf_idf[term] = {document.tweet_id: [document_dictionary[term] / max_tf]}
+                        # Indexer.word_tf_idf[term] = {document.tweet_id: [document_dictionary[term] / max_tf]}
 
                     # self.postingDict[term] = []
                 else:
                     # freq -> number of occurrences in the whole corpus (for each term df)
                     self.inverted_idx[term]["freq"] += 1
-                    #Indexer.word_tf_idf[term][document.tweet_id] = [document_dictionary[term] / max_tf]
+                    # Indexer.word_tf_idf[term][document.tweet_id] = [document_dictionary[term] / max_tf]
 
                 if term not in self.postingDict:
                     # check if term was already added as upper (and should now be lower)
@@ -138,14 +137,12 @@ class Indexer:
                     # number of tweets the term appeared in
                     self.postingDict[term]['df'] += 1
 
-
-
             except Exception as e:
                 print('problem with the following key {}'.format(term))
 
     def posting_save(self):
         terms_for_saving = {}
-        #for term in self.posting_copy_for_saving:
+        # for term in self.posting_copy_for_saving:
         for term in self.postingDict:
             lower_term = term.lower()
             if lower_term[0] in terms_for_saving:
@@ -154,29 +151,12 @@ class Indexer:
                 self.letters_appeared.append(lower_term[0])
                 terms_for_saving[lower_term[0]] = [term]
 
-        #self.postings_factory.create_posting_files(self.posting_copy_for_saving, terms_for_saving)
+        # self.postings_factory.create_posting_files(self.posting_copy_for_saving, terms_for_saving)
         self.postings_factory.create_posting_files(self.postingDict, terms_for_saving)
-        utils.save_obj(self.docs_data, "docs_index")
+        self.docs_files_counter += 1
+        utils.save_obj(self.docs_data, f"{self.posting_dir_path}\\docs\\docs_index{self.docs_files_counter}")
         # self.executor.submit(self.postings_factory.create_posting_files, self.posting_copy_for_saving, terms_for_saving)
-        # posting_file = ''
-        # posting_file_name = ''
-        # for letter in terms_for_saving:
-        #     lower_letter = letter.lower()
-        #     posting_file, posting_file_name = self.postings_factory.get_posting_file_and_path(lower_letter)
-        #
-        #     for term in terms_for_saving[lower_letter]:
-        #         # update term's pointer
-        #         # self.inverted_idx[term]['pointers'] = posting_file_name
-        #         if term in posting_file:
-        #             posting_file[term]["docs"] = posting_file[term]["docs"] + self.posting_copy_for_saving[term]["docs"]
-        #             posting_file[term]["df"] += self.posting_copy_for_saving[term]["df"]
-        #         else:
-        #             posting_file[term] = self.posting_copy_for_saving[term]
-        #     try:
-        #         utils.save_obj(posting_file, posting_file_name)
-        #
-        #     except Exception as e:
-        #         print(str(e))
+
 
     def capital_letters(self, document_dictionary):
         """
@@ -209,11 +189,11 @@ class Indexer:
     def cleanup(self):
         # insert each word's tf-idf value for each document --> {doc.id: [term tf, term tf_idf for doc]}
         if len(self.postingDict) > 0:
-            #self.posting_copy_for_saving = self.postingDict
+            # self.posting_copy_for_saving = self.postingDict
             self.posting_save()
-            # for letter in self.letters_appeared:
-            #     self.postings_factory.merge_file_group(letter)
             self.postings_factory.merge()
+            merger = Merger(self.posting_dir_path+"\\docs", "pkl")
+            merger.merge("docs_index")
         print(time.time())
         for term in self.word_tf_idf:  # TODO: Need to think of speed up - taking too long
             posting_file, posting_file_name = self.postings_factory.get_posting_file_and_path(term)
@@ -223,4 +203,3 @@ class Indexer:
             for term_doc in self.word_tf_idf[term]:
                 self.word_tf_idf[term][term_doc].append(term_idf * self.word_tf_idf[term][term_doc][0])
                 self.docs_data[term_doc][0] += math.pow(self.word_tf_idf[term][term_doc][1], 2)
-
