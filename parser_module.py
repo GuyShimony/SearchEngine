@@ -22,8 +22,7 @@ class Parse:
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.stemmer = SnowballStemmer("english")
-        self.nlp = spacy.load("en_core_web_sm",
-                              disable=["parser", "tagger", "vectors", "textcat"])  # Used for entity recognition
+        self.ascii_words = set(string.printable)
         self.sign_dictionary = {
             "#": self.hashtag_parser,
             "@": self.shtrudel_parser,
@@ -101,10 +100,10 @@ class Parse:
                 if re.search("[…]+", word) or len(word) == 1:  # 3 twitter type dots (end of tweet) or single letters
                     continue
 
-                word = "".join(filter(lambda w: w not in UNICODE_EMO and w not in self.punc.replace("/", ""), word))
+                # Remove all non ascii chars and punctuations
+                word = ''.join(filter(lambda w: w in self.ascii_words and w not in self.punc.replace("/",""), word))
 
-                if re.search("[…]+", word) or len(
-                        word) == 1 or not word:  # 3 twitter type dots (end of tweet) or single letters
+                if re.search("[…]+", word) or len(word) == 1 or not word:  # 3 twitter type dots (end of tweet) or single letters
                     continue
 
                 elif word.lower() not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:2] != "ht" \
@@ -362,7 +361,6 @@ class Parse:
                 continue
 
             elif 'www' in word:
-                #   word = word.replace("www.", "")
                 words_list.append(word[4:])
                 words_list.append(word)
 
