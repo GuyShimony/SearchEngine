@@ -33,7 +33,7 @@ def open_file(name):
     This function will load the pickle file to main memory
     and return the handle for the file.
     """
-    return open('filename.pkl', 'rb')
+    return open(f'{name}.pkl', 'rb')
 
 
 def append(obj, name):
@@ -41,7 +41,7 @@ def append(obj, name):
     This function will append an object to a file.
     If the file does not exist it will create it first.
     """
-    with open(name + "pkl", 'ab') as fp:
+    with open(name + ".pkl", 'ab') as fp:
         pickle.dump(obj, fp, pickle.HIGHEST_PROTOCOL)
 
 
@@ -51,12 +51,13 @@ def close_file(file_handle):
     """
     file_handle.close()
 
-def get_next(name):
+def get_next(file_handle):
     """
     The function will return the next object stored in the pickle file.
-    If there are no more
+    If the last object has already been read, a None will return. ( You will need to open the file again)
+    file_handle will be the file_handle object from the open_file function.
     """
     try:
-        return pickle.load(f"{name}.pkl")
+        return pickle.load(file_handle)
     except EOFError:
         return None

@@ -25,8 +25,8 @@ class Merger:
         while self.queue.qsize() > 1:
             self.p1 = self.queue.get().replace("." + self.file_type, "")
             self.p2 = self.queue.get().replace("." + self.file_type, "")
-            # posting_1 = utils.load_obj(f"{self.path_to_files}\\{self.p1}")
-            # posting_2 = utils.load_obj(f"{self.path_to_files}\\{self.p2}")
+            posting_1 = utils.load_obj(f"{self.path_to_files}\\{self.p1}")
+            posting_2 = utils.load_obj(f"{self.path_to_files}\\{self.p2}")
             # merge the 2 dictionaries
             posting_3 = {**posting_1, **posting_2}
             for key, value in posting_3.items():
@@ -53,5 +53,11 @@ class Merger:
                   f"{self.path_to_files}\\posting{self.files_name_pattern}.{self.file_type}")
 
     def collect_files(self):
-        for file in sorted(os.listdir(self.path_to_files)):
-            self.queue.put(file)
+        #for file in sorted(os.listdir(self.path_to_files)):
+        file_handle = utils.open_file(f"{self.path_to_files}\\{self.files_name_pattern}")
+        obj = utils.get_next(file_handle)
+        while obj:
+            self.queue.put(obj)
+            obj = utils.get_next(file_handle)
+
+        utils.close_file(file_handle)
