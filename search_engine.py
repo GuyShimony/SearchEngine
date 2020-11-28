@@ -75,8 +75,8 @@ def search_and_rank_query(query, inverted_index, k, docs_data=None):
     query_as_list = p.parse_sentence(query)
     # docs_data = load_docs_data()
     searcher = Searcher(inverted_index, config, docs_data)
-    relevant_docs = searcher.relevant_docs_from_posting(query_as_list)
-    ranked_docs = searcher.ranker.rank_relevant_doc(relevant_docs, number_of_documents)
+    relevant_docs, query_weight = searcher.relevant_docs_from_posting(query_as_list)
+    ranked_docs = searcher.ranker.rank_relevant_doc(relevant_docs, query_weight, number_of_documents)
     return searcher.ranker.retrieve_top_k(ranked_docs, k)
 
 

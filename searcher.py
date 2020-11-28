@@ -10,7 +10,7 @@ from posting_file_factory import PostingFilesFactory
 
 class Searcher:
 
-    def __init__(self, inverted_index, config=None, docs_data = None):
+    def __init__(self, inverted_index, config=None, docs_data=None):
         """
         :param inverted_index: dictionary of inverted index
         """
@@ -22,6 +22,7 @@ class Searcher:
         self.number_of_docs = 0
         self.upper_limit = 2000
         self.docs_file = self.postings_factory.get_docs_file()
+
     #    self.words_tf_idf = Indexer.word_tf_idf
 
     def relevant_docs_from_posting(self, query):
@@ -37,7 +38,7 @@ class Searcher:
         Ranker.query_terms = {}
         for term in query:
 
-            if term.lower() not in self.inverted_index and term.upper() not in self.inverted_index :
+            if term.lower() not in self.inverted_index and term.upper() not in self.inverted_index:
                 continue
             elif term.lower() in self.inverted_index:
                 term = term.lower()
@@ -62,8 +63,9 @@ class Searcher:
                 else:
                     posting_to_load[term[0].lower()] = postings_loaded[self.inverted_index[term]["pointers"]]
 
+        query_weight = 0
         for term in Ranker.query_terms:
-            try:  # an example of checks that you have to do
+            try:
 
                 posting_file_name = postings_factory.get_file_path(term)
                 if "SPECIALS" in posting_file_name:
@@ -71,20 +73,22 @@ class Searcher:
                 else:
                     posting_doc = posting_to_load[term[0].lower()]
 
+                query_weight += math.pow(Ranker.query_terms[term], 2)
+
                 for doc_tuple in posting_doc[term]["docs"]:
                     term_df = posting_doc[term]["df"]
                     doc_id = doc_tuple[0]
-                    max_tf = self.docs_data[doc_id][1]
-                    doc_len = self.docs_data[doc_id][2]
-                    term_tf = doc_tuple[1] / max_tf  # tf normalized for ranker
+                    max_tf = self.docs_file[doc_id][1]
+                    doc_len = self.docs_file[doc_id][2]
+                    term_tf = 0.6 * (posting_doc[term]['docs'][1] / max_tf) + 0.4 * (
+                                posting_doc[term]['docs'][1] / doc_len)
                     curses_per_doc = self.docs_data[doc_id][4]
-                    term_tf_idf = self.words_tf_idf[term][doc_id][1]
+                    term_tf_idf = term_tf * posting_doc[term]["idf"]  # normalized by max_tf and doc's length
                     doc_weight_squared = self.docs_file[doc_id][0]
 
                     if doc_id not in relevant_docs.keys():
                         # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,
-                        #                            document length, number of docs that the term appeared in,
-                        #                                       number of curses in the doc
+                        #                            document length, ..
                         relevant_docs[doc_id] = [1, [term], max_tf, doc_len, curses_per_doc, [term_tf_idf], [term_tf],
                                                  [term_df], doc_weight_squared]
                         self.number_of_docs += 1
@@ -100,4 +104,4 @@ class Searcher:
             except Exception as e:
                 print('term {} not found in posting'.format(term))
 
-        return relevant_docs
+        return relevant_docs, query_weight

@@ -1,3 +1,4 @@
+import math
 import os
 import utils
 from queue import Queue
@@ -5,59 +6,64 @@ from queue import Queue
 
 class Merger:
 
-    def __init__(self, path_to_files, file_type, corpus_size=0):
+    def __init__(self, path_to_files, file_type, docs_file, corpus_size=0):
+
         self.corpus_size = corpus_size
         self.queue = Queue()
-        self.p1 = None
-        self.p2 = None
-        self.files_name_pattern = None
+        self.dict1 = None
+        self.dict2 = None
+        self.files_name = None
         self.file_type = file_type
         self.path_to_files = path_to_files
+        self.docs_file = docs_file
 
     def merge(self, group_id):
-        if not os.listdir(self.path_to_files):
-            # directory is empty
-            return
-
-        self.files_name_pattern = group_id
+        was_combined = False
+        merged_dict = None
+        self.files_name = group_id
         self.collect_files()
 
         while self.queue.qsize() > 1:
-            self.p1 = self.queue.get().replace("." + self.file_type, "")
-            self.p2 = self.queue.get().replace("." + self.file_type, "")
-            posting_1 = utils.load_obj(f"{self.path_to_files}\\{self.p1}")
-            posting_2 = utils.load_obj(f"{self.path_to_files}\\{self.p2}")
+            if not was_combined:
+                was_combined = True
+            self.dict1 = self.queue.get()
+            self.dict2 = self.queue.get()
             # merge the 2 dictionaries
-            posting_3 = {**posting_1, **posting_2}
-            for key, value in posting_3.items():
-                if key in posting_1 and key in posting_2:  # if 2 keys were similar 3 got 2's keys
-                    if key == 'ANTHONY':
-                   # posting_3[key]['docs'] = posting_2[key]['docs'] + posting_1[key]['docs']
-                        posting_3[key]['docs'] = value['docs'] + posting_1[key]['docs']
-                        #posting_3[key]['df'] = posting_2[key]['df'] + posting_1[key]['df']
-                        posting_3[key]['df'] = value['df'] + posting_1[key]['df']
+            merged_dict = {**self.dict1, **self.dict2}
+            for key, value in merged_dict.items():
+                if key in self.dict1 and key in self.dict2:  # if 2 keys were similar 3 got 2's keys
+                    merged_dict[key]['docs'] = value['docs'] + self.dict1[key]['docs']
+                    merged_dict[key]['df'] = value['df'] + self.dict1[key]['df']
+                self.calculate_doc_weight(merged_dict, key)
 
-            # combine = f"{self.p1}_{self.p2}"
-            # # if combine[-1:] == "0":  # Use to prevent to long file name. Every 10 files reset the name
-            # #     combine = f"{self.files_name_pattern}0"
-            # utils.save_obj(posting_3, f"{self.path_to_files}\\{combine}")
-            # os.remove(f"{self.path_to_files}\\{self.p1}.{self.file_type}")
-            # os.remove(f"{self.path_to_files}\\{self.p2}.{self.file_type}")
-            # os.rename(f"{self.path_to_files}\\{combine}.{self.file_type}",
-            #           f"{self.path_to_files}\\{self.p1}.{self.file_type}")
-            # self.queue.put(self.p1)
-
-        final_name = self.queue.get().replace("." + self.file_type, "") # empty the queue from last file name
-        #  Change the name of the last file to 'a.pkl' instead of 'a0_a1_.._ak'
-        os.rename(f"{self.path_to_files}\\{final_name}.{self.file_type}",
-                  f"{self.path_to_files}\\posting{self.files_name_pattern}.{self.file_type}")
+            self.queue.put(merged_dict)
+        if was_combined:
+            utils.save_obj(merged_dict, f"{self.path_to_files}\\{self.files_name}")
+        else:
+            file_dict = self.queue.get()
+            for key in file_dict:
+                self.calculate_doc_weight(file_dict, key)
+            utils.save_obj(file_dict, f"{self.path_to_files}\\{self.files_name}")
+        utils.save_obj(self.docs_file, f"{self.path_to_files}\\docs_index")
 
     def collect_files(self):
         #for file in sorted(os.listdir(self.path_to_files)):
-        file_handle = utils.open_file(f"{self.path_to_files}\\{self.files_name_pattern}")
+        file_handle = utils.open_file(f"{self.path_to_files}\\{self.files_name}")
         obj = utils.get_next(file_handle)
         while obj:
             self.queue.put(obj)
             obj = utils.get_next(file_handle)
-
         utils.close_file(file_handle)
+
+    def calculate_doc_weight(self, merged_dict, key):
+        for i in range(len(merged_dict[key]['docs'])):
+            term_tf = merged_dict[key]['docs'][i][1]
+            doc_len = merged_dict[key]['docs'][i][2]
+            term_df = merged_dict[key]['df']
+            doc_id = merged_dict[key]['docs'][i][0]
+            max_tf = self.docs_file[doc_id][1]
+            term_idf = math.log10(self.corpus_size / term_df)
+            # save term's idf
+            merged_dict[key]['idf'] = term_idf
+            # calculate doc's total weight
+            self.docs_file[doc_id][0] += 0.6 * (term_tf / max_tf) * term_idf + 0.4 * (term_tf / doc_len) * term_idf
