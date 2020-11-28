@@ -100,7 +100,7 @@ class Parse:
         # First step - add each word (that was separated by white space) to the dictionary as a token
         for word in all_text_tokens:
             try:
-                if re.search("[…]+", word):  # 3 twitter type dots (end of tweet)
+                if re.search("[…]+", word) or len(word) == 1:  # 3 twitter type dots (end of tweet)
                     continue
 
                 elif word in self.punc or word in UNICODE_EMO or word in EMOTICONS:
@@ -127,8 +127,8 @@ class Parse:
                 else:
                     text_tokens_without_stopwords[word] = 1
 
-        # Second step - apply all the tokenizing rules on the text
-        special_text_tokens = self.special_cases_tokenizer(text)  # TODO: # parser doe not support #S**Z**A**
+        # Second step - apply all the tokenizing rules on the text # TODO: Remove unicode of bold text
+        special_text_tokens = self.special_cases_tokenizer(text) # TODO: # parser doe not support #S**Z**A**
         number_tokens, irregulars = self.numbers_tokenizer(text)
         date_tokens = self.date_tokenizer(text)
 
@@ -157,6 +157,8 @@ class Parse:
         # Fifth step - add all the newly generated tokens to the dict
         for word in rule_generated_tokens:
             try:
+                if len(word) == 1:
+                    continue
                 if word in self.coronavirus_dictionary:
                     text_tokens_without_stopwords[self.coronavirus_dictionary[word]] += 1
                 elif word in self.USA_dictionary:
@@ -173,6 +175,8 @@ class Parse:
 
         for date in date_tokens:
             try:
+                if len(date) == 1:
+                    continue
                 text_tokens_without_stopwords[date.lower()] = text_tokens_without_stopwords[date.lower()] + 1
             except KeyError:
                 text_tokens_without_stopwords[date.lower()] = 1
@@ -199,6 +203,7 @@ class Parse:
                 else:
                     text_tokens_without_stopwords_stemmed[word] += 1
             return text_tokens_without_stopwords_stemmed
+
 
         return text_tokens_without_stopwords
 

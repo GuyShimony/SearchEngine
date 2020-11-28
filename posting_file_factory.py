@@ -7,6 +7,7 @@ import os
 from queue import Queue
 from merger import Merger
 from  concurrent.futures import ThreadPoolExecutor
+from multiprocessing import Pool
 
 
 class PostingFilesFactory:
@@ -40,7 +41,6 @@ class PostingFilesFactory:
             }
             self.create_postings_dirs()
             self.posting_files_path_counter = {}
-            self.executer = None
             self.queue = Queue()
 
     def get_file_path(self, word):
@@ -115,8 +115,8 @@ class PostingFilesFactory:
                 self.posting_files_path_counter[name] += 1
                 for word in letter_word_mapping[char]:
                     word_data_dict[word] = posting_dict[word]
-
-            utils.save_obj(word_data_dict, f"{self.posting_paths[char_path]['path']}\\{name}{count}")
+            if word_data_dict:
+                utils.save_obj(word_data_dict, f"{self.posting_paths[char_path]['path']}\\{name}{count}")
 
     def merge_file_group(self, group_id):
         for index in range(self.posting_files_path_counter[group_id]):
@@ -147,10 +147,8 @@ class PostingFilesFactory:
             PostingFilesFactory(config)
         return PostingFilesFactory.instance
 
-    def set_threadpool(self, threadpool_executor):
-        self.executer = threadpool_executor
-
     def merge(self):
+
         for key in self.posting_paths:  # directory is empty
             if os.listdir(self.posting_paths[key]['path']):
                 merger = Merger(self.posting_paths[key]['path'], "pkl")
