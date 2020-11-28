@@ -25,16 +25,17 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
     config.corpusPath = corpus_path
     config.set_output_path(output_path)
     config.toStem = stemming
-    shutil.rmtree(config.get_output_path())
+    if os.path.exists(config.get_output_path()):
+        shutil.rmtree(config.get_output_path())
 
     r = ReadFile(corpus_path=config.get__corpusPath())
     p = Parse(config.toStem)
     indexer = Indexer(config)
 
-    executer = indexer.get_pool_executer()
+    # executer = indexer.get_pool_executer()
 
-    documents_list = r.read_file(file_name='sample2.parquet')
-    #  documents_list = r.read_file(file_name='Data')
+    documents_list = r.read_file(file_name='samples')
+    # documents_list = r.read_file(file_name='Data')
     # Iterate over every document in the file
     start = time()
     print(start)
@@ -50,7 +51,6 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
     utils.save_obj(indexer.inverted_idx, "inverted_idx")
     utils.save_obj(indexer.docs_data, "docs_weights")
     # utils.save_obj(indexer.postingDict, "posting")
-    executer.shutdown()
 
 
 def load_index():
