@@ -1,7 +1,9 @@
 from nltk.corpus import stopwords
+from nltk.corpus import words
 from document import Document
 from nltk.tokenize.regexp import RegexpTokenizer
 from nltk.tokenize import WhitespaceTokenizer
+from nltk.tokenize import TweetTokenizer
 import re, spacy, string
 from nltk.stem.snowball import SnowballStemmer
 from emo_unicode import *
@@ -15,7 +17,7 @@ class Parse:
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
         self.punctuation_dict = dict(
             (ord(char), None) for char in string.punctuation.replace("%", "").replace("@", "").replace("#", ""))
-        self.punc = string.punctuation.replace("%", "").replace("@", "").\
+        self.punc = string.punctuation.replace("%", "").replace("@", ""). \
                         replace("#", "").replace("*", "") + "”" + "“" + "•"
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
@@ -47,7 +49,10 @@ class Parse:
             #  Custom coronavirus rule -> Switch any coronavirus term form to 'coronavirus'
             #  Used to better IR coronavirus related docs
             "covid": "coronavirus",
+            "COVID": "coronavirus",
             "covid-19": "coronavirus",
+            "COVID-19": "coronavirus",
+            "Covid-19": "coronavirus",
             "covid19": "coronavirus",
             "covid_19": "coronavirus",
             "coronavirus": "coronavirus"
@@ -55,11 +60,11 @@ class Parse:
         self.USA_dictionary = {
             #  Custom coronavirus rule -> Switch any usa / america term form to 'USA'
             #  Used to better IR coronavirus related docs
-            "u.s": "usa",
-            "us": "usa",
-            "u.s.a": "usa",
-            "U.S.A": "usa",
-            "america": "usa",
+            "u.s": "USA",
+            "us": "USA",
+            "usa": "USA",
+            "u.s.a": "USA",
+            "america": "USA"
         }
         self.excluded_data = ["t.co", "https", "http", "html", "t"]
 
@@ -70,6 +75,10 @@ class Parse:
         :param stem: To use or not to use stemming on the text
         :return:
         """
+
+        # added rules: coronavirus, usa, dates, number+identifier, curses into *, emojis, word with / (hello/world ->
+        # hello world)
+
         if text is None or text == '[]':
             return {}  # Return an empty dict
         try:
@@ -89,10 +98,13 @@ class Parse:
         # First step - add each word (that was separated by white space) to the dictionary as a token
         for word in all_text_tokens:
             try:
+                if re.search("[…]+", word) or len(word) == 1:  # 3 twitter type dots (end of tweet) or single letters
+                    continue
 
-                word = "".join(filter(lambda w: w not in UNICODE_EMO and w not in self.punc.replace("/",""), word))
+                word = "".join(filter(lambda w: w not in UNICODE_EMO and w not in self.punc.replace("/", ""), word))
 
-                if re.search("[…]+", word) or len(word) == 1 or not word:  # 3 twitter type dots (end of tweet) or single letters
+                if re.search("[…]+", word) or len(
+                        word) == 1 or not word:  # 3 twitter type dots (end of tweet) or single letters
                     continue
 
                 elif word.lower() not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:2] != "ht" \
@@ -149,7 +161,7 @@ class Parse:
         # Fifth step - add all the newly generated tokens to the dict
         for word in rule_generated_tokens:
             try:
-                if len(word) == 1: # Ignore single letters words
+                if len(word) == 1:  # Ignore single letters words
                     continue
                 if word in self.coronavirus_dictionary:
                     text_tokens_without_stopwords[self.coronavirus_dictionary[word]] += 1
@@ -306,7 +318,8 @@ class Parse:
         return re.findall("\d+%|[0-9]+[0-9]*\s+\d+/\d+|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|"
                           "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words + "[0-9]+[\s]*[a-zA-Z]*"
                           , text), \
-               [words for segment in re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words + "[0-9]+[\s]*[a-zA-Z]*", text) for
+               [words for segment in
+                re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words + "[0-9]+[\s]*[a-zA-Z]*", text) for
                 words in segment.split()]
 
     ######## RULE BASED PARSER FUNCTIONS #############

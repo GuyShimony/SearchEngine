@@ -30,6 +30,7 @@ class Indexer:
         self.lower_case_words = {}
         self.letters_appeared = []
         self.docs_files_counter = 0
+
     def add_new_doc(self, document):
         """
         This function perform indexing process for a document object.
@@ -42,7 +43,7 @@ class Indexer:
         if not document_dictionary:
             return
         document_dictionary = self.capital_letters(document_dictionary)  # get dictionary according to lower and upper
-
+        doc_max_term = ''
         max_tf = max(list(document_dictionary.values()))  # Get the most frequent used value
         terms_with_one_occurrence = 0
         number_of_curses = 0
@@ -51,7 +52,6 @@ class Indexer:
                 terms_with_one_occurrence += 1
             if term == "*CENSORED*":
                 number_of_curses += 1
-        # Indexer.docs_weights[document.tweet_id] = [0, max_tf]
         self.docs_data[document.tweet_id] = [0, max_tf, document.doc_length, terms_with_one_occurrence,
                                              number_of_curses]
 
@@ -59,79 +59,58 @@ class Indexer:
         for term in document_dictionary.keys():
             if self.docs_counter > self.max_documents:
                 self.docs_counter = 0
-                # self.posting_copy_for_saving = self.postingDict.copy()
-                # Indexer.executor.submit(self.posting_save)
                 self.posting_save()
                 self.postingDict.clear()
                 self.docs_data.clear()
 
             try:
+                if not doc_max_term and document_dictionary[term] == max_tf:
+                    doc_max_term = term
+                    self.docs_data[document.tweet_id].append(doc_max_term)
                 # Update inverted index and posting
                 if term not in self.inverted_idx.keys():
                     # check if term was already added as upper (and should now be lower)
                     if term.islower() and term.upper() in self.inverted_idx:
                         # remove upper term and update it as a lower term
                         self.inverted_idx[term] = self.inverted_idx[term.upper()]
-                        # Indexer.word_tf_idf[term] = Indexer.word_tf_idf[term.upper()]
+                        Indexer.word_tf_idf[term] = Indexer.word_tf_idf[term.upper()]
 
                         self.inverted_idx[term]["freq"] += 1
-                        # Indexer.word_tf_idf[term][document.tweet_id] = [
-                        #   document_dictionary[term] / max_tf]  # tf normalized
+                        Indexer.word_tf_idf[term][document.tweet_id] = [document_dictionary[term] / max_tf]
+                                                                # tf normalized
 
                         self.inverted_idx.pop(term.upper())
-                    # Indexer.word_tf_idf.pop(term.upper())
+                        Indexer.word_tf_idf.pop(term.upper())
+
                     else:  # term is not in the dictionary in any form (case)
                         self.inverted_idx[term] = {"freq": 1,
                                                    "pointers": f"{self.postings_factory.get_file_path(term.lower())}"}
-                        # Indexer.word_tf_idf[term] = {document.tweet_id: [document_dictionary[term] / max_tf]}
+                        Indexer.word_tf_idf[term] = {document.tweet_id: [document_dictionary[term] / max_tf]}
 
-                    # self.postingDict[term] = []
                 else:
                     # freq -> number of occurrences in the whole corpus (for each term df)
                     self.inverted_idx[term]["freq"] += 1
-                    # Indexer.word_tf_idf[term][document.tweet_id] = [document_dictionary[term] / max_tf]
+                    Indexer.word_tf_idf[term][document.tweet_id] = [document_dictionary[term] / max_tf]
 
                 if term not in self.postingDict:
                     # check if term was already added as upper (and should now be lower)
                     if term.islower() and term.upper() in self.postingDict:
                         # update the term's data
                         self.postingDict[term] = self.postingDict[term.upper()]
-                        #    Indexer.word_tf_idf[term] = Indexer.word_tf_idf[term.upper()]
 
                         # update the term --> appeared again
-                        # self.postingDict[term]["docs"].append([document.tweet_id, document_dictionary[term], max_tf,
-                        #                                        document.doc_length, terms_with_one_occurrence,
-                        #                                        number_of_curses])
-
                         self.postingDict[term]["docs"].append([document.tweet_id, document_dictionary[term],
                                                                document.doc_length])
                         # number of tweets the term appeared in
                         self.postingDict[term]['df'] += 1
-
                         # remove the upper case term
                         self.postingDict.pop(term.upper())
-                    #     Indexer.word_tf_idf.pop(term.upper())
-
-                    # update the term's tf and df
-                    # self.postingDict[term]['tf-idf'][1] += 1
-                    #   Indexer.word_tf_idf[term][document.tweet_id].append([document_dictionary[term]])
-                    #  Indexer.word_tf_idf[term].append([document.tweet_id, document_dictionary[term]])
 
                     else:  # new term
-                        # self.postingDict[term] = {"df": 1, "docs": [[document.tweet_id, document_dictionary[term],
-                        #                                              max_tf, document.doc_length,
-                        #                                              # TODO: Add a second param
-                        #                                              terms_with_one_occurrence, number_of_curses]]}
                         self.postingDict[term] = {"df": 1, "docs": [[document.tweet_id, document_dictionary[term],
                                                                      document.doc_length]]}
 
-                        # Indexer.word_tf_idf[term] = [[document.tweet_id, document_dictionary[term]]]
-                    #  Indexer.word_tf_idf[term] = {document.tweet_id: [document_dictionary[term]]}
                 else:
-                    # tweet id , number of occurrences in the tweet (tf) ....
-                    # self.postingDict[term]["docs"].append([document.tweet_id, document_dictionary[term], max_tf,
-                    #                                        document.doc_length, terms_with_one_occurrence,
-                    #                                        number_of_curses])
                     self.postingDict[term]["docs"].append([document.tweet_id, document_dictionary[term],
                                                            document.doc_length])
                     # number of tweets the term appeared in

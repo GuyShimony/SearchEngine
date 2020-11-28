@@ -26,7 +26,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
     config.corpusPath = corpus_path
     config.set_output_path(output_path)
     config.toStem = stemming
-    if os.path.exists(config.get_output_path()):
+    if os.path.exists(config.get_output_path()): #TODO: check if to delete
         shutil.rmtree(config.get_output_path())
 
     r = ReadFile(corpus_path=config.get__corpusPath())
