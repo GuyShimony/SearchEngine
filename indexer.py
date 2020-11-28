@@ -16,10 +16,9 @@ class Indexer:
         self.inverted_idx = {}
         self.postingDict = {}
         self.config = config
-        self.max_documents = 1000
+        self.max_documents = 100000
         self.docs_counter = 0
         self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
-        #self.posting_copy_for_saving = None
         if not os.path.exists(self.posting_dir_path):
             # Create a directory for all posting files
             os.makedirs(self.posting_dir_path)
@@ -54,7 +53,7 @@ class Indexer:
             self.docs_counter = 0
             self.posting_save()
             self.postingDict.clear()
-            self.docs_data.clear()
+         #   self.docs_data.clear()
 
         self.docs_data[document.tweet_id] = [0, max_tf, document.doc_length, terms_with_one_occurrence,
                                              number_of_curses]
@@ -70,9 +69,7 @@ class Indexer:
                     if term.islower() and term.upper() in self.inverted_idx:
                         # remove upper term and update it as a lower term
                         self.inverted_idx[term] = self.inverted_idx[term.upper()]
-
                         self.inverted_idx[term]["freq"] += 1
-
                         self.inverted_idx.pop(term.upper())
 
                     else:  # term is not in the dictionary in any form (case)
@@ -123,7 +120,7 @@ class Indexer:
 
         # self.postings_factory.create_posting_files(self.posting_copy_for_saving, terms_for_saving)
         self.postings_factory.create_posting_files(self.postingDict, terms_for_saving)
-        utils.append(self.docs_data, f"{self.posting_dir_path}\\docs\\docs_index")
+       # utils.append(self.docs_data, f"{self.posting_dir_path}\\docs\\docs_index")
         # self.executor.submit(self.postings_factory.create_posting_files, self.posting_copy_for_saving, terms_for_saving)
 
 
@@ -155,13 +152,15 @@ class Indexer:
         return document_dictionary_new
 
     def cleanup(self, corpus_size):
+        utils.save_obj(self.docs_data, f"{self.posting_dir_path}\\docs\\docs_index")
+
         # insert each word's tf-idf value for each document --> {doc.id: [term tf, term tf_idf for doc]}
         if len(self.postingDict) > 0:
             # self.posting_copy_for_saving = self.postingDict
             self.posting_save()
             self.postings_factory.merge(corpus_size)
-            merger = Merger(self.posting_dir_path+"\\docs", "pkl")
-            merger.merge("docs_index")
+            # merger = Merger(self.posting_dir_path+"\\docs", "pkl", self.docs_data)
+            # merger.merge("docs_index")
         print(time.time())
-
+        self.docs_data.clear()
 

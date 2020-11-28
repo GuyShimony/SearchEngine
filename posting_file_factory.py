@@ -57,7 +57,7 @@ class PostingFilesFactory:
     def get_docs_file(self):
         return utils.load_obj(f"{self.posting_dir_path}\\docs\\docs_index")
 
-    def save_docs_file(self,file):
+    def save_docs_file(self, file):
         return utils.save_obj(file, f"{self.posting_dir_path}\\docs\\docs_index")
 
     def create_postings_dirs(self):

@@ -35,8 +35,8 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
 
     # executer = indexer.get_pool_executer()
 
-    documents_list = r.read_file(file_name='samples')
-    # documents_list = r.read_file(file_name='Data')
+    #documents_list = r.read_file(file_name='samples')
+    documents_list = r.read_file(file_name='Data')
     # Iterate over every document in the file
     start = time()
     print(start)
@@ -65,7 +65,7 @@ def load_index():
 def load_docs_data():
     global config
     print('Load docs dictionary')
-    docs_data = utils.load_obj(f"{config.get_output_path()}\\docs\\postingdocs_index")
+    docs_data = utils.load_obj(f"{config.get_output_path()}\\docs\\docs_index")
     return docs_data
 
 
