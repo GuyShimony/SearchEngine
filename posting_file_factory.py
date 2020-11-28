@@ -56,24 +56,6 @@ class PostingFilesFactory:
 
     def create_postings_dirs(self):
 
-        # self.posting_paths = {
-        #     '#': f"{self.posting_dir_path}\\posting#",
-        #     '@': f"{self.posting_dir_path}\\posting@",
-        #     '0': f"{self.posting_dir_path}\\postingNUM",
-        #     '1': f"{self.posting_dir_path}\\postingNUM",
-        #     '2': f"{self.posting_dir_path}\\postingNUM",
-        #     '3': f"{self.posting_dir_path}\\postingNUM",
-        #     '4': f"{self.posting_dir_path}\\postingNUM",
-        #     '5': f"{self.posting_dir_path}\\postingNUM",
-        #     '6': f"{self.posting_dir_path}\\postingNUM",
-        #     '7': f"{self.posting_dir_path}\\postingNUM",
-        #     '8': f"{self.posting_dir_path}\\postingNUM",
-        #     '9': f"{self.posting_dir_path}\\postingNUM",
-        #     'q': f"{self.posting_dir_path}\\postingQXZ",
-        #     'x': f"{self.posting_dir_path}\\postingQXZ",
-        #     'z': f"{self.posting_dir_path}\\postingQXZ"
-        # }
-
         # if not in dict --> utils.save_obj({}, f"{self.posting_dir_path}\\postingSPECIALS")
         for letter in string.ascii_lowercase:
             if self.posting_paths.get(letter) is None:
@@ -149,29 +131,8 @@ class PostingFilesFactory:
 
     def merge(self):
 
-        for key in self.posting_paths:  # directory is empty
-            if os.listdir(self.posting_paths[key]['path']):
+        for key in self.posting_paths:
+            if os.listdir(self.posting_paths[key]['path']): # directory is empty
                 merger = Merger(self.posting_paths[key]['path'], "pkl")
                 merger.merge(self.posting_paths[key]['name'])
-                # if key == "q" or key == "x" or key =="z":
-                #     if not flag:
-                #         merger = Merger(self.posting_paths[key]['path'], "pkl")
-                #         threads.append(Thread(target=merger.merge, args=(self.posting_paths[key]['name'],)))
-                #         flag = True
-                # else:
-                #     merger = Merger(self.posting_paths[key]['path'], "pkl")
-                #     threads.append(Thread(target=merger.merge, args=(self.posting_paths[key]['name'],)))
-                # # with ThreadPoolExecutor(max_workers=10) as executor:
-                # # executor.submit(merger.merge, self.posting_paths[key]['name'])
-                # # executor.shutdown()
-        #
-        # for thread in threads:
-        #     thread.start()
-        #
-        # return threads
-        # for thread in threads:
-        #     thread.join()
-                # if self.executer:  # Run each merger parallel
-                #     self.executer.submit(merger.merge, self.posting_paths[key]['name'])
-                # else:
-                #     merger.merge(self.posting_paths[key]['name'])
+

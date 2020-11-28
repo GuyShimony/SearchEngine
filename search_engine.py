@@ -8,6 +8,7 @@ from time import time
 import re
 import pandas as pd
 import shutil
+
 conifg = None
 number_of_documents = 0
 
@@ -49,14 +50,17 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
     print('Finished parsing and indexing. Starting to export files')
     print(time() - start)
     utils.save_obj(indexer.inverted_idx, "inverted_idx")
-   # utils.save_obj(indexer.docs_data, "docs_weights")
-    # utils.save_obj(indexer.postingDict, "posting")
+
+
+# utils.save_obj(indexer.docs_data, "docs_weights")
+# utils.save_obj(indexer.postingDict, "posting")
 
 
 def load_index():
     print('Load inverted index')
     inverted_index = utils.load_obj("inverted_idx")
     return inverted_index
+
 
 def load_docs_data():
     global config

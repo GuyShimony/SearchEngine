@@ -1,9 +1,7 @@
 from nltk.corpus import stopwords
-from nltk.corpus import words
 from document import Document
 from nltk.tokenize.regexp import RegexpTokenizer
 from nltk.tokenize import WhitespaceTokenizer
-from nltk.tokenize import TweetTokenizer
 import re, spacy, string
 from nltk.stem.snowball import SnowballStemmer
 from emo_unicode import *
@@ -17,8 +15,8 @@ class Parse:
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
         self.punctuation_dict = dict(
             (ord(char), None) for char in string.punctuation.replace("%", "").replace("@", "").replace("#", ""))
-        self.punc = string.punctuation.replace("%", "").replace("@", "").replace("#", "").replace("*", "") + "”" + \
-                    "“" + "•"
+        self.punc = string.punctuation.replace("%", "").replace("@", "").\
+                        replace("#", "").replace("*", "") + "”" + "“" + "•"
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.stemmer = SnowballStemmer("english")
@@ -49,26 +47,19 @@ class Parse:
             #  Custom coronavirus rule -> Switch any coronavirus term form to 'coronavirus'
             #  Used to better IR coronavirus related docs
             "covid": "coronavirus",
-            "COVID": "coronavirus",
             "covid-19": "coronavirus",
-            "COVID-19": "coronavirus",
-            "Covid-19": "coronavirus",
             "covid19": "coronavirus",
             "covid_19": "coronavirus",
             "coronavirus": "coronavirus"
         }
         self.USA_dictionary = {
-            #  Custom coronavirus rule -> Switch any coronavirus term form to 'coronavirus'
+            #  Custom coronavirus rule -> Switch any usa / america term form to 'USA'
             #  Used to better IR coronavirus related docs
-            "u.s": "USA",
-            "U.S": "USA",
-            "us": "USA",
-            "US": "USA",
-            "usa": "USA",
-            "u.s.a": "USA",
-            "U.S.A": "USA",
-            "America": "USA",
-            "AMERICA": "USA"
+            "u.s": "usa",
+            "us": "usa",
+            "u.s.a": "usa",
+            "U.S.A": "usa",
+            "america": "usa",
         }
         self.excluded_data = ["t.co", "https", "http", "html", "t"]
 
@@ -98,23 +89,26 @@ class Parse:
         # First step - add each word (that was separated by white space) to the dictionary as a token
         for word in all_text_tokens:
             try:
-                if re.search("[…]+", word) or len(word) == 1:  # 3 twitter type dots (end of tweet) or single letters
-                    continue
 
-                elif word in self.punc or word in UNICODE_EMO or word in EMOTICONS:
+                word = "".join(filter(lambda w: w not in UNICODE_EMO and w not in self.punc.replace("/",""), word))
+
+                if re.search("[…]+", word) or len(word) == 1 or not word:  # 3 twitter type dots (end of tweet) or single letters
                     continue
 
                 elif word.lower() not in self.stop_words and word[0] != "#" and word[0] != "@" and word[:2] != "ht" \
                         and word[:2] != "ww":
 
-                    word = self.punctuation_remover(word)
+                    if "/" in word:  # Handle terms like 'corona/people' -> add 'corona' & 'people'
+                        all_text_tokens += [w for w in word.split("/")]
+                        continue
+
                     if word.lower() in self.coronavirus_dictionary:
                         text_tokens_without_stopwords[self.coronavirus_dictionary[word.lower()]] += 1
 
                     elif word.lower() in self.USA_dictionary:
                         text_tokens_without_stopwords[self.USA_dictionary[word.lower()]] += 1
 
-                    elif word != '':
+                    else:
                         text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
 
             except KeyError:
@@ -388,7 +382,7 @@ class Parse:
         elif word_after and not word_last:
             number_word, word_after = self.punctuation_remover(number_word), self.punctuation_remover(word_after)
         else:
-            number_word = self.punctuation_remover(number_word, "")
+            number_word = self.punctuation_remover(number_word)
 
         try:
             number = float(number_word) if "." in number_word else int(number_word)
