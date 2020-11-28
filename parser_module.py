@@ -164,16 +164,16 @@ class Parse:
                 if len(word) == 1:  # Ignore single letters words
                     continue
                 if word in self.coronavirus_dictionary:
-                    text_tokens_without_stopwords[self.coronavirus_dictionary[word]] += 1
+                    text_tokens_without_stopwords[self.coronavirus_dictionary[word.lower()]] += 1
                 elif word in self.USA_dictionary:
-                    text_tokens_without_stopwords[self.USA_dictionary[word]] += 1
+                    text_tokens_without_stopwords[self.USA_dictionary[word.lower()]] += 1
                 else:
-                    text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
+                    text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word.lower()] + 1
             except KeyError:
                 if word in self.coronavirus_dictionary:
-                    text_tokens_without_stopwords[self.coronavirus_dictionary[word]] = 1
+                    text_tokens_without_stopwords[self.coronavirus_dictionary[word.lower()]] = 1
                 elif word in self.USA_dictionary:
-                    text_tokens_without_stopwords[self.USA_dictionary[word]] = 1
+                    text_tokens_without_stopwords[self.USA_dictionary[word.lower()]] = 1
                 else:
                     text_tokens_without_stopwords[word] = 1
 
