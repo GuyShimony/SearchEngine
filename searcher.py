@@ -1,5 +1,5 @@
 import math
-
+from posting_file_factory import PostingFilesFactory
 from indexer import Indexer
 from parser_module import Parse
 from ranker import Ranker
@@ -15,13 +15,14 @@ class Searcher:
         :param inverted_index: dictionary of inverted index
         """
         self.ranker = Ranker()
+        self.postings_factory = PostingFilesFactory.get_instance(config)
         self.inverted_index = inverted_index
         self.docs_data = docs_data
         self.config = config
         self.number_of_docs = 0
         self.upper_limit = 2000
-
-        self.words_tf_idf = Indexer.word_tf_idf
+        self.docs_file = self.postings_factory.get_docs_file()
+    #    self.words_tf_idf = Indexer.word_tf_idf
 
     def relevant_docs_from_posting(self, query):
         """
@@ -78,7 +79,7 @@ class Searcher:
                     term_tf = doc_tuple[1] / max_tf  # tf normalized for ranker
                     curses_per_doc = self.docs_data[doc_id][4]
                     term_tf_idf = self.words_tf_idf[term][doc_id][1]
-                    doc_weight_squared = self.docs_data[doc_id][0]
+                    doc_weight_squared = self.docs_file[doc_id][0]
 
                     if doc_id not in relevant_docs.keys():
                         # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,

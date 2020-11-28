@@ -8,7 +8,7 @@ import math
 from merger import Merger
 
 class Indexer:
-    word_tf_idf = {}
+   # word_tf_idf = {}
 
     def __init__(self, config):
 
@@ -24,9 +24,7 @@ class Indexer:
             # Create a directory for all posting files
             os.makedirs(self.posting_dir_path)
             os.makedirs(self.posting_dir_path + "\\docs")
-        # self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=3)
         self.postings_factory = PostingFilesFactory.get_instance(config)
-        # self.postings_factory.set_threadpool(self.executor)
         self.lower_case_words = {}
         self.letters_appeared = []
         self.docs_files_counter = 0
@@ -73,24 +71,24 @@ class Indexer:
                     if term.islower() and term.upper() in self.inverted_idx:
                         # remove upper term and update it as a lower term
                         self.inverted_idx[term] = self.inverted_idx[term.upper()]
-                        Indexer.word_tf_idf[term] = Indexer.word_tf_idf[term.upper()]
+                #        Indexer.word_tf_idf[term] = Indexer.word_tf_idf[term.upper()]
 
                         self.inverted_idx[term]["freq"] += 1
-                        Indexer.word_tf_idf[term][document.tweet_id] = [document_dictionary[term] / max_tf]
+                #        Indexer.word_tf_idf[term][document.tweet_id] = [document_dictionary[term] / max_tf]
                                                                 # tf normalized
 
                         self.inverted_idx.pop(term.upper())
-                        Indexer.word_tf_idf.pop(term.upper())
+                 #       Indexer.word_tf_idf.pop(term.upper())
 
                     else:  # term is not in the dictionary in any form (case)
                         self.inverted_idx[term] = {"freq": 1,
                                                    "pointers": f"{self.postings_factory.get_file_path(term.lower())}"}
-                        Indexer.word_tf_idf[term] = {document.tweet_id: [document_dictionary[term] / max_tf]}
+                    #    Indexer.word_tf_idf[term] = {document.tweet_id: [document_dictionary[term] / max_tf]}
 
                 else:
                     # freq -> number of occurrences in the whole corpus (for each term df)
                     self.inverted_idx[term]["freq"] += 1
-                    Indexer.word_tf_idf[term][document.tweet_id] = [document_dictionary[term] / max_tf]
+                 #   Indexer.word_tf_idf[term][document.tweet_id] = [document_dictionary[term] / max_tf]
 
                 if term not in self.postingDict:
                     # check if term was already added as upper (and should now be lower)
@@ -170,15 +168,18 @@ class Indexer:
         if len(self.postingDict) > 0:
             # self.posting_copy_for_saving = self.postingDict
             self.posting_save()
-            self.postings_factory.merge()
+            self.postings_factory.merge(self.docs_counter)
             merger = Merger(self.posting_dir_path+"\\docs", "pkl")
             merger.merge("docs_index")
         print(time.time())
-        for term in self.word_tf_idf:  # TODO: Need to think of speed up - taking too long
-            posting_file, posting_file_name = self.postings_factory.get_posting_file_and_path(term)
-            # calculate idf for each word
-            term_df = posting_file[term]["df"]
-            term_idf = math.log10(self.docs_counter / term_df)
-            for term_doc in self.word_tf_idf[term]:
-                self.word_tf_idf[term][term_doc].append(term_idf * self.word_tf_idf[term][term_doc][0])
-                self.docs_data[term_doc][0] += math.pow(self.word_tf_idf[term][term_doc][1], 2)
+
+        # docs_file = self.postings_factory.get_docs_file()
+        # for term in self.word_tf_idf:  # TODO: Need to think of speed up - taking too long
+        #     posting_file, posting_file_name = self.postings_factory.get_posting_file_and_path(term)
+        #     # calculate idf for each word
+        #     term_df = posting_file[term]["df"]
+        #     term_idf = math.log10(self.docs_counter / term_df)
+        #     for term_doc in self.word_tf_idf[term]:
+        #         self.word_tf_idf[term][term_doc].append(term_idf * self.word_tf_idf[term][term_doc][0])
+        #         docs_file[term_doc][0] += math.pow(self.word_tf_idf[term][term_doc][1], 2)
+        # self.postings_factory.save_docs_file(docs_file)

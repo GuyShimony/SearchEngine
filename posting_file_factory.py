@@ -54,6 +54,12 @@ class PostingFilesFactory:
 
         return utils.load_obj(self.get_file_path(word)), self.get_file_path(word)
 
+    def get_docs_file(self):
+        return utils.load_obj(f"{self.posting_dir_path}\\docs\\postingdocs_index")
+
+    def save_docs_file(self,file):
+        return utils.save_obj(file, f"{self.posting_dir_path}\\docs\\postingdocs_index")
+
     def create_postings_dirs(self):
 
         # if not in dict --> utils.save_obj({}, f"{self.posting_dir_path}\\postingSPECIALS")

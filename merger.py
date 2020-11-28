@@ -25,8 +25,8 @@ class Merger:
         while self.queue.qsize() > 1:
             self.p1 = self.queue.get().replace("." + self.file_type, "")
             self.p2 = self.queue.get().replace("." + self.file_type, "")
-            posting_1 = utils.load_obj(f"{self.path_to_files}\\{self.p1}")
-            posting_2 = utils.load_obj(f"{self.path_to_files}\\{self.p2}")
+            # posting_1 = utils.load_obj(f"{self.path_to_files}\\{self.p1}")
+            # posting_2 = utils.load_obj(f"{self.path_to_files}\\{self.p2}")
             # merge the 2 dictionaries
             posting_3 = {**posting_1, **posting_2}
             for key, value in posting_3.items():
@@ -37,15 +37,15 @@ class Merger:
                         #posting_3[key]['df'] = posting_2[key]['df'] + posting_1[key]['df']
                         posting_3[key]['df'] = value['df'] + posting_1[key]['df']
 
-            combine = f"{self.p1}_{self.p2}"
-            # if combine[-1:] == "0":  # Use to prevent to long file name. Every 10 files reset the name
-            #     combine = f"{self.files_name_pattern}0"
-            utils.save_obj(posting_3, f"{self.path_to_files}\\{combine}")
-            os.remove(f"{self.path_to_files}\\{self.p1}.{self.file_type}")
-            os.remove(f"{self.path_to_files}\\{self.p2}.{self.file_type}")
-            os.rename(f"{self.path_to_files}\\{combine}.{self.file_type}",
-                      f"{self.path_to_files}\\{self.p1}.{self.file_type}")
-            self.queue.put(self.p1)
+            # combine = f"{self.p1}_{self.p2}"
+            # # if combine[-1:] == "0":  # Use to prevent to long file name. Every 10 files reset the name
+            # #     combine = f"{self.files_name_pattern}0"
+            # utils.save_obj(posting_3, f"{self.path_to_files}\\{combine}")
+            # os.remove(f"{self.path_to_files}\\{self.p1}.{self.file_type}")
+            # os.remove(f"{self.path_to_files}\\{self.p2}.{self.file_type}")
+            # os.rename(f"{self.path_to_files}\\{combine}.{self.file_type}",
+            #           f"{self.path_to_files}\\{self.p1}.{self.file_type}")
+            # self.queue.put(self.p1)
 
         final_name = self.queue.get().replace("." + self.file_type, "") # empty the queue from last file name
         #  Change the name of the last file to 'a.pkl' instead of 'a0_a1_.._ak'
