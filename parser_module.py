@@ -124,9 +124,9 @@ class Parse:
                         text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
 
             except KeyError:
-                if word in self.coronavirus_dictionary:
+                if word.lower() in self.coronavirus_dictionary:
                     text_tokens_without_stopwords[self.coronavirus_dictionary[word.lower()]] = 1
-                elif word in self.USA_dictionary:
+                elif word.lower() in self.USA_dictionary:
                     text_tokens_without_stopwords[self.USA_dictionary[word.lower()]] = 1
                 else:
                     text_tokens_without_stopwords[word] = 1

@@ -78,7 +78,7 @@ class Ranker:
 
     @staticmethod
     def retrieve_top_k(sorted_relevant_doc, k=1,total_doc_scores={}):
-        """
+        """  #TODO: remove all total_doc_scores from parameters
         return a list of top K tweets based on their ranking from highest to lowest
         :param sorted_relevant_doc: list of all candidates docs.
         :param k: Number of top document to return
