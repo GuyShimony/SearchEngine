@@ -1,15 +1,11 @@
-import concurrent.futures
 import time
 import utils
 import os
 from posting_file_factory import PostingFilesFactory
 import string
-import math
-from merger import Merger
 
 
 class Indexer:
-    # word_tf_idf = {}
 
     def __init__(self, config):
 
@@ -174,5 +170,4 @@ class Indexer:
         print("Starting merge")
         self.postings_factory.merge(corpus_size)
 
-        print(time.time())
 

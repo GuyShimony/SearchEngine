@@ -13,7 +13,7 @@ conifg = None
 number_of_documents = 0
 
 
-def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None, num_docs_to_retrieve=None):
+def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, queries=None, num_docs_to_retrieve=None):
     """
 
     :return:
@@ -26,11 +26,12 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, queries=None,
     config.corpusPath = corpus_path
     config.set_output_path(output_path)
     config.toStem = stemming
+    config.toLemm = lemma
     if os.path.exists(config.get_output_path()): #TODO: check if to delete
         shutil.rmtree(config.get_output_path())
 
     r = ReadFile(corpus_path=config.get__corpusPath())
-    p = Parse(config.toStem)
+    p = Parse(config.toStem, config.toLemm)
     indexer = Indexer(config)
 
     # executer = indexer.get_pool_executer()

@@ -94,6 +94,7 @@ class PostingFilesFactory:
                     word_data_dict[word] = posting_dict[word]
             if word_data_dict:
                 utils.append(word_data_dict, f"{self.posting_paths[char_path]['path']}\\{name}")
+                # utils.save_obj(word_data_dict, f"{self.posting_paths[char_path]['path']}\\{name}{count}")
 
     # def merge_file_group(self, group_id):
     #     for index in range(self.posting_files_path_counter[group_id]):

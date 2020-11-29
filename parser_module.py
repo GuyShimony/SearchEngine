@@ -12,7 +12,7 @@ from document import Document
 
 class Parse:
 
-    def __init__(self, stemming=True, lemmatization = True):
+    def __init__(self, stemming=False, lemmatization =False):
         self.stop_words = stopwords.words('english')  # + [",", ";", "`", "/", "~", "\\", "+", '"', "'", "-", "”",
         #  "(", ")", "[", "]", "{", "}","•"]
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
