@@ -1,4 +1,3 @@
-import time
 import utils
 import os
 from posting_file_factory import PostingFilesFactory
@@ -165,6 +164,7 @@ class Indexer:
                 break
 
             current_dict = {**current_dict, **next_dict}
+
         utils.save_obj(current_dict, f"{self.posting_dir_path}\\docs\\docs_index")
         self.docs_data.clear()
         print("Starting merge")

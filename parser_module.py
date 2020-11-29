@@ -2,11 +2,10 @@ import re
 import string
 
 from nltk.corpus import stopwords
-import spacy
 from nltk.stem.snowball import SnowballStemmer
 from nltk.tokenize import WhitespaceTokenizer
 from nltk.tokenize.regexp import RegexpTokenizer
-
+import spacy
 from document import Document
 
 
@@ -19,7 +18,7 @@ class Parse:
         self.punctuation_dict = dict(
             (ord(char), None) for char in string.punctuation.replace("%", "").replace("@", "").replace("#", ""))
         self.punc = string.punctuation.replace("%", "").replace("@", ""). \
-                        replace("#", "").replace("*", "") + "”" + "“" + "•"
+                        replace("#", "").replace("*", "") + "”" + "“" + "•" + "\n"
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.stemmer = SnowballStemmer("english")
@@ -134,7 +133,7 @@ class Parse:
                 else:
                     text_tokens_without_stopwords[word] = 1
 
-        # Second step - apply all the tokenizing rules on the text # TODO: Remove unicode of bold text
+        # Second step - apply all the tokenizing rules on the text #
         special_text_tokens = self.special_cases_tokenizer(text)  # TODO: # parser doe not support #S**Z**A**
         number_tokens, irregulars = self.numbers_tokenizer(text)
         date_tokens = self.date_tokenizer(text)
@@ -164,8 +163,15 @@ class Parse:
         # Fifth step - add all the newly generated tokens to the dict
         for word in rule_generated_tokens:
             try:
-                if len(word) == 1:  # Ignore single letters words
+                word = word.strip("\n")
+                if "\n" in word:
+                    rule_generated_tokens += [w for w in word.split("\n")]
                     continue
+
+                if not word or len(word) == 1 or (len(word) == 19 and word.isdigit()):
+                    # Ignore single letters words and tweet_ids
+                    continue
+
                 if word in self.coronavirus_dictionary:
                     text_tokens_without_stopwords[self.coronavirus_dictionary[word.lower()]] += 1
                 elif word in self.USA_dictionary:
@@ -331,7 +337,7 @@ class Parse:
                            "[^a-zA-Z\s][0-9]+\s[pP]ercent[age]*[s]*\s*[a-zA-Z]*|"
 
         return re.findall("\d+%|[0-9]+[0-9]*\s+\d+/\d+|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|"
-                          "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words + "[0-9]+[\s]*[a-zA-Z]*"
+                          "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words + "[0-9]+[\s]+[a-zA-Z]*"
                           , text), \
                [words for segment in
                 re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words + "[0-9]+[\s]*[a-zA-Z]*", text) for
@@ -394,6 +400,9 @@ class Parse:
         and mean 123000.
         The numbers will be saved as 123K or 1.23M (for millions) etc.
         """
+        if len(number_word) == 20:
+            return
+
         word_after = ""
         word_last = ""
         # number_word, word_after, word_last = number_word.split(" ") if len(number_word.split(" ")) >= 2 else (number_word, "")

@@ -1,7 +1,7 @@
 import math
-import os
-import utils
 from queue import Queue
+
+import utils
 
 
 class Merger:
@@ -47,7 +47,7 @@ class Merger:
             utils.save_obj(file_dict, f"{self.path_to_files}\\{self.files_name}")
 
     def collect_files(self):
-        #for file in sorted(os.listdir(self.path_to_files)):
+        # for file in sorted(os.listdir(self.path_to_files)):
         file_handle = utils.open_file(f"{self.path_to_files}\\{self.files_name}")
         obj = utils.get_next(file_handle)
         while obj:
@@ -67,3 +67,4 @@ class Merger:
             merged_dict[key]['idf'] = term_idf
             # calculate doc's total weight
             self.docs_file[doc_id][0] += 0.6 * (term_tf / max_tf) * term_idf + 0.4 * (term_tf / doc_len) * term_idf
+            self.docs_file[doc_id][0] = round(self.docs_file[doc_id][0], 3)

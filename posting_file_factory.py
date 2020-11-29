@@ -1,13 +1,9 @@
+import os
 import string
-import time
+from queue import Queue
 
 import utils
-from threading import Thread
-import os
-from queue import Queue
 from merger import Merger
-from concurrent.futures import ThreadPoolExecutor
-from multiprocessing import Pool
 
 
 class PostingFilesFactory:
@@ -21,32 +17,32 @@ class PostingFilesFactory:
             self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
             PostingFilesFactory.instance = self
 
-            self.posting_paths = {
-                '#': {"path": f"{self.posting_dir_path}\\Dir_#", "name": "#"},
-                '@': {"path": f"{self.posting_dir_path}\\Dir_@", "name": "@"},
-                '0': {"path": f"{self.posting_dir_path}\\Dir_num", "name": "NUM"},
-                '1': {"path": f"{self.posting_dir_path}\\Dir_num", "name": "NUM"},
-                '2': {"path": f"{self.posting_dir_path}\\Dir_num", "name": "NUM"},
-                '3': {"path": f"{self.posting_dir_path}\\Dir_num", "name": "NUM"},
-                '4': {"path": f"{self.posting_dir_path}\\Dir_num", "name": "NUM"},
-                '5': {"path": f"{self.posting_dir_path}\\Dir_num", "name": "NUM"},
-                '6': {"path": f"{self.posting_dir_path}\\Dir_num", "name": "NUM"},
-                '7': {"path": f"{self.posting_dir_path}\\Dir_num", "name": "NUM"},
-                '8': {"path": f"{self.posting_dir_path}\\Dir_num", "name": "NUM"},
-                '9': {"path": f"{self.posting_dir_path}\\Dir_num", "name": "NUM"},
-                'q': {"path": f"{self.posting_dir_path}\\Dir_qxz", "name": "QXZ"},
-                'x': {"path": f"{self.posting_dir_path}\\Dir_qxz", "name": "QXZ"},
-                'z': {"path": f"{self.posting_dir_path}\\Dir_qxz", "name": "QXZ"},
-                'SPECIALS': {"path": f"{self.posting_dir_path}\\Dir_specials", "name": "SPECIALS"}
+            self.postings_data = {
+                '#': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_#", "name": "#"},
+                '@': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_@", "name": "@"},
+                '0': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_0", "name": "0"},
+                '1': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_1", "name": "1"},
+                '2': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_2", "name": "2"},
+                '3': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_3", "name": "3"},
+                '4': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_4", "name": "4"},
+                '5': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_5", "name": "5"},
+                '6': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_6", "name": "6"},
+                '7': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_7", "name": "7"},
+                '8': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_8", "name": "8"},
+                '9': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_9", "name": "9"},
+                'q': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_qxz", "name": "QXZ"},
+                'x': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_qxz", "name": "QXZ"},
+                'z': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_qxz", "name": "QXZ"},
+                'SPECIALS': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_specials", "name": "SPECIALS"}
             }
             self.create_postings_dirs()
-            self.posting_files_path_counter = {}
+            #self.posting_files_path_counter = {}
             self.queue = Queue()
 
     def get_file_path(self, word):
         word = word.lower()
-        if word[0] in self.posting_paths:
-            return f"{self.posting_paths[word[0]]['path']}\\{self.posting_paths[word[0]]['name']}"
+        if word[0] in self.postings_data:
+            return f"{self.postings_data[word[0]]['path']}\\{self.postings_data[word[0]]['name']}"
         else:
             return f"{self.posting_dir_path}\\Dir_specials\\SPECIALS"
 
@@ -64,60 +60,39 @@ class PostingFilesFactory:
 
         # if not in dict --> utils.save_obj({}, f"{self.posting_dir_path}\\postingSPECIALS")
         for letter in string.ascii_lowercase:
-            if self.posting_paths.get(letter) is None:
-                self.posting_paths[letter] = {"path": f"{self.posting_dir_path}\\Dir_{letter}",
+            if self.postings_data.get(letter) is None:
+                self.postings_data[letter] = {"counter": 0,
+                                              "path": f"{self.posting_dir_path}\\Dir_{letter}",
                                               "name": letter}
 
-        self.posting_paths["SPECIALS"] = {"path": f"{self.posting_dir_path}\\Dir_specials",
-                                          "name": "SPECIALS"}
-        for key in self.posting_paths:
-            if not os.path.exists(self.posting_paths[key]['path']):
-                os.makedirs(self.posting_paths[key]['path'])
+        for key in self.postings_data:
+            if not os.path.exists(self.postings_data[key]['path']):
+                os.makedirs(self.postings_data[key]['path'])
 
     def create_posting_files(self, posting_dict, letter_word_mapping):
         for char in letter_word_mapping:
             word_data_dict = {}
-            if self.posting_paths.get(char) is None:
+            if self.postings_data.get(char) is None:
                 name = "SPECIALS"
                 char_path = "SPECIALS"
             else:
-                name = self.posting_paths[char]['name']
+                name = self.postings_data[char]['name']
                 char_path = char
-            try:
-                count = self.posting_files_path_counter[name]
-            except KeyError:
-                self.posting_files_path_counter[name] = 0
-                count = self.posting_files_path_counter[name]
-            finally:
-                self.posting_files_path_counter[name] += 1
-                for word in letter_word_mapping[char]:
-                    word_data_dict[word] = posting_dict[word]
-            if word_data_dict:
-                utils.append(word_data_dict, f"{self.posting_paths[char_path]['path']}\\{name}")
-                # utils.save_obj(word_data_dict, f"{self.posting_paths[char_path]['path']}\\{name}{count}")
+            # try:
+            #     # count = self.posting_files_path_counter[name]
+            #     # count = self.postings_data[name]['counter']
+            # except KeyError:
+            #     # self.posting_files_path_counter[name] = 0
+            #     # self.postings_data[name]['counter'] = 0
+            #     # count = self.postings_data[name]['counter']
+            # finally:
+                # self.postings_data[name]['counter'] += 1
+            for word in letter_word_mapping[char]:
+                word_data_dict[word] = posting_dict[word]
 
-    # def merge_file_group(self, group_id):
-    #     for index in range(self.posting_files_path_counter[group_id]):
-    #         self.queue.put(group_id + f"{index}")
-    #     while self.queue.qsize() > 1:
-    #         filename_1 = self.queue.get()
-    #         filename_2 = self.queue.get()
-    #         posting_1 = utils.load_obj(f"{self.posting_dir_path}\\{filename_1}")
-    #         posting_2 = utils.load_obj(f"{self.posting_dir_path}\\{filename_2}")
-    #         # merge the 2 dictionaries
-    #         posting_3 = {**posting_1, **posting_2}
-    #         for key, value in posting_3.items():
-    #             if key in posting_1 and key in posting_2:  # if 2 keys were similar 3 got 2's keys
-    #                 posting_3[key] = value + posting_1[key]
-    #         if self.queue.qsize() == 1:
-    #             filename_3 = group_id
-    #         else:
-    #             filename_3 = filename_1 + filename_2
-    #         utils.save_obj(posting_3, f"{self.posting_dir_path}\\{filename_3}")
-    #         os.remove(f"{self.posting_dir_path}\\{filename_1}.pkl")
-    #         os.remove(f"{self.posting_dir_path}\\{filename_2}.pkl")
-    #         self.queue.put(filename_3)
-    #     self.queue.get()  # empty the queue from last file name
+            if word_data_dict:
+                utils.append(word_data_dict, f"{self.postings_data[char_path]['path']}\\{name}")
+                # utils.save_obj(word_data_dict, f"{self.posting_paths[char_path]['path']}\\{name}{count}")
 
     @staticmethod
     def get_instance(config):
@@ -130,11 +105,11 @@ class PostingFilesFactory:
         The function will merge all the data in the posting files using the BSBI algorithm
         """
         docs_file = self.get_docs_file()
-        for key in self.posting_paths:
-            if os.listdir(self.posting_paths[key]['path']):  # directory is not empty
-                merger = Merger(self.posting_paths[key]['path'], "pkl", docs_file, corpus_size)
-                merger.merge(self.posting_paths[key]['name'])
+        for key in self.postings_data:
+            if os.listdir(self.postings_data[key]['path']):  # directory is not empty
+                merger = Merger(self.postings_data[key]['path'], "pkl", docs_file, corpus_size)
+                merger.merge(self.postings_data[key]['name'])
 
-        #  The merger udpates the docs data. After the merge of all the letters - all the documents data
+        #  The merger updates the docs data. After the merge of all the letters - all the documents data
         #  Is updated and need to be saved on disk to reduce the memory load
         utils.save_obj(docs_file, f"{self.posting_dir_path}\\docs\\docs_index")
