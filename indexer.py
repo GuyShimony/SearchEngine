@@ -7,8 +7,9 @@ import string
 import math
 from merger import Merger
 
+
 class Indexer:
-   # word_tf_idf = {}
+    # word_tf_idf = {}
 
     def __init__(self, config):
 
@@ -16,7 +17,7 @@ class Indexer:
         self.inverted_idx = {}
         self.postingDict = {}
         self.config = config
-        self.max_documents = 100000
+        self.max_documents = 50000
         self.docs_counter = 0
         self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
         if not os.path.exists(self.posting_dir_path):
@@ -25,7 +26,6 @@ class Indexer:
             os.makedirs(self.posting_dir_path + "\\docs")
         self.postings_factory = PostingFilesFactory.get_instance(config)
         self.lower_case_words = {}
-        self.letters_appeared = []
 
     def add_new_doc(self, document):
         """
@@ -53,7 +53,7 @@ class Indexer:
             self.docs_counter = 0
             self.posting_save()
             self.postingDict.clear()
-         #   self.docs_data.clear()
+            self.docs_data.clear()
 
         self.docs_data[document.tweet_id] = [0, max_tf, document.doc_length, terms_with_one_occurrence,
                                              number_of_curses]
@@ -109,20 +109,17 @@ class Indexer:
 
     def posting_save(self):
         terms_for_saving = {}
-        # for term in self.posting_copy_for_saving:
         for term in self.postingDict:
             lower_term = term.lower()
             if lower_term[0] in terms_for_saving:
                 terms_for_saving[lower_term[0]].append(term)
             else:
-                #self.letters_appeared.append(lower_term[0])
                 terms_for_saving[lower_term[0]] = [term]
 
         # self.postings_factory.create_posting_files(self.posting_copy_for_saving, terms_for_saving)
         self.postings_factory.create_posting_files(self.postingDict, terms_for_saving)
-       # utils.append(self.docs_data, f"{self.posting_dir_path}\\docs\\docs_index")
+        utils.append(self.docs_data, f"{self.posting_dir_path}\\docs\\docs_index")
         # self.executor.submit(self.postings_factory.create_posting_files, self.posting_copy_for_saving, terms_for_saving)
-
 
     def capital_letters(self, document_dictionary):
         """
@@ -134,7 +131,7 @@ class Indexer:
         for term in document_dictionary:
             if not term:
                 continue
-            if term[0] not in string.ascii_letters:  # TODO: Check where the "" comes from
+            if term[0] not in string.ascii_letters:
                 document_dictionary_new[term] = document_dictionary[term]
                 continue
             if term[0].islower():
@@ -152,15 +149,28 @@ class Indexer:
         return document_dictionary_new
 
     def cleanup(self, corpus_size):
-        utils.save_obj(self.docs_data, f"{self.posting_dir_path}\\docs\\docs_index")
-
+        print("Finished index in")
         # insert each word's tf-idf value for each document --> {doc.id: [term tf, term tf_idf for doc]}
         if len(self.postingDict) > 0:
             # self.posting_copy_for_saving = self.postingDict
             self.posting_save()
-            self.postings_factory.merge(corpus_size)
+            utils.save_obj(self.inverted_idx, "inverted_idx")
             # merger = Merger(self.posting_dir_path+"\\docs", "pkl", self.docs_data)
             # merger.merge("docs_index")
-        print(time.time())
+
+        self.inverted_idx.clear()
+        f = utils.open_file(f"{self.posting_dir_path}\\docs\\docs_index")
+        current_dict = utils.get_next(f)
+        while True:
+            next_dict = utils.get_next(f)
+            if not next_dict:
+                break
+
+            current_dict = {**current_dict, **next_dict}
+        utils.save_obj(current_dict, f"{self.posting_dir_path}\\docs\\docs_index")
         self.docs_data.clear()
+        print("Starting merge")
+        self.postings_factory.merge(corpus_size)
+
+        print(time.time())
 
