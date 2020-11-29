@@ -1,17 +1,18 @@
+import re
+import string
+
 from nltk.corpus import stopwords
-from nltk.corpus import words
-from document import Document
-from nltk.tokenize.regexp import RegexpTokenizer
-from nltk.tokenize import WhitespaceTokenizer
-from nltk.tokenize import TweetTokenizer
-import re, spacy, string
+import spacy
 from nltk.stem.snowball import SnowballStemmer
-from emo_unicode import *
+from nltk.tokenize import WhitespaceTokenizer
+from nltk.tokenize.regexp import RegexpTokenizer
+
+from document import Document
 
 
 class Parse:
 
-    def __init__(self, stemming=False):
+    def __init__(self, stemming=True, lemmatization = True):
         self.stop_words = stopwords.words('english')  # + [",", ";", "`", "/", "~", "\\", "+", '"', "'", "-", "”",
         #  "(", ")", "[", "]", "{", "}","•"]
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
@@ -22,6 +23,7 @@ class Parse:
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.stemmer = SnowballStemmer("english")
+        self.nlp = spacy.load('en_core_web_sm')
         self.ascii_words = set(string.printable)
         self.sign_dictionary = {
             "#": self.hashtag_parser,
@@ -44,6 +46,7 @@ class Parse:
         self.entity_dictionary = {}
         self.tweet_id = None
         self.stem = stemming
+        self.lemma = lemmatization
         self.coronavirus_dictionary = {
             #  Custom coronavirus rule -> Switch any coronavirus term form to 'coronavirus'
             #  Used to better IR coronavirus related docs
@@ -76,7 +79,7 @@ class Parse:
         """
 
         # added rules: 1. coronavirus, 2. usa, 3. dates, 4. number+identifier, 5. curses into *, 6. emojis,
-        # 7. word with / (hello/world -> hello world), 8. remove bold words
+        # 7. word with / (hello/world -> hello world), 8. remove bold words, 9. lemmatization
 
         if text is None or text == '[]':
             return {}  # Return an empty dict
@@ -197,7 +200,7 @@ class Parse:
                     text_tokens_without_stopwords[entity] = text_tokens_without_stopwords[entity] + 1
                 except KeyError:
                     text_tokens_without_stopwords[entity] = 1
-
+        # stem or lemmatization (not both, stem gets priority)
         if self.stem:
             text_tokens_without_stopwords_stemmed = {}
             for word in text_tokens_without_stopwords:
@@ -207,6 +210,18 @@ class Parse:
                 else:
                     text_tokens_without_stopwords_stemmed[word] += 1
             return text_tokens_without_stopwords_stemmed
+        elif self.lemma:
+            lemmatized_word = ''
+            text_tokens_without_stopwords_lemma = {}
+            for word in text_tokens_without_stopwords:
+                word_sentence = self.nlp(word)
+                for w in word_sentence:
+                    lemmatized_word = " ".join([w.lemma_ for w in word_sentence])
+                if lemmatized_word not in text_tokens_without_stopwords_lemma:
+                    text_tokens_without_stopwords_lemma[lemmatized_word] = 1
+                else:
+                    text_tokens_without_stopwords_lemma[lemmatized_word] += 1
+            return text_tokens_without_stopwords_lemma
 
         return text_tokens_without_stopwords
 
@@ -233,7 +248,7 @@ class Parse:
         if url:
             urls_index = [m.start() for m in re.finditer('http', url)]  # Find all start index of the http word
             urls = [url[:i - 1] if i - 1 > 0 else url[:i] for i in urls_index] + [url[urls_index[-1]:]]  # Match all url
-            url = "".join(w + " " for w in urls)  # Join on all urls with spaces as a seperator
+            url = "".join(w + " " for w in urls)  # Join on all urls with spaces as a separator
             url_dict = self.parse_sentence(url)
         else:
             url_dict = {}
