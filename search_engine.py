@@ -13,7 +13,8 @@ conifg = None
 number_of_documents = 0
 
 
-def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, queries=None, num_docs_to_retrieve=None):
+def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, queries=None,
+               num_docs_to_retrieve=None):
     """
 
     :return:
@@ -27,7 +28,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, 
     config.set_output_path(output_path)
     config.toStem = stemming
     config.toLemm = lemma
-    if os.path.exists(config.get_output_path()): #TODO: check if to delete
+    if os.path.exists(config.get_output_path()):  # TODO: check if to delete
         shutil.rmtree(config.get_output_path())
 
     r = ReadFile(corpus_path=config.get__corpusPath())
@@ -37,7 +38,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, 
     # executer = indexer.get_pool_executer()
 
     documents_list = r.read_file(file_name='samples')
-    #documents_list = r.read_file(file_name='Data')
+    # documents_list = r.read_file(file_name='Data')
     # Iterate over every document in the file
     start = time()
     print(start)
@@ -47,10 +48,11 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, 
         number_of_documents += 1
         # index the document data
         indexer.add_new_doc(parsed_document)
+    documents_list.clear()  # Finished parsing and indexing all files
     indexer.cleanup(number_of_documents)
     print('Finished parsing and indexing. Starting to export files')
     print(time() - start)
-    #utils.save_obj(indexer.inverted_idx, "inverted_idx")
+    # utils.save_obj(indexer.inverted_idx, "inverted_idx")
 
 
 # utils.save_obj(indexer.docs_data, "docs_weights")
@@ -77,8 +79,8 @@ def search_and_rank_query(query, inverted_index, k, docs_data=None):
     # docs_data = load_docs_data()
     searcher = Searcher(inverted_index, config, docs_data)
     relevant_docs, query_weight = searcher.relevant_docs_from_posting(query_as_list)
-    ranked_docs,doc_scores = searcher.ranker.rank_relevant_doc(relevant_docs, query_weight, number_of_documents)
-    return searcher.ranker.retrieve_top_k(ranked_docs, k,doc_scores)
+    ranked_docs, doc_scores = searcher.ranker.rank_relevant_doc(relevant_docs, query_weight, number_of_documents)
+    return searcher.ranker.retrieve_top_k(ranked_docs, k, doc_scores)
 
 
 def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
