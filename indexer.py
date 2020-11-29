@@ -135,13 +135,15 @@ class Indexer:
                 document_dictionary_new[term] = document_dictionary[term]
                 continue
             if term[0].islower():
-                if term not in self.lower_case_words:
-                    self.lower_case_words[term] = 0
+                # if term not in self.lower_case_words:
+                #     self.lower_case_words[term] = 0
                 document_dictionary_new[term] = document_dictionary[term]
             else:  # term is upper case
                 lower_term = term.lower()
-                if lower_term in self.lower_case_words:  # term was seen in small letters
+                if lower_term in self.inverted_idx:
                     document_dictionary_new[lower_term] = document_dictionary[term]
+                # if lower_term in self.lower_case_words:  # term was seen in small letters
+                #     document_dictionary_new[lower_term] = document_dictionary[term]
                 else:  # giving it a chance as upper case
                     document_dictionary_new[term.upper()] = document_dictionary[term]
         if not document_dictionary_new:
