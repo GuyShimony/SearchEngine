@@ -105,14 +105,14 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve):
     k = num_docs_to_retrieve
     inverted_index = load_index()
     docs_data = load_docs_data()
-
+    query_num = 0
     for query in queries:
         if query != '\n':
+            query_num += 1
             if re.search(r'\d', query):  # remove number query and "." from query if exists
-                query_num = re.findall("\d+", query)[0]
+                #query_num = re.findall("\d+", query)[0]
                 query = query.replace(re.findall("\d.[\s]*", query)[0], "")
-            else:
-                query_num = 0
+
             # print("Starting to search query: {0}".format(query))
             for doc_tuple in search_and_rank_query(query, inverted_index, k, docs_data):
                 result = result.append({"Query_num": query_num, "Tweet_id": doc_tuple[0], "Rank": doc_tuple[1]},
