@@ -47,7 +47,6 @@ class PostingFilesFactory:
             return f"{self.posting_dir_path}\\Dir_specials\\SPECIALS"
 
     def get_posting_file_and_path(self, word):
-
         return utils.load_obj(self.get_file_path(word)), self.get_file_path(word)
 
     def get_docs_file(self):
@@ -78,21 +77,11 @@ class PostingFilesFactory:
             else:
                 name = self.postings_data[char]['name']
                 char_path = char
-            # try:
-            #     # count = self.posting_files_path_counter[name]
-            #     # count = self.postings_data[name]['counter']
-            # except KeyError:
-            #     # self.posting_files_path_counter[name] = 0
-            #     # self.postings_data[name]['counter'] = 0
-            #     # count = self.postings_data[name]['counter']
-            # finally:
-                # self.postings_data[name]['counter'] += 1
             for word in letter_word_mapping[char]:
                 word_data_dict[word] = posting_dict[word]
 
             if word_data_dict:
                 utils.append(word_data_dict, f"{self.postings_data[char_path]['path']}\\{name}")
-                # utils.save_obj(word_data_dict, f"{self.posting_paths[char_path]['path']}\\{name}{count}")
 
     @staticmethod
     def get_instance(config):

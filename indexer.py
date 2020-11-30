@@ -12,7 +12,7 @@ class Indexer:
         self.inverted_idx = {}
         self.postingDict = {}
         self.config = config
-        self.max_documents = 50000
+        self.max_documents = 75000
         self.docs_counter = 0
         self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
         if not os.path.exists(self.posting_dir_path):
