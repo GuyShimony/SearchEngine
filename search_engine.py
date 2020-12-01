@@ -33,8 +33,12 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, 
     p = Parse(config.toStem, config.toLemm)
     indexer = Indexer(config)
 
-
-    documents_list = r.read_file(file_name='samples')
+    documents_list = []
+    for root, dirs, files in os.walk(corpus_path):
+        for file in files:
+            if file.endswith(".parquet"):
+                documents_list += r.read_file(file)
+    #documents_list = r.read_file(file_name='samples')
     #documents_list = r.read_file(file_name=config.get__corpusPath())
     # Iterate over every document in the file
     #start = time()

@@ -104,6 +104,7 @@ class Searcher:
                         relevant_docs[doc_id][7].append(term_df)
 
             except Exception as e:
-                print('term {} not found in posting'.format(term))
+                pass
+                #print('term {} not found in posting'.format(term))
 
         return relevant_docs, query_weight
