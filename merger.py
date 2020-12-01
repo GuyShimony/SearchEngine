@@ -30,11 +30,17 @@ class Merger:
             self.dict2 = self.queue.get()
             # merge the 2 dictionaries
             merged_dict = {**self.dict1, **self.dict2}
-            for key, value in merged_dict.items():
-                if key in self.dict1 and key in self.dict2:  # if 2 keys were similar 3 got 2's keys
-                    merged_dict[key]['docs'] = value['docs'] + self.dict1[key]['docs']
-                    merged_dict[key]['df'] = value['df'] + self.dict1[key]['df']
+            for key in set(self.dict1.keys()).intersection(set(self.dict2.keys())):
+                merged_dict[key]['docs'] = merged_dict[key]['docs'] + self.dict1[key]['docs']
+                merged_dict[key]['df'] = merged_dict[key]['df'] + self.dict1[key]['df']
                 self.calculate_doc_weight(merged_dict, key)
+
+            # for key, value in merged_dict.items(): # think about using set intersection
+            #     if key in self.dict1 and key in self.dict2:  # if 2 keys were similar 3 got 2's keys
+            #
+            #         merged_dict[key]['docs'] = value['docs'] + self.dict1[key]['docs']
+            #         merged_dict[key]['df'] = value['df'] + self.dict1[key]['df']
+            #     self.calculate_doc_weight(merged_dict, key)
 
             self.queue.put(merged_dict)
 

@@ -36,7 +36,6 @@ class PostingFilesFactory:
                 'SPECIALS': {"counter": 0, "path": f"{self.posting_dir_path}\\Dir_specials", "name": "SPECIALS"}
             }
             self.create_postings_dirs()
-            #self.posting_files_path_counter = {}
             self.queue = Queue()
 
     def get_file_path(self, word):

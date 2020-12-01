@@ -12,7 +12,7 @@ class Indexer:
         self.inverted_idx = {}
         self.postingDict = {}
         self.config = config
-        self.max_documents = 75000
+        self.max_documents = 80000
         self.docs_counter = 0
         self.posting_dir_path = self.config.get_output_path()  # Path for posting directory that was given at runtime
         if not os.path.exists(self.posting_dir_path):
@@ -48,7 +48,6 @@ class Indexer:
             self.docs_counter = 0
             self.posting_save()
             self.postingDict.clear()
-            self.docs_data.clear()
 
         self.docs_data[document.tweet_id] = [0, max_tf, document.doc_length, terms_with_one_occurrence,
                                              number_of_curses]
@@ -103,6 +102,12 @@ class Indexer:
                 print('problem with the following key {}'.format(term))
 
     def posting_save(self):
+        """
+        The function will sort all the words in a dictionary based on the first char.
+        For example: {'a': ['atom','array'], 'b'['bar']}.
+        It will used the mapping to save each term of the terms that were filed up until the function call
+        and save each term to the posting file.
+        """
         terms_for_saving = {}
         for term in self.postingDict:
             lower_term = term.lower()
@@ -111,10 +116,7 @@ class Indexer:
             else:
                 terms_for_saving[lower_term[0]] = [term]
 
-        # self.postings_factory.create_posting_files(self.posting_copy_for_saving, terms_for_saving)
         self.postings_factory.create_posting_files(self.postingDict, terms_for_saving)
-        utils.append(self.docs_data, f"{self.posting_dir_path}\\docs\\docs_index")
-        # self.executor.submit(self.postings_factory.create_posting_files, self.posting_copy_for_saving, terms_for_saving)
 
     def capital_letters(self, document_dictionary):
         """
@@ -130,15 +132,12 @@ class Indexer:
                 document_dictionary_new[term] = document_dictionary[term]
                 continue
             if term[0].islower():
-                # if term not in self.lower_case_words:
-                #     self.lower_case_words[term] = 0
+
                 document_dictionary_new[term] = document_dictionary[term]
             else:  # term is upper case
                 lower_term = term.lower()
                 if lower_term in self.inverted_idx:
                     document_dictionary_new[lower_term] = document_dictionary[term]
-                # if lower_term in self.lower_case_words:  # term was seen in small letters
-                #     document_dictionary_new[lower_term] = document_dictionary[term]
                 else:  # giving it a chance as upper case
                     document_dictionary_new[term.upper()] = document_dictionary[term]
         if not document_dictionary_new:
@@ -146,28 +145,21 @@ class Indexer:
         return document_dictionary_new
 
     def cleanup(self, corpus_size):
-        print("Finished index in")
+        """
+        The function will be responsible to free up the memory of all objects
+        created by the indexer and save up the last docs that were not saved in any terms
+        """
+        # print("Finished index in")
         # insert each word's tf-idf value for each document --> {doc.id: [term tf, term tf_idf for doc]}
         if len(self.postingDict) > 0:
-            # self.posting_copy_for_saving = self.postingDict
             self.posting_save()
-            utils.save_obj(self.inverted_idx, "inverted_idx")
-            # merger = Merger(self.posting_dir_path+"\\docs", "pkl", self.docs_data)
-            # merger.merge("docs_index")
 
+        utils.save_obj(self.inverted_idx, f"{self.posting_dir_path}\\inverted_idx")
         self.inverted_idx.clear()
-        f = utils.open_file(f"{self.posting_dir_path}\\docs\\docs_index")
-        current_dict = utils.get_next(f)
-        while True:
-            next_dict = utils.get_next(f)
-            if not next_dict:
-                break
 
-            current_dict = {**current_dict, **next_dict}
-
-        utils.save_obj(current_dict, f"{self.posting_dir_path}\\docs\\docs_index")
+        utils.save_obj(self.docs_data, f"{self.posting_dir_path}\\docs\\docs_index")
         self.docs_data.clear()
-        print("Starting merge")
+
         self.postings_factory.merge(corpus_size)
 
 

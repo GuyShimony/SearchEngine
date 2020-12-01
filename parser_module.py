@@ -5,15 +5,14 @@ from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 from nltk.tokenize import WhitespaceTokenizer
 from nltk.tokenize.regexp import RegexpTokenizer
-import spacy
+#import spacy
 from document import Document
 
 
 class Parse:
 
     def __init__(self, stemming=False, lemmatization =False):
-        self.stop_words = stopwords.words('english')  # + [",", ";", "`", "/", "~", "\\", "+", '"', "'", "-", "”",
-        #  "(", ")", "[", "]", "{", "}","•"]
+        self.stop_words = stopwords.words('english')
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
         self.punctuation_dict = dict(
             (ord(char), None) for char in string.punctuation.replace("%", "").replace("@", "").replace("#", ""))
@@ -22,7 +21,7 @@ class Parse:
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.stemmer = SnowballStemmer("english")
-        self.nlp = spacy.load('en_core_web_sm')
+ #       self.nlp = spacy.load('en_core_web_sm')
         self.ascii_words = set(string.printable)
         self.sign_dictionary = {
             "#": self.hashtag_parser,
@@ -340,7 +339,7 @@ class Parse:
                           "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words + "[0-9]+[\s]+[a-zA-Z]*"
                           , text), \
                [words for segment in
-                re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words + "[0-9]+[\s]*[a-zA-Z]*", text) for
+                re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words, text) for
                 words in segment.split()]
 
     ######## RULE BASED PARSER FUNCTIONS #############

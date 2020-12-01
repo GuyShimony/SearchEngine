@@ -1,8 +1,5 @@
 import pickle
 
-import json
-
-
 def save_obj(obj, name):
     """
     This function save an object as a pickle.
@@ -61,3 +58,11 @@ def get_next(file_handle):
         return pickle.load(file_handle)
     except EOFError:
         return None
+
+def load_inverted_index(name):
+    """
+    The function will get the path for the inverted index
+    and will return the inverted idx object as a dictionary.
+    """
+    print('Load inverted index')
+    return load_obj(f"{name}\\inverted_idx")

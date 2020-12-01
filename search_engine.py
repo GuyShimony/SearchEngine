@@ -35,10 +35,9 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, 
     p = Parse(config.toStem, config.toLemm)
     indexer = Indexer(config)
 
-    # executer = indexer.get_pool_executer()
 
     # documents_list = r.read_file(file_name='samples')
-    documents_list = r.read_file(file_name='Data')
+    documents_list = r.read_file(file_name=config.get__corpusPath())
     # Iterate over every document in the file
     start = time()
     print(start)
@@ -55,13 +54,12 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, 
     # utils.save_obj(indexer.inverted_idx, "inverted_idx")
 
 
-# utils.save_obj(indexer.docs_data, "docs_weights")
-# utils.save_obj(indexer.postingDict, "posting")
 
 
 def load_index():
+    global config
     print('Load inverted index')
-    inverted_index = utils.load_obj("inverted_idx")
+    inverted_index = utils.load_obj(f"{config.get_output_path()}\\inverted_idx")
     return inverted_index
 
 
@@ -76,7 +74,6 @@ def search_and_rank_query(query, inverted_index, k, docs_data=None):
     global config
     p = Parse(config.toStem)
     query_as_list = p.parse_sentence(query)
-    # docs_data = load_docs_data()
     searcher = Searcher(inverted_index, config, docs_data)
     relevant_docs, query_weight = searcher.relevant_docs_from_posting(query_as_list)
     ranked_docs, doc_scores = searcher.ranker.rank_relevant_doc(relevant_docs, query_weight, number_of_documents)

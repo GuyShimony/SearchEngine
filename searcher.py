@@ -1,10 +1,6 @@
 import math
-from posting_file_factory import PostingFilesFactory
-from indexer import Indexer
-from parser_module import Parse
 from ranker import Ranker
 import utils
-import string
 from posting_file_factory import PostingFilesFactory
 
 
@@ -33,8 +29,6 @@ class Searcher:
         """
         postings_factory = PostingFilesFactory.get_instance(self.config)
         relevant_docs = {}
-        posting_to_load = {}
-        postings_loaded = {}
         Ranker.query_terms = {}
         query = sorted(query)  #  Sorting the query by words helps not opening the same posting twice
         for term in query:
@@ -71,7 +65,6 @@ class Searcher:
             try:
 
                 #posting_file_name = postings_factory.get_file_path(term)
-                posting_file_name = self.inverted_index[term]["pointers"]
                 if current_posting != self.inverted_index[term]["pointers"]:
                     posting_doc = utils.load_obj(self.inverted_index[term]["pointers"])
                     current_posting = self.inverted_index[term]["pointers"]

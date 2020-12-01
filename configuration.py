@@ -23,6 +23,7 @@ class ConfigClass:
         Get the output for the posting files
         """
         return self.saveFilesWithStem if self.toStem else self.saveFilesWithoutStem
+        #return self.saveFilesWithStem if self.toStem else self.saveFilesWithoutStem
 
     def set_output_path(self, path):
         self.savedFileMainFolder = path

@@ -16,7 +16,8 @@ class ReadFile:
         :return: a dataframe contains tweets.
         """
         parquet_files = []
-        full_path = os.path.join(self.corpus_path, file_name)
+        # full_path = os.path.join(self.corpus_path, file_name)
+        full_path = self.corpus_path
 
         if ".parquet" in file_name:  # Load the single file given
             df = pd.read_parquet(full_path, engine="pyarrow")
