@@ -35,3 +35,5 @@ class ReadFile:
         return df.values.tolist()
 
 
+    def set_corpus_path(self, path):
+        self.corpus_path = path

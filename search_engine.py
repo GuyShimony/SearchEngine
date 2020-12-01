@@ -35,14 +35,11 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, 
 
     documents_list = []
     for root, dirs, files in os.walk(corpus_path):
+        r.set_corpus_path(root)
         for file in files:
             if file.endswith(".parquet"):
                 documents_list += r.read_file(file)
-    #documents_list = r.read_file(file_name='samples')
-    #documents_list = r.read_file(file_name=config.get__corpusPath())
     # Iterate over every document in the file
-    #start = time()
-    #print(start)
     for idx, document in enumerate(documents_list):
         # parse the document
         parsed_document = p.parse_doc(document)
