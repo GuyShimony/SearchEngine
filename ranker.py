@@ -8,7 +8,7 @@ class Ranker:
         pass
 
     @staticmethod
-    def rank_relevant_doc(relevant_docs, query_weight, number_of_documents):
+    def rank_relevant_doc(relevant_docs, query_weight, number_of_documents=100):
         """
         This function provides rank for each relevant document and sorts them by their scores.
         The current score considers solely the number of terms shared by the tweet (full_text) and query.

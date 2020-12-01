@@ -65,13 +65,14 @@ def load_docs_data():
 
 
 def search_and_rank_query(query, inverted_index, k, docs_data=None):
-    global config
+    global config, number_of_documents
+
     p = Parse(config.toStem)
     query_as_list = p.parse_sentence(query)
     searcher = Searcher(inverted_index, config, docs_data)
     relevant_docs, query_weight = searcher.relevant_docs_from_posting(query_as_list)
-    ranked_docs, doc_scores = searcher.ranker.rank_relevant_doc(relevant_docs, query_weight, number_of_documents)
-    return searcher.ranker.retrieve_top_k(ranked_docs, k, doc_scores)
+    ranked_docs = searcher.ranker.rank_relevant_doc(relevant_docs, query_weight, number_of_documents)
+    return searcher.ranker.retrieve_top_k(ranked_docs, k)
 
 
 def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve, lemma=False):
