@@ -35,11 +35,13 @@ class Parse:
             "million": [1000000, "M"],
             "millions": [1000000, "M"],
             "billion": [1000000000, "B"],
-            "billions": [1000000000, "B"],
-            "percent": [1, "%"],
-            "percents": [1, "%"],
-            "percentage": [1, "%"],
-            "percentages": [1, "%"]
+            "billions": [1000000000, "B"]
+        }
+        self.percent_dictionary = {
+            "percent": ["%"],
+            "percents": ["%"],
+            "percentage": ["%"],
+            "percentages": ["%"]
         }
         self.entity_dictionary = {}
         self.tweet_id = None
@@ -399,7 +401,7 @@ class Parse:
         and mean 123000.
         The numbers will be saved as 123K or 1.23M (for millions) etc.
         """
-
+        sign =''
         word_after = ""
         word_last = ""
         # number_word, word_after, word_last = number_word.split(" ") if len(number_word.split(" ")) >= 2 else (number_word, "")
@@ -422,8 +424,12 @@ class Parse:
             if "/" in word_after:
                 word = number_word + " " + word_after
             else:
-                number = number * int(self.number_dictionary[word_after.lower()][0])
-                number_word = str(number)
+                if word_after in self.number_dictionary:
+                    number = number * int(self.number_dictionary[word_after.lower()][0])
+                    number_word = str(number) # number with large value
+                else:
+                    sign = self.percent_dictionary[word_after.lower()][0]
+                    number_word = str(number)
                 # word = "{0}{1}".format(number, self.number_dictionary[word_after.lower()][1])
                 if len(number_word) < 4 or "." in number_word:
                     word = number_word
@@ -433,10 +439,16 @@ class Parse:
                     word = number_word[:-6] + "M"
                 else:
                     word = number_word[:-9] + "B"
+                if sign:
+                    word += sign
                 if word_last:
                     words_list.append(word)
-                    word = word + " " + word_last
-                    words_list.append(word_last)
+                    if word_last.lower() in self.percent_dictionary:
+                        word_last = self.percent_dictionary[word_last.lower()][0]
+                        word = word + word_last
+                    else:
+                        word = word + " " + word_last
+                        words_list.append(word_last)
 
         except KeyError:
             if len(number_word) < 4 or "." in number_word:
