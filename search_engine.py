@@ -6,6 +6,7 @@ from searcher import Searcher
 import utils
 import re
 import pandas as pd
+import shutil
 
 conifg = None
 number_of_documents = 0
@@ -25,8 +26,8 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, 
     config.set_output_path(output_path)
     config.toStem = stemming
     config.toLemm = lemma
-    # if os.path.exists(config.get_output_path()):  # TODO: check if to delete
-    #     shutil.rmtree(config.get_output_path())
+    if os.path.exists(config.get_output_path()):  # TODO: check if to delete
+        shutil.rmtree(config.get_output_path())
 
     r = ReadFile(corpus_path=config.get__corpusPath())
     p = Parse(config.toStem, config.toLemm)
