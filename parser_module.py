@@ -1,17 +1,16 @@
 import re
 import string
-
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 from nltk.tokenize import WhitespaceTokenizer
 from nltk.tokenize.regexp import RegexpTokenizer
-#import spacy
+import spacy
 from document import Document
 
 
 class Parse:
 
-    def __init__(self, stemming=False, lemmatization = False):
+    def __init__(self, stemming=False, lemmatization=False):
         self.stop_words = stopwords.words('english')
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
         self.punctuation_dict = dict(
@@ -21,7 +20,7 @@ class Parse:
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.stemmer = SnowballStemmer("english")
- #       self.nlp = spacy.load('en_core_web_sm')
+        self.nlp = spacy.load('en_core_web_sm', disable=['ner'])
         self.ascii_words = set(string.printable)
         self.sign_dictionary = {
             "#": self.hashtag_parser,
@@ -79,7 +78,7 @@ class Parse:
         """
 
         # added rules: 1. coronavirus, 2. usa, 3. dates, 4. number+identifier, 5. curses into *, 6. emojis,
-        # 7. word with / (hello/world -> hello world), 8. remove bold words, 9. lemmatization
+        # 7. word with / (hello/world -> hello world), 8. remove bold words, 9. lemmatization 10. tweet id removal
 
         if text is None or text == '[]':
             return {}  # Return an empty dict
@@ -93,6 +92,8 @@ class Parse:
             return {}
         # Preprocessing - Apply the curse rule first to replace each curse word with the word CENSORED
         text = self.curse_parser(text)
+        for w in self.tweet_id_tokezizer(text):
+            text = text.replace(w, "")  # Remove tweet id from text
 
         text_tokens_without_stopwords = {}
 
@@ -283,6 +284,13 @@ class Parse:
 
         return full_text
 
+    def tweet_id_tokezizer(self, text):
+        """
+        The function looks for tweet id in the text (20 length numbers) and return them
+        as tokens
+        """
+        return re.findall("\d{20}|\d{19}", text)
+
         ######## RULE BASED TOKENIZER FUNCTIONS #############
 
     def curse_tokenizer(self, text):
@@ -341,7 +349,7 @@ class Parse:
                           "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words + "[0-9]+[\s]+[a-zA-Z]*|[0-9]+"
                           , text), \
                [words for segment in
-                re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words +"[0-9]+[\s]*[a-zA-Z]*|[0-9]+", text) for
+                re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words + "[0-9]+[\s]*[a-zA-Z]*|[0-9]+", text) for
                 words in segment.split()]
 
     ######## RULE BASED PARSER FUNCTIONS #############
@@ -360,7 +368,8 @@ class Parse:
                 words_list += [w.lower() for w in re.findall('[a-z|A-Z][^A-Z|_]*', hashtag_word)] + \
                               [hashtag_word[0] + hashtag_word[1:].lower()]
         except IndexError as i:
-            print(str(i))
+            pass
+            # print(str(i))
 
     def shtrudel_parser(self, word, words_list):
         """
@@ -401,7 +410,7 @@ class Parse:
         and mean 123000.
         The numbers will be saved as 123K or 1.23M (for millions) etc.
         """
-        sign =''
+        sign = ''
         word_after = ""
         word_last = ""
         # number_word, word_after, word_last = number_word.split(" ") if len(number_word.split(" ")) >= 2 else (number_word, "")
@@ -426,7 +435,7 @@ class Parse:
             else:
                 if word_after in self.number_dictionary:
                     number = number * int(self.number_dictionary[word_after.lower()][0])
-                    number_word = str(number) # number with large value
+                    number_word = str(number)  # number with large value
                 else:
                     sign = self.percent_dictionary[word_after.lower()][0]
                     number_word = str(number)
@@ -439,8 +448,6 @@ class Parse:
                     word = number_word[:-6] + "M"
                 else:
                     word = number_word[:-9] + "B"
-                if sign:
-                    word += sign
                 if word_last:
                     words_list.append(word)
                     if word_last.lower() in self.percent_dictionary:
@@ -495,7 +502,7 @@ class Parse:
                 if entities[i].lower() in self.stop_words or entities[i - 1] in self.stop_words:  # Ignore stop word
                     continue
 
-                if len(entities[i]) == 1 and len(entities[i-1]) == 1:
+                if len(entities[i]) == 1 and len(entities[i - 1]) == 1:
                     continue
 
                 if text.find(entities[i - 1]) + len(entities[i - 1]) - text.find(entities[i]) == -1:
