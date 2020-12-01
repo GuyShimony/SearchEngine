@@ -34,8 +34,8 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, 
     indexer = Indexer(config)
 
 
-    # documents_list = r.read_file(file_name='samples')
-    documents_list = r.read_file(file_name=config.get__corpusPath())
+    documents_list = r.read_file(file_name='samples')
+    #documents_list = r.read_file(file_name=config.get__corpusPath())
     # Iterate over every document in the file
     #start = time()
     #print(start)

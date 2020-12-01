@@ -72,5 +72,5 @@ class Merger:
             # save term's idf
             merged_dict[key]['idf'] = term_idf
             # calculate doc's total weight
-            self.docs_file[doc_id][0] += 0.6 * (term_tf / max_tf) * term_idf + 0.4 * (term_tf / doc_len) * term_idf
+            self.docs_file[doc_id][0] += 0.8 * (term_tf / max_tf) * term_idf + 0.2 * (term_tf / doc_len) * term_idf
             self.docs_file[doc_id][0] = round(self.docs_file[doc_id][0], 3)

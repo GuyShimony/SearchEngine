@@ -11,7 +11,7 @@ from document import Document
 
 class Parse:
 
-    def __init__(self, stemming=False, lemmatization =False):
+    def __init__(self, stemming=False, lemmatization = False):
         self.stop_words = stopwords.words('english')
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
         self.punctuation_dict = dict(
@@ -336,10 +336,10 @@ class Parse:
                            "[^a-zA-Z\s][0-9]+\s[pP]ercent[age]*[s]*\s*[a-zA-Z]*|"
 
         return re.findall("\d+%|[0-9]+[0-9]*\s+\d+/\d+|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|"
-                          "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words + "[0-9]+[\s]+[a-zA-Z]*"
+                          "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words + "[0-9]+[\s]+[a-zA-Z]*|[0-9]+"
                           , text), \
                [words for segment in
-                re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words, text) for
+                re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words +"[0-9]+[\s]*[a-zA-Z]*|[0-9]+", text) for
                 words in segment.split()]
 
     ######## RULE BASED PARSER FUNCTIONS #############
@@ -399,8 +399,6 @@ class Parse:
         and mean 123000.
         The numbers will be saved as 123K or 1.23M (for millions) etc.
         """
-        if len(number_word) == 20:
-            return
 
         word_after = ""
         word_last = ""
@@ -436,7 +434,10 @@ class Parse:
                 else:
                     word = number_word[:-9] + "B"
                 if word_last:
+                    words_list.append(word)
                     word = word + " " + word_last
+                    words_list.append(word_last)
+
         except KeyError:
             if len(number_word) < 4 or "." in number_word:
                 word = number_word
@@ -447,7 +448,9 @@ class Parse:
             else:
                 word = str(number / 1000000000) + "B"
             if word_after:
+                words_list.append(word)
                 word = word + " " + word_after
+                words_list.append(word_after)
 
         except ValueError:
             word = number_word
