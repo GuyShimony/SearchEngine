@@ -158,7 +158,6 @@ class Indexer:
 
         utils.save_obj(self.docs_data, f"{self.posting_dir_path}\\docs\\docs_index")
         self.docs_data.clear()
-
         self.postings_factory.merge(corpus_size)
 
 

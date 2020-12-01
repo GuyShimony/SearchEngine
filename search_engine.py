@@ -89,7 +89,8 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve, lemm
         output_path = os.getcwd()
 
     run_engine(corpus_path, output_path, stemming, lemma)
-    if os.path.isfile(queries):  # If the queries are stored in a file
+
+    if type(queries) is not list:  # If the queries are stored in a file
         with open(queries, encoding="utf8") as file:
             queries = file.readlines()
 
@@ -109,4 +110,4 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve, lemm
                 result = result.append({"Query_num": query_num, "Tweet_id": doc_tuple[0], "Rank": doc_tuple[1]},
                                        ignore_index=True)
 
-    result.to_csv("results.csv")
+    result.to_csv("results.csv", index=False)

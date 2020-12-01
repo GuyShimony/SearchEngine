@@ -10,8 +10,6 @@ class ConfigClass:
         self.saveFilesWithStem = self.savedFileMainFolder + "/WithStem"
         self.toStem = False
 
-        print('Project was created successfully..')
-
     def get__corpusPath(self):
         """
         Get the corpus path to read the data from
@@ -23,7 +21,6 @@ class ConfigClass:
         Get the output for the posting files
         """
         return self.saveFilesWithStem if self.toStem else self.saveFilesWithoutStem
-        #return self.saveFilesWithStem if self.toStem else self.saveFilesWithoutStem
 
     def set_output_path(self, path):
         self.savedFileMainFolder = path

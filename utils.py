@@ -63,5 +63,11 @@ def load_inverted_index():
     """
     The function will get the path for the inverted index
     and will return the inverted idx object as a dictionary.
+    used only for tests
     """
-    return load_obj("inverted_idx")
+    idx = load_obj("inverted_idx")
+    new_idx = {}
+    for key in idx:
+        new_idx[key] = idx[key][0]
+
+    return new_idx
