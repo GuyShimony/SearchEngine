@@ -24,10 +24,8 @@ class Ranker:
         for doc in total_doc_scores:
             inner_product_score = Ranker.inner_product(doc)
             total_doc_scores[doc] = 0.6 * document_scores_cosin[doc] + 0.4 * inner_product_score
-        print(Ranker.query_terms)
-        return sorted(total_doc_scores.items(), key=lambda item: item[1], reverse=True), relevant_docs
+        return sorted(total_doc_scores.items(), key=lambda item: item[1], reverse=True)
 
-    # TODO: check if needed .. already calculated inside each doc
     @staticmethod
     def tf_idf(relevant_docs, number_of_documents):
 
@@ -66,10 +64,6 @@ class Ranker:
             doc_weight = relevant_docs[relevant_doc][8]
             # denominator right -> term per query weight squared
 
-            # term_per_query_w = 0
-            # for query_term in Ranker.query_terms:
-            #     if query_term in relevant_docs[relevant_doc][1]:
-            #         term_per_query_w += math.pow(Ranker.query_terms[query_term], 2)
             cosin_denominator = math.sqrt(doc_weight * query_weight)
             cosin_score = inner_product / cosin_denominator
             document_scores_cosin[relevant_doc] = cosin_score
@@ -77,8 +71,8 @@ class Ranker:
         return document_scores_cosin
 
     @staticmethod
-    def retrieve_top_k(sorted_relevant_doc, k=1,total_doc_scores={}):
-        """  #TODO: remove all total_doc_scores from parameters
+    def retrieve_top_k(sorted_relevant_doc, k=1):
+        """
         return a list of top K tweets based on their ranking from highest to lowest
         :param sorted_relevant_doc: list of all candidates docs.
         :param k: Number of top document to return

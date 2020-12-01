@@ -149,12 +149,11 @@ class Indexer:
         The function will be responsible to free up the memory of all objects
         created by the indexer and save up the last docs that were not saved in any terms
         """
-        # print("Finished index in")
         # insert each word's tf-idf value for each document --> {doc.id: [term tf, term tf_idf for doc]}
         if len(self.postingDict) > 0:
             self.posting_save()
 
-        utils.save_obj(self.inverted_idx, f"{self.posting_dir_path}\\inverted_idx")
+        utils.save_obj(self.inverted_idx, "inverted_idx")
         self.inverted_idx.clear()
 
         utils.save_obj(self.docs_data, f"{self.posting_dir_path}\\docs\\docs_index")
