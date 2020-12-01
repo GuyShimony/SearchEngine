@@ -59,7 +59,7 @@ def get_next(file_handle):
     except EOFError:
         return None
 
-def load_inverted_index():
+def load_inverted_index(name=None):
     """
     The function will get the path for the inverted index
     and will return the inverted idx object as a dictionary.

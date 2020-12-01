@@ -60,7 +60,7 @@ class Parse:
         }
         self.USA_dictionary = {
             #  Custom coronavirus rule -> Switch any usa / america term form to 'USA'
-            #  Used to better IR coronavirus related docs
+            #  Used to better IR usa related docs
             "u.s": "USA",
             "us": "USA",
             "usa": "USA",
