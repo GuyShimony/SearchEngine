@@ -98,6 +98,7 @@ class Parse:
         text_tokens_without_stopwords = {}
 
         all_text_tokens = self.whitespace_tokenizer.tokenize(text)
+
         # First step - add each word (that was separated by white space) to the dictionary as a token
         for word in all_text_tokens:
             try:
@@ -119,21 +120,19 @@ class Parse:
                         continue
 
                     if word.lower() in self.coronavirus_dictionary:
-                        text_tokens_without_stopwords[self.coronavirus_dictionary[word.lower()]] += 1
+                    #    text = text.replace(word, "")
+                        word = self.coronavirus_dictionary[word.lower()]
+                        text_tokens_without_stopwords[word] += 1
 
                     elif word.lower() in self.USA_dictionary:
-                        text_tokens_without_stopwords[self.USA_dictionary[word.lower()]] += 1
+                      #  text = text.replace(word, "")
+                        word = self.USA_dictionary[word.lower()]
+                        text_tokens_without_stopwords[word] += 1
 
                     else:
                         text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
-
             except KeyError:
-                if word.lower() in self.coronavirus_dictionary:
-                    text_tokens_without_stopwords[self.coronavirus_dictionary[word.lower()]] = 1
-                elif word.lower() in self.USA_dictionary:
-                    text_tokens_without_stopwords[self.USA_dictionary[word.lower()]] = 1
-                else:
-                    text_tokens_without_stopwords[word] = 1
+                text_tokens_without_stopwords[word] = 1
 
         # Second step - apply all the tokenizing rules on the text #
         special_text_tokens = self.special_cases_tokenizer(text)  # TODO: # parser doe not support #S**Z**A**
@@ -346,10 +345,10 @@ class Parse:
                            "[^a-zA-Z\s][0-9]+\s[pP]ercent[age]*[s]*\s*[a-zA-Z]*|"
 
         return re.findall("\d+%|[0-9]+[0-9]*\s+\d+/\d+|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|"
-                          "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words + "[0-9]+[\s]+[a-zA-Z]*|[0-9]+"
+                          "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words + "\b[0-9]+[\s]+[a-zA-Z]+|\b[0-9]+"
                           , text), \
                [words for segment in
-                re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words + "[0-9]+[\s]*[a-zA-Z]*|[0-9]+", text) for
+                re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words + "\b[0-9]+[\s]+[a-zA-Z]+|\b[0-9]+", text) for
                 words in segment.split()]
 
     ######## RULE BASED PARSER FUNCTIONS #############
