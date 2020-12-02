@@ -100,7 +100,8 @@ class Indexer:
                     self.postingDict[term]['df'] += 1
 
             except Exception as e:
-                print('problem with the following key {}'.format(term))
+                #print('problem with the following key {}'.format(term))
+                pass
 
     def posting_save(self):
         """

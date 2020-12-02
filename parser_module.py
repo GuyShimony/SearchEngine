@@ -100,10 +100,6 @@ class Parse:
         special_text_tokens = self.special_cases_tokenizer(text)
         for word in special_text_tokens:
             text = text.replace(word, "")
-        number_tokens, irregulars = self.numbers_tokenizer(text)
-        for word in irregulars:
-            text = text.replace(word, "")
-        date_tokens = self.date_tokenizer(text)
 
         text = self.covid_normelizer(text)
         text = self.usa_normelizer(text)
@@ -133,12 +129,10 @@ class Parse:
                         continue
 
                     if word.lower() in self.coronavirus_dictionary:
-                    #    text = text.replace(word, "")
                         word = self.coronavirus_dictionary[word.lower()]
                         text_tokens_without_stopwords[word] += 1
 
                     elif word.lower() in self.USA_dictionary:
-                      #  text = text.replace(word, "")
                         word = self.USA_dictionary[word.lower()]
                         text_tokens_without_stopwords[word] += 1
 
@@ -147,12 +141,19 @@ class Parse:
             except KeyError:
                 text_tokens_without_stopwords[word] = 1
 
+        # Second step - Apply all the tokenizing rules on the text #
+        number_tokens, irregulars = self.numbers_tokenizer(text)
+        date_tokens = self.date_tokenizer(text)
+
         # Third step - delete all the words that were processed in the rules.
         # For example '123 Thousand' was turned to '123K' -> Need to delete  '123', 'Thousand'
         for irregular in irregulars:
             try:
-                irregular = irregular
-                text_tokens_without_stopwords.pop(irregular)
+                irregular = irregular.lower()
+                if text_tokens_without_stopwords[irregular] > 1:
+                    text_tokens_without_stopwords[irregular] -= 1
+                else:
+                    text_tokens_without_stopwords.pop(irregular)
             except KeyError:
                 pass
 
@@ -424,17 +425,11 @@ class Parse:
             if word in self.excluded_data:
                 continue
 
-            elif 'www' in word:
+            elif 'www' in word: # Take the domain without the www.
                 words_list.append(word[4:])
-                words_list.append(word)
 
             else:
-                dot_split = word.split(".")
-                if len(dot_split) == 2:
-                    words_list.append(dot_split[0])
-                    words_list.append(dot_split[1])
-                else:
-                    words_list.append(word)
+                words_list.append(word)
 
     def number_parser(self, number_word, words_list):
         """
@@ -445,7 +440,6 @@ class Parse:
         sign = ''
         word_after = ""
         word_last = ""
-        # number_word, word_after, word_last = number_word.split(" ") if len(number_word.split(" ")) >= 2 else (number_word, "")
         if len(number_word.split(" ")) == 3:
             number_word, word_after, word_last = number_word.split(" ")
         elif len(number_word.split(" ")) == 2:
@@ -472,7 +466,6 @@ class Parse:
                 else:
                     sign = self.percent_dictionary[word_after.lower()][0]
                     number_word = str(number)
-                # word = "{0}{1}".format(number, self.number_dictionary[word_after.lower()][1])
                 if len(number_word) < 4 or "." in number_word:
                     word = number_word
                 elif 4 <= len(number_word) <= 6:
@@ -481,13 +474,16 @@ class Parse:
                     word = number_word[:-6] + "M"
                 else:
                     word = number_word[:-9] + "B"
+                if sign: # For the percentage
+                    word += sign
+
                 if word_last:
                     words_list.append(word)
                     if word_last.lower() in self.percent_dictionary:
                         word_last = self.percent_dictionary[word_last.lower()][0]
                         word = word + word_last
                     else:
-                        word = word + " " + word_last
+                        word = str(word) + " " + word_last
                         words_list.append(word_last)
 
         except KeyError:
