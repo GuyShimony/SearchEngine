@@ -23,7 +23,7 @@ class Ranker:
         document_scores_cosin = Ranker.cosine_sim(relevant_docs, query_weight)
         for doc in total_doc_scores:
             inner_product_score = Ranker.inner_product(doc)
-            total_doc_scores[doc] = 0.6 * document_scores_cosin[doc] + 0.4 * inner_product_score
+            total_doc_scores[doc] = 0.4 * document_scores_cosin[doc] + 0.5 * inner_product_score
         return sorted(total_doc_scores.items(), key=lambda item: item[1], reverse=True)
 
     @staticmethod

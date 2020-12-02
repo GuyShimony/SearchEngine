@@ -1,3 +1,5 @@
+import time
+
 from reader import ReadFile
 from configuration import ConfigClass
 from parser_module import Parse
@@ -34,6 +36,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, 
     indexer = Indexer(config)
 
     documents_list = []
+    start = time.time()
     for root, dirs, files in os.walk(corpus_path):
         r.set_corpus_path(root)
         for file in files:
@@ -46,10 +49,9 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, 
         number_of_documents += 1
         # index the document data
         indexer.add_new_doc(parsed_document)
-    documents_list.clear()  # Finished parsing and indexing all files
+    documents_list.clear()  # Finished parsing and indexing all files - need to clean all the used memory
     indexer.cleanup(number_of_documents)
-    #print('Finished parsing and indexing. Starting to export files')
-    # utils.save_obj(indexer.inverted_idx, "inverted_idx")
+    print(time.time() - start)
 
 
 

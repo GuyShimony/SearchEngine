@@ -45,36 +45,20 @@ class Searcher:
                 Ranker.query_terms[term] += 1
             else:
                 Ranker.query_terms[term] = 1
-            # posting_file_name = postings_factory.get_file_path(term)
 
-            # if "SPECIALS" in posting_file_name:
-            #     if "SPECIALS" not in posting_to_load:
-            #         posting_to_load["SPECIALS"] = utils.load_obj(self.inverted_index[term]["pointers"])
-            # else:
-            #     if self.inverted_index[term]["pointers"] not in postings_loaded:
-            #
-            #         posting_to_load[term[0].lower()] = utils.load_obj(self.inverted_index[term]["pointers"])
-            #         postings_loaded[self.inverted_index[term]["pointers"]] = posting_to_load[term[0].lower()]
-            #     else:
-            #         posting_to_load[term[0].lower()] = postings_loaded[self.inverted_index[term]["pointers"]]
-
+        #  Check each first char in each term to see if the current open posting
+        #  corresponds to char. For example if the current posting is the 'a' terms posting and the
+        #  term we will look for is 'atom' we don't have to load the posting from disc again but to
+        #  use the current loaded
         current_posting = ""
         posting_doc = 0
         query_weight = 0
         for term in Ranker.query_terms:
             try:
 
-                #posting_file_name = postings_factory.get_file_path(term)
                 if current_posting != self.inverted_index[term]["pointers"]:
                     posting_doc = utils.load_obj(self.inverted_index[term]["pointers"])
                     current_posting = self.inverted_index[term]["pointers"]
-                    # Check if the new term needs a different posting file
-                    # if "SPECIALS" in posting_file_name:
-                    #     # posting_doc = posting_to_load["SPECIALS"]
-                    #     posting_doc = self.inverted_index[term]["pointers"]
-                    # else:
-                    #     # posting_doc = posting_to_load[term[0].lower()]
-                    #     posting_doc = posting_to_load[term[0].lower()]
 
                 query_weight += math.pow(Ranker.query_terms[term], 2)
 

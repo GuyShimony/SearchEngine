@@ -62,7 +62,6 @@ class Parse:
             #  Custom coronavirus rule -> Switch any usa / america term form to 'USA'
             #  Used to better IR usa related docs
             "u.s": "USA",
-            "us": "USA",
             "usa": "USA",
             "u.s.a": "USA",
             "america": "USA"

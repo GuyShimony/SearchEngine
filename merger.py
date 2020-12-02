@@ -1,11 +1,12 @@
 import math
 from queue import Queue
-
 import utils
 
 
 class Merger:
-
+    """
+    A class for the merge functionality of posting files
+    """
     def __init__(self, path_to_files, file_type, docs_file, corpus_size=0):
 
         self.corpus_size = corpus_size
@@ -18,6 +19,17 @@ class Merger:
         self.docs_file = docs_file
 
     def merge(self, group_id):
+        """
+        The merge function:
+        The function will collect all the dictionaries from the posting file given
+        and insert each dictionary to the queue.
+        Algorithm used is the BSBI algorithm:
+        for each two dictionaries:
+            merged them, update the intersection keys in the merged dictionary and put the
+            new merged dictionary back to the queue.
+            To that until there is only 1 dictionary left in the queue.
+        Save the last dictionary in the posting file.
+        """
         was_combined = False
         merged_dict = None
         self.files_name = group_id
@@ -35,13 +47,6 @@ class Merger:
                 merged_dict[key]['df'] = merged_dict[key]['df'] + self.dict1[key]['df']
                 self.calculate_doc_weight(merged_dict, key)
 
-            # for key, value in merged_dict.items(): # think about using set intersection
-            #     if key in self.dict1 and key in self.dict2:  # if 2 keys were similar 3 got 2's keys
-            #
-            #         merged_dict[key]['docs'] = value['docs'] + self.dict1[key]['docs']
-            #         merged_dict[key]['df'] = value['df'] + self.dict1[key]['df']
-            #     self.calculate_doc_weight(merged_dict, key)
-
             self.queue.put(merged_dict)
 
         if was_combined:
@@ -53,7 +58,6 @@ class Merger:
             utils.save_obj(file_dict, f"{self.path_to_files}\\{self.files_name}")
 
     def collect_files(self):
-        # for file in sorted(os.listdir(self.path_to_files)):
         file_handle = utils.open_file(f"{self.path_to_files}\\{self.files_name}")
         obj = utils.get_next(file_handle)
         while obj:
