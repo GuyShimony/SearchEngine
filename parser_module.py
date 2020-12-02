@@ -20,7 +20,7 @@ class Parse:
         self.punctuation_remover = lambda word: (word.lstrip(self.punc)).rstrip(self.punc)
         self.whitespace_tokenizer = WhitespaceTokenizer()
         self.stemmer = SnowballStemmer("english")
-        self.nlp = spacy.load('en_core_web_sm', disable=['ner'])
+        self.nlp = spacy.load('en_core_web_sm', disable=['ner', 'parser', 'tokenizer'])
         self.ascii_words = set(string.printable)
         self.sign_dictionary = {
             "#": self.hashtag_parser,
@@ -62,6 +62,7 @@ class Parse:
             #  Custom coronavirus rule -> Switch any usa / america term form to 'USA'
             #  Used to better IR usa related docs
             "u.s": "USA",
+            "u.s.": "USA",
             "usa": "USA",
             "u.s.a": "USA",
             "america": "USA"
@@ -93,6 +94,8 @@ class Parse:
         text = self.curse_parser(text)
         for w in self.tweet_id_tokezizer(text):
             text = text.replace(w, "")  # Remove tweet id from text
+        text = self.covid_normelizer(text)
+        text = self.usa_normelizer(text)
 
         text_tokens_without_stopwords = {}
 
@@ -281,6 +284,33 @@ class Parse:
             full_text = full_text.replace(short, extended)
 
         return full_text
+    
+    def covid_tokenizer(self, text):
+        return re.findall("[^@#][Cc][Oo][Vv][Ii][Dd][-]*[19]*|"
+                          "[^@#][Cc][Oo][Rr][Oo][Nn][Aa][Vv][Ii][Rr][Uu][Ss]",text)
+
+    def covid_normelizer(self, text):
+        for word in self.covid_tokenizer(text):
+            try:
+                word = word.strip(" ")
+                text = text.replace(word, self.coronavirus_dictionary[word.lower()])
+            except:
+                pass
+
+        return text
+
+    def usa_tokenizer(self, text):
+        return re.findall("[^@#][Uu][.]*[Ss][.]*[Aa]|[^@#a-tv-zA-TV-Z][U][.]*[S][.]*[^a-tv-zA-TV-Z]", text)
+
+    def usa_normelizer(self, text):
+        for word in self.usa_tokenizer(text):
+            try:
+                word = word.strip(" ")
+                text = text.replace(word, self.USA_dictionary[word.lower()])
+            except:
+                pass
+
+        return text
 
     def tweet_id_tokezizer(self, text):
         """
@@ -342,12 +372,11 @@ class Parse:
                            "[^a-zA-Z\s][0-9]+\s[mM]illion[s]*\s*[a-zA-Z]*|" \
                            "[^a-zA-Z\s][0-9]+\s[bB]illion[s]*\s*[a-zA-Z]*|" \
                            "[^a-zA-Z\s][0-9]+\s[pP]ercent[age]*[s]*\s*[a-zA-Z]*|"
-#TODO: GET ALSO THE NUMBERS ALONE
         return re.findall("\d+%|[0-9]+[0-9]*\s+\d+/\d+|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|"
-                          "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words + "\b[0-9]+[\s]+[a-zA-Z]+|\b[0-9]+"
+                          "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words + "[0-9]+[\s]+[a-zA-Z]+|[0-9]+"
                           , text), \
                [words for segment in
-                re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words + "\b[0-9]+[\s]+[a-zA-Z]+|\b[0-9]+", text) for
+                re.findall("[0-9]+[0-9]*\s+\d+/\d+|" + number_and_words + "[0-9]+[\s]+[a-zA-Z]+|[0-9]+", text) for
                 words in segment.split()]
 
     ######## RULE BASED PARSER FUNCTIONS #############
@@ -367,7 +396,6 @@ class Parse:
                               [hashtag_word[0] + hashtag_word[1:].lower()]
         except IndexError as i:
             pass
-            # print(str(i))
 
     def shtrudel_parser(self, word, words_list):
         """
@@ -427,6 +455,7 @@ class Parse:
             number_word = self.punctuation_remover(number_word)
 
         try:
+            #  Handle floating points and fractions numbers like '2 1/3'
             number = float(number_word) if "." in number_word else int(number_word)
             if "/" in word_after:
                 word = number_word + " " + word_after
@@ -485,7 +514,7 @@ class Parse:
     def entity(self, text):
         """
         According to the exercise: "An entity is a pair (or more) of following terms starting with capital letters.
-        That occured in two documents or more".
+        That occurred in two documents or more".
         The function will find this pattern and insert it to the entity dictionary.
         If the entity has already been in another document it will be matched and returned.
 
