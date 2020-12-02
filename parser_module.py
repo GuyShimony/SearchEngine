@@ -134,7 +134,7 @@ class Parse:
                 text_tokens_without_stopwords[word] = 1
 
         # Second step - apply all the tokenizing rules on the text #
-        special_text_tokens = self.special_cases_tokenizer(text)  # TODO: # parser doe not support #S**Z**A**
+        special_text_tokens = self.special_cases_tokenizer(text)
         number_tokens, irregulars = self.numbers_tokenizer(text)
         date_tokens = self.date_tokenizer(text)
 
@@ -142,7 +142,6 @@ class Parse:
         # For example '123 Thousand' was turned to '123K' -> Need to delete  '123', 'Thousand'
         for irregular in irregulars:
             try:
-                # irregular = irregular.lower()
                 irregular = irregular
                 text_tokens_without_stopwords.pop(irregular)
             except KeyError:
@@ -168,8 +167,8 @@ class Parse:
                     rule_generated_tokens += [w for w in word.split("\n")]
                     continue
 
-                if not word or len(word) == 1 or (len(word) == 19 and word.isdigit()):
-                    # Ignore single letters words and tweet_ids
+                if not word or len(word) == 1:
+                    # Ignore single letters words
                     continue
 
                 if word in self.coronavirus_dictionary:
@@ -258,6 +257,7 @@ class Parse:
             url_dict = self.parse_sentence(url)
         else:
             url_dict = {}
+
         full_text_dict = self.parse_sentence(full_text)
 
         # Merge all dict objects to one with dictionaries unpacking

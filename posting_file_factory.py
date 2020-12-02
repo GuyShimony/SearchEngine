@@ -7,6 +7,11 @@ from merger import Merger
 
 
 class PostingFilesFactory:
+    """
+    The class is responsible for all the posting files
+    logic.
+    It uses the Singelton design pattern.
+    """
     instance = None
 
     def __init__(self, config):
@@ -46,6 +51,10 @@ class PostingFilesFactory:
             return f"{self.posting_dir_path}\\Dir_specials\\SPECIALS"
 
     def get_posting_file_and_path(self, word):
+        """
+        The function will get a word and will look for the correct posting file that the words belgons to.
+        returns: tuple - (the path to the file, the loaded file object - dictionary)
+        """
         return utils.load_obj(self.get_file_path(word)), self.get_file_path(word)
 
     def get_docs_file(self):
@@ -68,6 +77,13 @@ class PostingFilesFactory:
                 os.makedirs(self.postings_data[key]['path'])
 
     def create_posting_files(self, posting_dict, letter_word_mapping):
+        """
+        The function will get the mapping of every word to its first char (a: atom, assertive..)
+        and will create the posting file for all the words of a certain character.
+        param posting_dict: Dictionary of all the terms and their info to save in the posting files.
+        param letter_word_mapping: Dictionary that map each word to its first char. For example:
+        {'a':['atom','arg'], 'b':['bar']}
+        """
         for char in letter_word_mapping:
             word_data_dict = {}
             if self.postings_data.get(char) is None:
@@ -84,6 +100,10 @@ class PostingFilesFactory:
 
     @staticmethod
     def get_instance(config):
+        """
+        Based on the singelton pattern - If the class does not have an instance it will be created
+        only once.
+        """
         if not PostingFilesFactory.instance:
             PostingFilesFactory(config)
         return PostingFilesFactory.instance

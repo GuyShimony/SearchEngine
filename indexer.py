@@ -45,6 +45,7 @@ class Indexer:
                 number_of_curses += 1
 
         if self.docs_counter > self.max_documents:
+            #  Build the posting files in stages - every 'max_documents' of docs a new posting is created
             self.docs_counter = 0
             self.posting_save()
             self.postingDict.clear()
