@@ -343,7 +343,7 @@ class Parse:
                            "[^a-zA-Z\s][0-9]+\s[mM]illion[s]*\s*[a-zA-Z]*|" \
                            "[^a-zA-Z\s][0-9]+\s[bB]illion[s]*\s*[a-zA-Z]*|" \
                            "[^a-zA-Z\s][0-9]+\s[pP]ercent[age]*[s]*\s*[a-zA-Z]*|"
-
+#TODO: GET ALSO THE NUMBERS ALONE
         return re.findall("\d+%|[0-9]+[0-9]*\s+\d+/\d+|[+-]?[0-9]+[.][0-9]*[%]*|[.][0-9]+|"
                           "[^#-@\sa-zA-Z][^#-@\sa-zA-Z][0-9]+|" + number_and_words + "\b[0-9]+[\s]+[a-zA-Z]+|\b[0-9]+"
                           , text), \
