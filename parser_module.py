@@ -94,6 +94,17 @@ class Parse:
         text = self.curse_parser(text)
         for w in self.tweet_id_tokezizer(text):
             text = text.replace(w, "")  # Remove tweet id from text
+
+
+        # Apply all the tokenizing rules on the text #
+        special_text_tokens = self.special_cases_tokenizer(text)
+        for word in special_text_tokens:
+            text = text.replace(word, "")
+        number_tokens, irregulars = self.numbers_tokenizer(text)
+        for word in irregulars:
+            text = text.replace(word, "")
+        date_tokens = self.date_tokenizer(text)
+
         text = self.covid_normelizer(text)
         text = self.usa_normelizer(text)
 
@@ -135,11 +146,6 @@ class Parse:
                         text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
             except KeyError:
                 text_tokens_without_stopwords[word] = 1
-
-        # Second step - apply all the tokenizing rules on the text #
-        special_text_tokens = self.special_cases_tokenizer(text)
-        number_tokens, irregulars = self.numbers_tokenizer(text)
-        date_tokens = self.date_tokenizer(text)
 
         # Third step - delete all the words that were processed in the rules.
         # For example '123 Thousand' was turned to '123K' -> Need to delete  '123', 'Thousand'
@@ -358,7 +364,7 @@ class Parse:
         Returns a list of all special tokens with there following words
         """
         return re.findall(
-            r'#\w+|@\w*|http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+|'
+            r'#\w+-\d+|#\w+|@\w+-\d+|@\w*|http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+|'
             r'https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))',
             text)
 

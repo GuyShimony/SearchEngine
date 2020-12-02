@@ -1,4 +1,3 @@
-import time
 
 from reader import ReadFile
 from configuration import ConfigClass
@@ -28,7 +27,7 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, 
     config.set_output_path(output_path)
     config.toStem = stemming
     config.toLemm = lemma
-    if os.path.exists(config.get_output_path()):  # TODO: check if to delete
+    if os.path.exists(config.get_output_path()):
         shutil.rmtree(config.get_output_path())
 
     r = ReadFile(corpus_path=config.get__corpusPath())
@@ -36,7 +35,6 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, 
     indexer = Indexer(config)
 
     documents_list = []
-    start = time.time()
     for root, dirs, files in os.walk(corpus_path):
         r.set_corpus_path(root)
         for file in files:
@@ -51,7 +49,6 @@ def run_engine(corpus_path=None, output_path=None, stemming=False, lemma=False, 
         indexer.add_new_doc(parsed_document)
     documents_list.clear()  # Finished parsing and indexing all files - need to clean all the used memory
     indexer.cleanup(number_of_documents)
-    print(time.time() - start)
 
 
 
@@ -112,4 +109,4 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve, lemm
                 result = result.append({"Query_num": query_num, "Tweet_id": doc_tuple[0], "Rank": doc_tuple[1]},
                                        ignore_index=True)
 
-    result.to_csv("results.csv", index=False)
+    result.to_csv("Results.csv", index=False)
