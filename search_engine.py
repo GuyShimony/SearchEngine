@@ -105,7 +105,7 @@ def main(corpus_path, output_path, stemming, queries, num_docs_to_retrieve, lemm
                 query = query.replace(re.findall("\d.[\s]*", query)[0], "")
 
             for doc_tuple in search_and_rank_query(query, inverted_index, k, docs_data):
-                print('Tweet id: {} Score: {}'.format(doc_tuple[0], doc_tuple[1], query_num))
+                print('Tweet id: {} Score: {}'.format(doc_tuple[0], doc_tuple[1]))
                 result = result.append({"Query_num": query_num, "Tweet_id": doc_tuple[0], "Rank": doc_tuple[1]},
                                        ignore_index=True)
 
