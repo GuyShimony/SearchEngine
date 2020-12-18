@@ -23,8 +23,19 @@ def precision(df, single=False, query_number=None):
         total = df.shape[0]
 
     else:
-        total_relevance = df['label'].aggregate('sum')
-        total = df.shape[0]
+        # total_relevance = df['label'].aggregate('sum')
+        # total = df.shape[0]
+        queries = df['query_num'].tolist()
+        queries = set(queries)
+        total_precision = 0
+        for query in queries:
+            query_df = df.loc[df['query_num'] == query]
+            query_relevance = query_df['label'].aggregate('sum')
+            total = query_df.shape[0]
+            total_precision += round(query_relevance / total, 2)
+
+        total_relevance = total_precision
+        total = len(queries)
 
     return round(total_relevance / total, 2)
 
@@ -65,9 +76,21 @@ def precision_at_n(df, query_number=1, n=5):
         total_relevance = df['label'].aggregate('sum')
         total = df.shape[0]
     else:
-        df = df.head(n)
-        total_relevance = df['label'].aggregate('sum')
-        total = df.shape[0]
+        # df = df.head(n)
+        # total_relevance = df['label'].aggregate('sum')
+        # total = df.shape[0]
+        queries = df['query_num'].tolist()
+        queries = set(queries)
+        total_precision = 0
+        for query in queries:
+            query_df = df.loc[df['query_num'] == query]
+            query_n_df = query_df.head(n)
+            query_relevance = query_n_df['label'].aggregate('sum')
+            total = query_n_df.shape[0]
+            total_precision += round(query_relevance / total, 2)
+
+        total_relevance = total_precision
+        total = len(queries)
 
     return round(total_relevance / total, 2)
 
@@ -79,7 +102,6 @@ def map(df):
         :param df: DataFrame: Contains tweet ids, their scores, ranks and relevance
         :return: Double: the average precision of the df
     """
-    pass
 
 
 def run_value(func, expected, variables):
@@ -105,11 +127,11 @@ def run_value(func, expected, variables):
 
 
 run_value(precision, 0.5, [df, True, 1])
-#test_value(precision, 0.5, [df, False, None])
-# test_value(recall, 0.5, [df, 2, True, 1])
-# test_value(recall, 0.6, [df, 5, False, None])
-# test_value(precision_at_n, 0.5, [df, 1, 2])
-# test_value(precision_at_n, 0, [df, 3, 1])
+run_value(precision, 0.5, [df, False, None])
+run_value(recall, 0.5, [df, 2, True, 1])
+run_value(recall, 0.6, [df, 5, False, None])
+run_value(precision_at_n, 0.5, [df, 1, 2])
+run_value(precision_at_n, 0, [df, 3, 1])
 # test_value(map, 0.5, [df])
 #
 for res in results:
