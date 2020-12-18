@@ -66,7 +66,7 @@ def map(df):
     pass
 
 
-def test_value(func, expected, variables):
+def run_value(func, expected, variables):
     """
         This function is used to test your code. Do Not change it!!
         :param func: Function: The function to test
@@ -88,7 +88,7 @@ def test_value(func, expected, variables):
                         f' value return is not a number'])
 
 
-test_value(precision, 0.5, [df, True, 1])
+run_value(precision, 0.5, [df, True, 1])
 #test_value(precision, 0.5, [df, False, None])
 # test_value(recall, 0.5, [df, 2, True, 1])
 # test_value(recall, 0.6, [df, 5, False, None])
