@@ -40,7 +40,13 @@ def recall(df, num_of_relevant, single=False, query_number=None):
         :param query_number: Integer/None that tell on what query_number to evaluate precision or None for the entire DataFrame
         :return: Double - The recall
     """
-    pass
+    if single:
+        df = df.loc[df['query_num'] == query_number]
+        total_relevance = df['label'].aggregate('sum')
+    else:
+        total_relevance = df['label'].aggregate('sum')
+
+    return round(total_relevance / num_of_relevant, 2)
 
 
 # precision_at_n(df, 1, 2) == 0.5
