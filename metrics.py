@@ -59,7 +59,17 @@ def precision_at_n(df, query_number=1, n=5):
         :param n: Total document to splice from the df
         :return: Double: The precision of those n documents
     """
-    pass
+    if query_number:
+        df = df.loc[df['query_num'] == query_number]
+        df = df.head(n)
+        total_relevance = df['label'].aggregate('sum')
+        total = df.shape[0]
+    else:
+        df = df.head(n)
+        total_relevance = df['label'].aggregate('sum')
+        total = df.shape[0]
+
+    return round(total_relevance / total, 2)
 
 
 # map(df) == 0.5
