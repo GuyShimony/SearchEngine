@@ -102,7 +102,26 @@ def map(df):
         :param df: DataFrame: Contains tweet ids, their scores, ranks and relevance
         :return: Double: the average precision of the df
     """
-
+    map =[]
+    queries = df['query_num'].tolist()
+    queries = set(queries)
+    total_precision = 0
+    for query in queries:
+        precision_at_recall_for_query =[]
+        query_df = df.loc[df['query_num'] == query]
+        n=0
+        for i in query_df['label'].tolist():
+            n+=1
+            if i==1:
+                # query_n_df = query_df.head(n)
+                # query_relevance = query_n_df['label'].aggregate('sum')
+                # total = query_n_df.shape[0]
+                # total_precision += round(query_relevance / total, 2)
+                precision_at_recall_for_query.append(precision_at_n(df,query,n))
+        if precision_at_recall_for_query: #for queries with only non relevant docs
+            precision_avg = sum(precision_at_recall_for_query)/ len(precision_at_recall_for_query)
+            map.append(precision_avg)
+    return sum(map) / len(map)
 
 def run_value(func, expected, variables):
     """
@@ -132,7 +151,7 @@ run_value(recall, 0.5, [df, 2, True, 1])
 run_value(recall, 0.6, [df, 5, False, None])
 run_value(precision_at_n, 0.5, [df, 1, 2])
 run_value(precision_at_n, 0, [df, 3, 1])
-# test_value(map, 0.5, [df])
+run_value(map, 0.5, [df])
 #
 for res in results:
     print(res)
