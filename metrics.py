@@ -7,7 +7,7 @@ df = pd.DataFrame(
     {'query': [1, 1, 2, 2, 3], 'Tweet_id': [12345, 12346, 12347, 12348, 12349],
      'label': [1, 0, 1, 1, 0]})
 
-# df = pd.read_csv("311178123.csv")
+# df = pd.read_csv(r"C:\Users\Owner\Desktop\SearchEngine\labels\311178123.csv")
 
 test_number = 0
 results = []
@@ -54,6 +54,8 @@ def recall(df, num_of_relevant):
          and values are the number of relevant.
         :return: Double - The recall
     """
+    if len(num_of_relevant) == 1 and list(num_of_relevant.values())[0] == 0:
+        return None
 
     queries = num_of_relevant.keys()
     total_recall = 0
