@@ -1,11 +1,13 @@
 import traceback
-
+import math
 import pandas as pd
 from functools import reduce
 
 df = pd.DataFrame(
     {'query': [1, 1, 2, 2, 3], 'Tweet_id': [12345, 12346, 12347, 12348, 12349],
      'label': [1, 0, 1, 1, 0]})
+
+# df = pd.read_csv("311178123.csv")
 
 test_number = 0
 results = []
@@ -27,8 +29,6 @@ def precision(df, single=False, query_number=None):
         total = df.shape[0]
 
     else:
-        # total_relevance = df['label'].aggregate('sum')
-        # total = df.shape[0]
         queries = df['query'].tolist()
         queries = set(queries)
         total_precision = 0
@@ -54,13 +54,17 @@ def recall(df, num_of_relevant):
          and values are the number of relevant.
         :return: Double - The recall
     """
+
     queries = num_of_relevant.keys()
     total_recall = 0
+    total = len(num_of_relevant)
     for query in queries:
         query_df = df.loc[df['query'] == query]
         total_relevance = query_df['label'].aggregate('sum')
-        total_recall += total_relevance / num_of_relevant[query]
-
+        if num_of_relevant[query]:
+            total_recall += total_relevance / num_of_relevant[query]
+        else:
+            total -= 1
     return total_recall / len(num_of_relevant)
 
 
@@ -163,6 +167,8 @@ run_value(recall, 0.388, [df, {1: 2, 2: 3, 3: 1}])
 run_value(precision_at_n, 0.5, [df, 1, 2])
 run_value(precision_at_n, 0, [df, 3, 1])
 run_value(map, 2 / 3, [df])
+
+
 
 for res in results:
     print(res)
