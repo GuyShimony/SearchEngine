@@ -1,3 +1,6 @@
+import os
+
+
 class ConfigClass:
     def __init__(self):
         # link to a zip file in google drive with your pretrained model
@@ -15,6 +18,7 @@ class ConfigClass:
         self.saveFilesWithStem = self.savedFileMainFolder + "/WithStem"
         self.saveFilesWithoutStem = self.savedFileMainFolder + "/WithoutStem"
         self.toStem = False
+        self.toLemm = False
 
         print('Project was created successfully..')
 
@@ -26,3 +30,20 @@ class ConfigClass:
 
     def get_download_model(self):
         return self._download_model
+
+    def set_output_path(self, path):
+        self.savedFileMainFolder = path
+        if 'nt' in os.name:  # Windows system
+            self.saveFilesWithStem = self.savedFileMainFolder + "\\WithStem"
+            self.saveFilesWithoutStem = self.savedFileMainFolder + "\\WithoutStem"
+        else:  # Unix system
+            self.saveFilesWithoutStem = self.savedFileMainFolder + "/WithoutStem"
+            self.saveFilesWithStem = self.savedFileMainFolder + "/WithStem"
+
+    def get_output_path(self):
+        """
+        Get the output for the posting files
+        """
+        return os.getcwd()
+
+
