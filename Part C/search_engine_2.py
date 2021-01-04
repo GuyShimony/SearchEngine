@@ -6,6 +6,7 @@ from indexer import Indexer
 from searcher import Searcher
 import utils
 import math
+from SpellChecker import SpellCheck
 
 
 # DO NOT CHANGE THE CLASS NAME
@@ -57,7 +58,6 @@ class SearchEngine:
         Input:
             fn - file name of pickled index.
         """
-        # TODO: Check if the index needs to be in the memory in run time
         self._indexer.load_index(fn)
 
     # DO NOT MODIFY THIS SIGNATURE
@@ -83,6 +83,7 @@ class SearchEngine:
             a list of tweet_ids where the first element is the most relavant
             and the last is the least relevant result.
         """
+        query = SpellCheck.spellCheck(query)
         searcher = Searcher(self._parser, self._indexer, model=self._model)
         return searcher.search(query)
 
@@ -113,7 +114,7 @@ def main():
 
     se = SearchEngine(config)
     se.build_index_from_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
-    n_res, res, docs = se.search('Coronavirus is less dangerous than the flu	coronavirus less dangerous flu')
+    n_res, res, docs = se.search('Coronaviros is less dangeros than the fla	coronavirus less dangerous flu')
     df = pd.read_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 

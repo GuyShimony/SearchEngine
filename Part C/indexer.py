@@ -57,19 +57,19 @@ class Indexer:
                         self.inverted_idx[term] = self.inverted_idx[term.upper()]
                         self.inverted_idx[term]["freq"] += 1
                         self.inverted_idx[term]["df"] += 1
-                        self.inverted_idx[term]["posting_list"].append((document.tweet_id, document_dictionary[term]))
+                        self.inverted_idx[term]["posting_list"][document.tweet_id] = [document_dictionary[term]/document.doc_length]
                         self.inverted_idx.pop(term.upper())
 
                     else:  # term is not in the dictionary in any form (case)
                         self.inverted_idx[term] = {"freq": 1,
                                                    "df": 1,
-                                                   "posting_list": [(document.tweet_id,document_dictionary[term])]}
+                                                   "posting_list": {document.tweet_id:[document_dictionary[term]/document.doc_length]}}
 
                 else:
-                    # term is in the inverted_inde
+                    # term is in the inverted_index
                     self.inverted_idx[term]["freq"] += 1
                     self.inverted_idx[term]["df"] += 1
-                    self.inverted_idx[term]["posting_list"].append((document.tweet_id, document_dictionary[term]))
+                    self.inverted_idx[term]["posting_list"][document.tweet_id] = [document_dictionary[term]/document.doc_length]
 
                 #self.postingDict[term].append((document.tweet_id, document_dictionary[term]))
 

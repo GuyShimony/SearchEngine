@@ -1,11 +1,16 @@
-# you can change whatever you want in this module, just make sure it doesn't 
+import math
+
+# you can change whatever you want in this module, just make sure it doesn't
 # break the searcher module
 class Ranker:
+    query_terms = {}
+    query_weight = 0
+
     def __init__(self):
         pass
 
     @staticmethod
-    def rank_relevant_docs(relevant_docs, query_weight, k=None):
+    def rank_relevant_docs(relevant_docs, k=None):
         """
         This function provides rank for each relevant document and sorts them by their scores.
         The current score considers solely the number of terms shared by the tweet (full_text) and query.
@@ -17,10 +22,10 @@ class Ranker:
         for rel_doc in relevant_docs:
             total_doc_scores[rel_doc] = 0
         # document_scores_tf_idf = Ranker.tf_idf(relevant_docs, number_of_documents)
-        document_scores_cosin = Ranker.cosine_sim(relevant_docs, query_weight)
+        document_scores_cosin = Ranker.cosine_sim(relevant_docs)
         for doc in total_doc_scores:
             inner_product_score = Ranker.inner_product(doc)
-            total_doc_scores[doc] = 0.5 * document_scores_cosin[doc] + 0.5 * inner_product_score
+            total_doc_scores[doc] = 0.8 * document_scores_cosin[doc] + 0.2 * inner_product_score
         return sorted(total_doc_scores.items(), key=lambda item: item[1], reverse=True)
 
     @staticmethod
@@ -46,7 +51,7 @@ class Ranker:
         return inner_product
 
     @staticmethod
-    def cosine_sim(relevant_docs, query_weight):
+    def cosine_sim(relevant_docs):
         document_scores_cosin = {}
         # numerator -> inner product
         for relevant_doc in relevant_docs:
@@ -61,7 +66,7 @@ class Ranker:
             doc_weight = relevant_docs[relevant_doc][8]
             # denominator right -> term per query weight squared
 
-            cosin_denominator = math.sqrt(doc_weight * query_weight)
+            cosin_denominator = math.sqrt(doc_weight * Ranker.query_weight)
             cosin_score = inner_product / cosin_denominator
             document_scores_cosin[relevant_doc] = cosin_score
 
