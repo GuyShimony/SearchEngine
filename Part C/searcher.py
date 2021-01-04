@@ -53,17 +53,7 @@ class Searcher:
         :param query_as_list: parsed query tokens
         :return: dictionary of relevant documents mapping doc_id to document frequency.
         """
-        # posting_list = self._indexer.get_term_posting_list(term)
 
-    #     relevant_docs = {}
-    #     for term in query_as_list:
-    #         posting_list = self._indexer.get_term_posting_list(term)
-    #         for doc_id, tf in posting_list:
-    #             df = relevant_docs.get(doc_id, 0)
-    #             relevant_docs[doc_id] = df + 1
-    #     return relevant_docs
-    #
-        # it from the docs_index
         relevant_docs = {}
         Ranker.query_terms = {}
         for term in query_as_list:
@@ -87,7 +77,7 @@ class Searcher:
 
                 query_weight += math.pow(Ranker.query_terms[term], 2)
 
-                for doc_id in self.inverted_index[term]["posting_list"]:
+                for doc_id in self._indexer.get_term_posting_list(term):
                     normalized_tf = self.inverted_index[term]["posting_list"][doc_id][0]
                     term_df = self.inverted_index[term]["df"]
                     #term_tf = round(0.6 * (tf / max_tf) + 0.4 * (tf / doc_len),3) # Maybe try again max_tf with doc len
