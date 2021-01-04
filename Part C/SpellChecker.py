@@ -1,5 +1,6 @@
 from spellchecker import SpellChecker
 
+
 class SpellCheck:
 
     @staticmethod
@@ -7,6 +8,8 @@ class SpellCheck:
         corrected_word_string = ""
         words_to_check = string_to_check.split()
         spell = SpellChecker()
+
+        spell.word_frequency.add("coronavirus")
 
         for word in words_to_check:
             corrected_word = spell.correction(word)
