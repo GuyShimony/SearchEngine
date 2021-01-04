@@ -6,7 +6,7 @@ from indexer import Indexer
 from searcher import Searcher
 import utils
 import math
-from SpellChecker import SpellCheck
+from Thesaurus import Thesaurus
 
 
 # DO NOT CHANGE THE CLASS NAME
@@ -83,7 +83,7 @@ class SearchEngine:
             a list of tweet_ids where the first element is the most relavant
             and the last is the least relevant result.
         """
-        query = SpellCheck.spellCheck(query)
+        query = Thesaurus.synonyms(query)
         searcher = Searcher(self._parser, self._indexer, model=self._model)
         return searcher.search(query)
 
@@ -114,7 +114,7 @@ def main():
 
     se = SearchEngine(config)
     se.build_index_from_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
-    n_res, res, docs = se.search('Coronaviros is less dangeros than the fla	coronavirus less dangerous flu')
+    n_res, res, docs = se.search('Coronavirus is less dangerous than the flu	coronavirus less dangerous flu')
     df = pd.read_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 
