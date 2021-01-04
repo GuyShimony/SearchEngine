@@ -111,7 +111,7 @@ class Indexer:
         """
         Checks if a term exist in the dictionary.
         """
-        return term in self.postingDict
+        return term in self.inverted_idx
 
     # feel free to change the signature and/or implementation of this function 
     # or drop altogether.
@@ -119,7 +119,7 @@ class Indexer:
         """
         Return the posting list from the index for a term.
         """
-        return self.postingDict[term] if self._is_term_exist(term) else []
+        return self.inverted_idx[term]["posting_list"] if self._is_term_exist(term) else []
 
     def capital_letters(self, document_dictionary):
         """

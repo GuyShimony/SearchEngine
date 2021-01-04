@@ -90,7 +90,7 @@ class SearchEngine:
         # TODO: Think about a way to loop through each doc once
         for word in self._indexer.inverted_idx:
 
-            for doc_id in self._indexer.inverted_idx[word]['posting_list']:
+            for doc_id in self._indexer.get_term_posting_list(word):
                 normalized_term_tf = self._indexer.inverted_idx[word]["posting_list"][doc_id][0]
                 doc_len = self._indexer.docs_index[doc_id][2]
                 term_df = self._indexer.inverted_idx[word]['df']
