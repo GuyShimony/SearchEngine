@@ -89,16 +89,13 @@ class SearchEngine:
     def calculate_doc_weight(self):
         # TODO: Think about a way to loop through each doc once
         for word in self._indexer.inverted_idx:
-            if word == "flu":
-                print("sasa")
+
             for doc_id in self._indexer.inverted_idx[word]['posting_list']:
                 normalized_term_tf = self._indexer.inverted_idx[word]["posting_list"][doc_id][0]
-                # term_tf = merged_dict[key]['docs'][i][1]
                 doc_len = self._indexer.docs_index[doc_id][2]
                 term_df = self._indexer.inverted_idx[word]['df']
-
                 max_tf = self._indexer.docs_index[doc_id][1]
-                term_idf = math.log10(self.corpus_size / term_df)
+                term_idf = math.log2(self.corpus_size / term_df)
                 # calculate doc's total weight
                 # term_weight_squared = math.pow(0.8 * (term_tf / max_tf) * term_idf + 0.2 * (term_tf / doc_len) * term_idf,2)
                 term_weight = normalized_term_tf * term_idf

@@ -1,7 +1,10 @@
 import utils
 import string
+import math
+
 # DO NOT MODIFY CLASS NAME
 class Indexer:
+
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
     def __init__(self, config):
@@ -11,7 +14,7 @@ class Indexer:
         self.config = config
         self.lower_case_words = {}
         self.docs_counter = 0
-
+        self.total_docs_len = 0
 
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
@@ -41,7 +44,9 @@ class Indexer:
                 number_of_curses += 1
 
         self.docs_index[document.tweet_id] = [0, max_tf, document.doc_length, terms_with_one_occurrence,
-                                             number_of_curses]
+                                              number_of_curses]
+
+        self.total_docs_len += document.doc_length
 
         # Go over each term in the doc
         for term in document_dictionary.keys():
@@ -57,21 +62,24 @@ class Indexer:
                         self.inverted_idx[term] = self.inverted_idx[term.upper()]
                         self.inverted_idx[term]["freq"] += 1
                         self.inverted_idx[term]["df"] += 1
-                        self.inverted_idx[term]["posting_list"][document.tweet_id] = [document_dictionary[term]/document.doc_length]
+                        self.inverted_idx[term]["posting_list"][document.tweet_id] = [
+                            document_dictionary[term] / document.doc_length]
                         self.inverted_idx.pop(term.upper())
 
                     else:  # term is not in the dictionary in any form (case)
                         self.inverted_idx[term] = {"freq": 1,
                                                    "df": 1,
-                                                   "posting_list": {document.tweet_id:[document_dictionary[term]/document.doc_length]}}
+                                                   "posting_list": {document.tweet_id: [
+                                                      document_dictionary[term] / document.doc_length]}}
 
                 else:
                     # term is in the inverted_index
                     self.inverted_idx[term]["freq"] += 1
                     self.inverted_idx[term]["df"] += 1
-                    self.inverted_idx[term]["posting_list"][document.tweet_id] = [document_dictionary[term]/document.doc_length]
+                    self.inverted_idx[term]["posting_list"][document.tweet_id] = [
+                       document_dictionary[term] / document.doc_length]
 
-                #self.postingDict[term].append((document.tweet_id, document_dictionary[term]))
+                # self.postingDict[term].append((document.tweet_id, document_dictionary[term]))
 
             except Exception as e:
                 print(str(e))
@@ -96,7 +104,7 @@ class Indexer:
               fn - file name of pickled index.
         """
         utils.save_obj(self.inverted_idx, fn)
-        
+
     # feel free to change the signature and/or implementation of this function 
     # or drop altogether.
     def _is_term_exist(self, term):

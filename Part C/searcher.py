@@ -18,6 +18,8 @@ class Searcher:
         self.upper_limit = 2000
         self.inverted_index = self._indexer.inverted_idx
         self.docs_index = self._indexer.docs_index
+        Ranker.avdl = self._indexer.total_docs_len / self._indexer.get_docs_count()
+
 
 
     # DO NOT MODIFY THIS SIGNATURE
@@ -39,7 +41,7 @@ class Searcher:
         # relevant_docs = self._relevant_docs_from_posting(query_as_list)
         relevant_docs, Ranker.query_weight = self._relevant_docs_from_posting(query_as_list)
         n_relevant = len(relevant_docs)
-        ranked_doc_ids = Ranker.rank_relevant_docs(relevant_docs)
+        ranked_doc_ids = Ranker.rank_relevant_docs(relevant_docs, self._indexer.get_docs_count())
         # return n_relevant, ranked_doc_ids
         return n_relevant, ranked_doc_ids, relevant_docs
 
@@ -91,7 +93,6 @@ class Searcher:
                     #term_tf = round(0.6 * (tf / max_tf) + 0.4 * (tf / doc_len),3) # Maybe try again max_tf with doc len
                     doc_len = self.docs_index[doc_id][2]
                     # term_tf = round((tf / doc_len), 3) # Maybe try again max_tf with doc len
-                    term_tf = normalized_tf # Maybe try again max_tf with doc len
                     term_tf_idf = self.inverted_index[term]["posting_list"][doc_id][1]  # normalized by max_tf and doc's length
 
                     if doc_id not in relevant_docs.keys():
@@ -102,7 +103,7 @@ class Searcher:
 
                         # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,
                         #                            document length, ..
-                        relevant_docs[doc_id] = [1, [term], max_tf, doc_len, curses_per_doc, [term_tf_idf], [term_tf],
+                        relevant_docs[doc_id] = [1, [term], max_tf, doc_len, curses_per_doc, [term_tf_idf], [normalized_tf],
                                                  [term_df], doc_weight_squared] # curses_per_doc was deleted from index 4
                         if self.number_of_docs > self.upper_limit:
                             break
@@ -111,11 +112,11 @@ class Searcher:
                         relevant_docs[doc_id][0] += 1
                         relevant_docs[doc_id][1].append(term)
                         relevant_docs[doc_id][5].append(term_tf_idf)
-                        relevant_docs[doc_id][6].append(term_tf)
+                        relevant_docs[doc_id][6].append(normalized_tf)
                         relevant_docs[doc_id][7].append(term_df)
 
             except Exception as e:
-                pass
-                print('term {} not found in posting'.format(term))
+                #pass
+                print('term {} not found in inverted index'.format(term))
 
         return relevant_docs, query_weight
