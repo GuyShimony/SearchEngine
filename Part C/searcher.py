@@ -39,8 +39,9 @@ class Searcher:
 
         # relevant_docs = self._relevant_docs_from_posting(query_as_list)
         relevant_docs, Ranker.query_weight = self._relevant_docs_from_posting(query_as_list)
-        n_relevant = len(relevant_docs)
         ranked_doc_ids = Ranker.rank_relevant_docs(relevant_docs, self._indexer.get_docs_count())
+        n_relevant = len(ranked_doc_ids)
+
         # return n_relevant, ranked_doc_ids
         return n_relevant, ranked_doc_ids, relevant_docs
 
@@ -97,8 +98,6 @@ class Searcher:
                                                  [normalized_tf],
                                                  [term_df],
                                                  doc_weight_squared]  # curses_per_doc was deleted from index 4
-                        if self.number_of_docs > self.upper_limit:
-                            break
 
                     else:
                         relevant_docs[doc_id][0] += 1

@@ -2,6 +2,7 @@ import utils
 import string
 import math
 
+
 # DO NOT MODIFY CLASS NAME
 class Indexer:
 
@@ -70,14 +71,14 @@ class Indexer:
                         self.inverted_idx[term] = {"freq": 1,
                                                    "df": 1,
                                                    "posting_list": {document.tweet_id: [
-                                                      document_dictionary[term] / document.doc_length]}}
+                                                       document_dictionary[term] / document.doc_length]}}
 
                 else:
                     # term is in the inverted_index
                     self.inverted_idx[term]["freq"] += 1
                     self.inverted_idx[term]["df"] += 1
                     self.inverted_idx[term]["posting_list"][document.tweet_id] = [
-                       document_dictionary[term] / document.doc_length]
+                        document_dictionary[term] / document.doc_length]
 
                 # self.postingDict[term].append((document.tweet_id, document_dictionary[term]))
 
@@ -104,7 +105,7 @@ class Indexer:
               fn - file name of pickled index.
         """
         # TODO: find if we need to save the docs index with the inverted_index in the same file
-        #index_with_docs_index = {**self.inverted_idx, **self.docs_index}
+        # index_with_docs_index = {**self.inverted_idx, **self.docs_index}
         utils.save_obj(self.inverted_idx, fn)
         utils.save_obj(self.inverted_idx, f"{fn}_docs_idx")
 
