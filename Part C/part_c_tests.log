@@ -1,5 +1,208 @@
-ERROR 2020-12-31 20:57:52,154: report_part_c.docx does not exist.
-ERROR 2020-12-31 20:57:52,170: search_engine_1.py does not exist.
-ERROR 2020-12-31 20:57:52,170: search_engine_2.py does not exist.
-ERROR 2020-12-31 20:58:02,395: idx_bench.pkl does not exist.
-DEBUG 2020-12-31 20:58:02,395: Total runtime was: 0:00:10.241432
+ERROR 2021-01-05 19:02:15,687: report_part_c.docx does not exist.
+INFO 2021-01-05 19:02:15,703: Successfully loaded benchmark labels data.
+INFO 2021-01-05 19:02:15,718: Successfully loaded queries data.
+INFO 2021-01-05 19:02:16,843: Successfully imported module search_engine_1.
+DEBUG 2021-01-05 19:02:21,734: Building the index in search_engine_1 for benchmark data took 4.2529667 seconds.
+DEBUG 2021-01-05 19:02:21,734: search_engine_1 successfully returned 7 results for the query 'bioweapon'.
+DEBUG 2021-01-05 19:02:21,812: search_engine_1 successfully returned 203 results for query number 1.
+INFO 2021-01-05 19:02:21,812: 203 total valid tweets
+DEBUG 2021-01-05 19:02:21,937: search_engine_1 successfully returned 1010 results for query number 2.
+INFO 2021-01-05 19:02:21,952: 1010 total valid tweets
+DEBUG 2021-01-05 19:02:22,015: search_engine_1 successfully returned 1016 results for query number 3.
+INFO 2021-01-05 19:02:22,030: 1016 total valid tweets
+DEBUG 2021-01-05 19:02:22,046: search_engine_1 successfully returned 165 results for query number 4.
+INFO 2021-01-05 19:02:22,062: 165 total valid tweets
+DEBUG 2021-01-05 19:02:22,062: search_engine_1 successfully returned 75 results for query number 5.
+INFO 2021-01-05 19:02:22,062: 75 total valid tweets
+DEBUG 2021-01-05 19:02:22,109: search_engine_1 successfully returned 1025 results for query number 6.
+INFO 2021-01-05 19:02:22,124: 1025 total valid tweets
+DEBUG 2021-01-05 19:02:22,140: search_engine_1 successfully returned 60 results for query number 7.
+INFO 2021-01-05 19:02:22,140: 60 total valid tweets
+DEBUG 2021-01-05 19:02:22,280: search_engine_1 successfully returned 974 results for query number 8.
+INFO 2021-01-05 19:02:22,296: 974 total valid tweets
+DEBUG 2021-01-05 19:02:22,343: search_engine_1 successfully returned 457 results for query number 9.
+INFO 2021-01-05 19:02:22,343: 457 total valid tweets
+DEBUG 2021-01-05 19:02:22,390: search_engine_1 successfully returned 1048 results for query number 10.
+INFO 2021-01-05 19:02:22,405: 1048 total valid tweets
+DEBUG 2021-01-05 19:02:22,546: search_engine_1 successfully returned 1016 results for query number 11.
+INFO 2021-01-05 19:02:22,562: 1016 total valid tweets
+DEBUG 2021-01-05 19:02:22,624: search_engine_1 successfully returned 1057 results for query number 12.
+INFO 2021-01-05 19:02:22,640: 1057 total valid tweets
+DEBUG 2021-01-05 19:02:22,687: search_engine_1 successfully returned 955 results for query number 13.
+INFO 2021-01-05 19:02:22,702: 955 total valid tweets
+DEBUG 2021-01-05 19:02:22,749: search_engine_1 successfully returned 1017 results for query number 14.
+INFO 2021-01-05 19:02:22,780: 1017 total valid tweets
+DEBUG 2021-01-05 19:02:22,796: search_engine_1 successfully returned 24 results for query number 15.
+INFO 2021-01-05 19:02:22,796: 24 total valid tweets
+DEBUG 2021-01-05 19:02:22,905: search_engine_1 successfully returned 437 results for query number 16.
+INFO 2021-01-05 19:02:22,921: 437 total valid tweets
+DEBUG 2021-01-05 19:02:22,952: search_engine_1 successfully returned 480 results for query number 17.
+INFO 2021-01-05 19:02:22,952: 480 total valid tweets
+DEBUG 2021-01-05 19:02:22,968: search_engine_1 successfully returned 71 results for query number 18.
+INFO 2021-01-05 19:02:22,968: 71 total valid tweets
+DEBUG 2021-01-05 19:02:22,983: search_engine_1 successfully returned 344 results for query number 19.
+INFO 2021-01-05 19:02:22,983: 344 total valid tweets
+DEBUG 2021-01-05 19:02:23,015: search_engine_1 successfully returned 361 results for query number 20.
+INFO 2021-01-05 19:02:23,015: 361 total valid tweets
+DEBUG 2021-01-05 19:02:23,062: search_engine_1 successfully returned 992 results for query number 21.
+INFO 2021-01-05 19:02:23,077: 992 total valid tweets
+DEBUG 2021-01-05 19:02:23,233: search_engine_1 successfully returned 1059 results for query number 22.
+INFO 2021-01-05 19:02:23,249: 1059 total valid tweets
+DEBUG 2021-01-05 19:02:23,296: search_engine_1 successfully returned 1008 results for query number 23.
+INFO 2021-01-05 19:02:23,312: 1008 total valid tweets
+DEBUG 2021-01-05 19:02:23,390: search_engine_1 successfully returned 1154 results for query number 24.
+INFO 2021-01-05 19:02:23,405: 1154 total valid tweets
+DEBUG 2021-01-05 19:02:23,562: search_engine_1 successfully returned 1010 results for query number 25.
+INFO 2021-01-05 19:02:23,577: 1010 total valid tweets
+DEBUG 2021-01-05 19:02:23,608: search_engine_1 successfully returned 305 results for query number 26.
+INFO 2021-01-05 19:02:23,608: 305 total valid tweets
+DEBUG 2021-01-05 19:02:23,624: search_engine_1 successfully returned 368 results for query number 27.
+INFO 2021-01-05 19:02:23,640: 368 total valid tweets
+DEBUG 2021-01-05 19:02:23,671: search_engine_1 successfully returned 982 results for query number 28.
+INFO 2021-01-05 19:02:23,702: 982 total valid tweets
+DEBUG 2021-01-05 19:02:23,749: search_engine_1 successfully returned 971 results for query number 29.
+INFO 2021-01-05 19:02:23,765: 971 total valid tweets
+DEBUG 2021-01-05 19:02:23,796: search_engine_1 successfully returned 343 results for query number 30.
+INFO 2021-01-05 19:02:23,796: 343 total valid tweets
+DEBUG 2021-01-05 19:02:23,812: search_engine_1 successfully returned 108 results for query number 31.
+INFO 2021-01-05 19:02:23,812: 108 total valid tweets
+DEBUG 2021-01-05 19:02:23,983: search_engine_1 successfully returned 1003 results for query number 32.
+INFO 2021-01-05 19:02:23,999: 1003 total valid tweets
+DEBUG 2021-01-05 19:02:24,046: search_engine_1 successfully returned 1013 results for query number 33.
+INFO 2021-01-05 19:02:24,077: 1013 total valid tweets
+DEBUG 2021-01-05 19:02:24,093: search_engine_1 successfully returned 363 results for query number 34.
+INFO 2021-01-05 19:02:24,108: 363 total valid tweets
+DEBUG 2021-01-05 19:02:24,124: search_engine_1 successfully returned 333 results for query number 35.
+INFO 2021-01-05 19:02:24,140: 333 total valid tweets
+WARNING 2021-01-05 19:02:24,249: search_engine_1's recall for the following queries was zero [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35].
+ERROR 2021-01-05 19:02:24,249: The following error occured while testing the module search_engine_1.
+ERROR 2021-01-05 19:02:24,249: division by zero
+Traceback (most recent call last):
+  File "C:/Users/FirstUser/Desktop/SearchEngine/Part C/test_part_c_students.py", line 166, in <module>
+    results_map = metrics.map(q_results_labeled)
+  File "C:\Users\FirstUser\Desktop\SearchEngine\Part C\metrics.py", line 78, in map
+    return acc / len(split_df)
+ZeroDivisionError: division by zero
+INFO 2021-01-05 19:02:24,280: Successfully imported module search_engine_2.
+DEBUG 2021-01-05 19:02:29,530: Building the index in search_engine_2 for benchmark data took 4.531880600000001 seconds.
+DEBUG 2021-01-05 19:02:29,780: search_engine_2 successfully returned 7 results for the query 'bioweapon'.
+DEBUG 2021-01-05 19:02:31,483: search_engine_2 successfully returned 146 results for query number 1.
+INFO 2021-01-05 19:02:31,483: 146 total valid tweets
+DEBUG 2021-01-05 19:02:31,733: search_engine_2 successfully returned 162 results for query number 2.
+INFO 2021-01-05 19:02:31,733: 162 total valid tweets
+DEBUG 2021-01-05 19:02:32,045: search_engine_2 successfully returned 1016 results for query number 3.
+INFO 2021-01-05 19:02:32,061: 1016 total valid tweets
+DEBUG 2021-01-05 19:02:32,342: search_engine_2 successfully returned 165 results for query number 4.
+INFO 2021-01-05 19:02:32,342: 165 total valid tweets
+DEBUG 2021-01-05 19:02:32,623: search_engine_2 successfully returned 75 results for query number 5.
+INFO 2021-01-05 19:02:32,623: 75 total valid tweets
+DEBUG 2021-01-05 19:02:32,889: search_engine_2 successfully returned 230 results for query number 6.
+INFO 2021-01-05 19:02:32,905: 230 total valid tweets
+DEBUG 2021-01-05 19:02:33,186: search_engine_2 successfully returned 60 results for query number 7.
+INFO 2021-01-05 19:02:33,186: 60 total valid tweets
+DEBUG 2021-01-05 19:02:33,483: search_engine_2 successfully returned 974 results for query number 8.
+INFO 2021-01-05 19:02:33,498: 974 total valid tweets
+DEBUG 2021-01-05 19:02:33,905: search_engine_2 successfully returned 457 results for query number 9.
+INFO 2021-01-05 19:02:33,920: 457 total valid tweets
+DEBUG 2021-01-05 19:02:34,201: search_engine_2 successfully returned 1048 results for query number 10.
+INFO 2021-01-05 19:02:34,217: 1048 total valid tweets
+DEBUG 2021-01-05 19:02:34,483: search_engine_2 successfully returned 159 results for query number 11.
+INFO 2021-01-05 19:02:34,483: 159 total valid tweets
+DEBUG 2021-01-05 19:02:35,092: search_engine_2 successfully returned 1057 results for query number 12.
+INFO 2021-01-05 19:02:35,108: 1057 total valid tweets
+DEBUG 2021-01-05 19:02:35,842: search_engine_2 successfully returned 955 results for query number 13.
+INFO 2021-01-05 19:02:35,858: 955 total valid tweets
+DEBUG 2021-01-05 19:02:36,342: search_engine_2 successfully returned 1017 results for query number 14.
+INFO 2021-01-05 19:02:36,358: 1017 total valid tweets
+DEBUG 2021-01-05 19:02:36,608: search_engine_2 successfully returned 24 results for query number 15.
+INFO 2021-01-05 19:02:36,608: 24 total valid tweets
+DEBUG 2021-01-05 19:02:36,873: search_engine_2 successfully returned 437 results for query number 16.
+INFO 2021-01-05 19:02:36,889: 437 total valid tweets
+DEBUG 2021-01-05 19:02:37,154: search_engine_2 successfully returned 480 results for query number 17.
+INFO 2021-01-05 19:02:37,170: 480 total valid tweets
+DEBUG 2021-01-05 19:02:37,436: search_engine_2 successfully returned 54 results for query number 18.
+INFO 2021-01-05 19:02:37,436: 54 total valid tweets
+DEBUG 2021-01-05 19:02:37,686: search_engine_2 successfully returned 344 results for query number 19.
+INFO 2021-01-05 19:02:37,686: 344 total valid tweets
+DEBUG 2021-01-05 19:02:37,967: search_engine_2 successfully returned 361 results for query number 20.
+INFO 2021-01-05 19:02:37,967: 361 total valid tweets
+DEBUG 2021-01-05 19:02:38,373: search_engine_2 successfully returned 992 results for query number 21.
+INFO 2021-01-05 19:02:38,389: 992 total valid tweets
+DEBUG 2021-01-05 19:02:38,998: search_engine_2 successfully returned 1059 results for query number 22.
+INFO 2021-01-05 19:02:39,014: 1059 total valid tweets
+DEBUG 2021-01-05 19:02:39,623: search_engine_2 successfully returned 1008 results for query number 23.
+INFO 2021-01-05 19:02:39,639: 1008 total valid tweets
+DEBUG 2021-01-05 19:02:40,060: search_engine_2 successfully returned 1154 results for query number 24.
+INFO 2021-01-05 19:02:40,076: 1154 total valid tweets
+DEBUG 2021-01-05 19:02:40,701: search_engine_2 successfully returned 1010 results for query number 25.
+INFO 2021-01-05 19:02:40,717: 1010 total valid tweets
+DEBUG 2021-01-05 19:02:40,982: search_engine_2 successfully returned 305 results for query number 26.
+INFO 2021-01-05 19:02:40,998: 305 total valid tweets
+DEBUG 2021-01-05 19:02:41,279: search_engine_2 successfully returned 363 results for query number 27.
+INFO 2021-01-05 19:02:41,279: 363 total valid tweets
+DEBUG 2021-01-05 19:02:41,873: search_engine_2 successfully returned 982 results for query number 28.
+INFO 2021-01-05 19:02:41,888: 982 total valid tweets
+DEBUG 2021-01-05 19:02:42,263: search_engine_2 successfully returned 971 results for query number 29.
+INFO 2021-01-05 19:02:42,279: 971 total valid tweets
+DEBUG 2021-01-05 19:02:42,529: search_engine_2 successfully returned 343 results for query number 30.
+INFO 2021-01-05 19:02:42,545: 343 total valid tweets
+DEBUG 2021-01-05 19:02:44,138: search_engine_2 successfully returned 108 results for query number 31.
+INFO 2021-01-05 19:02:44,138: 108 total valid tweets
+DEBUG 2021-01-05 19:02:44,763: search_engine_2 successfully returned 1003 results for query number 32.
+INFO 2021-01-05 19:02:44,779: 1003 total valid tweets
+DEBUG 2021-01-05 19:02:45,357: search_engine_2 successfully returned 1013 results for query number 33.
+INFO 2021-01-05 19:02:45,373: 1013 total valid tweets
+DEBUG 2021-01-05 19:02:45,638: search_engine_2 successfully returned 363 results for query number 34.
+INFO 2021-01-05 19:02:45,638: 363 total valid tweets
+DEBUG 2021-01-05 19:02:45,904: search_engine_2 successfully returned 333 results for query number 35.
+INFO 2021-01-05 19:02:45,919: 333 total valid tweets
+WARNING 2021-01-05 19:02:46,013: search_engine_2's recall for the following queries was zero [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35].
+ERROR 2021-01-05 19:02:46,013: The following error occured while testing the module search_engine_2.
+ERROR 2021-01-05 19:02:46,013: division by zero
+Traceback (most recent call last):
+  File "C:/Users/FirstUser/Desktop/SearchEngine/Part C/test_part_c_students.py", line 166, in <module>
+    results_map = metrics.map(q_results_labeled)
+  File "C:\Users\FirstUser\Desktop\SearchEngine\Part C\metrics.py", line 78, in map
+    return acc / len(split_df)
+ZeroDivisionError: division by zero
+INFO 2021-01-05 19:02:46,013: Successfully imported module search_engine_best.
+DEBUG 2021-01-05 19:02:52,412: Building the index in search_engine_best for benchmark data took 5.589950299999998 seconds.
+ERROR 2021-01-05 19:02:52,412: basic query for the word bioweapon returned no results
+ERROR 2021-01-05 19:02:52,412: Query 1 with keywords 'fauci paper hydroxychloroquine sars' returned no results.
+ERROR 2021-01-05 19:02:52,412: Query 2 with keywords 'flu kills more than covid' returned no results.
+ERROR 2021-01-05 19:02:52,412: Query 3 with keywords 'coronavirus less dangerous flu' returned no results.
+ERROR 2021-01-05 19:02:52,412: Query 4 with keywords 'gates implant microchips' returned no results.
+ERROR 2021-01-05 19:02:52,412: Query 5 with keywords 'vaccines move freely' returned no results.
+ERROR 2021-01-05 19:02:52,412: Query 6 with keywords 'Gates own covid vaccine' returned no results.
+ERROR 2021-01-05 19:02:52,412: Query 7 with keywords 'Herd immunity reached' returned no results.
+ERROR 2021-01-05 19:02:52,412: Query 8 with keywords 'children immune to coronavirus' returned no results.
+ERROR 2021-01-05 19:02:52,412: Query 9 with keywords 'face masks prevent spread' returned no results.
+ERROR 2021-01-05 19:02:52,412: Query 10 with keywords 'zinc can cure coronavirus' returned no results.
+ERROR 2021-01-05 19:02:52,412: Query 11 with keywords 'US lowest covid mortality' returned no results.
+ERROR 2021-01-05 19:02:52,412: Query 12 with keywords 'warm weather slows covid-19 spread ' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 13 with keywords '5G spreads covid-19' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 14 with keywords 'disinfectant can cure coronavirus' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 15 with keywords 'operation lockstep rockefeller' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 16 with keywords 'epidemic status death rate' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 17 with keywords 'wear masks healthy people' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 18 with keywords 'bioweapon lab wuhan' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 19 with keywords 'people ate bat soup' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 20 with keywords 'Outbreak people ate bat' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 21 with keywords 'coronavirus eat bat soup' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 22 with keywords 'covid-19 spread farts' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 23 with keywords 'flu deadlier than covid-19' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 24 with keywords 'coronavirus caused by virus' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 25 with keywords 'Covid-19 not caused by bacteria' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 26 with keywords 'masks do not cause oxygen deficiency' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 27 with keywords 'Masks don't cause CO2 intoxication.' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 28 with keywords 'covid-19 caused by coin shortage' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 29 with keywords 'coin shortage coronavirus' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 30 with keywords 'not wear masks while exercising' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 31 with keywords 'hydroxychloroquine treating SARS' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 32 with keywords 'Bill Gates is responsible for Covid-19' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 33 with keywords 'cold can cause positive COVID-19 test' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 34 with keywords 'wearing masks proven ineffective' returned no results.
+ERROR 2021-01-05 19:02:52,427: Query 35 with keywords 'virus has a cure' returned no results.
+INFO 2021-01-05 19:02:52,427: idx_bench.pkl found!
+INFO 2021-01-05 19:02:52,802: Successfully loaded idx_bench.pkl using search_engine_best.
+DEBUG 2021-01-05 19:02:52,802: Total runtime was: 0:00:37.115070

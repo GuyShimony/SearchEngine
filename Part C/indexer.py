@@ -94,7 +94,7 @@ class Indexer:
         Input:
             fn - file name of pickled index.
         """
-        return utils.load_obj(self.inverted_idx)
+        return utils.load_obj(fn)
 
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
@@ -106,7 +106,7 @@ class Indexer:
         """
         # TODO: find if we need to save the docs index with the inverted_index in the same file
         # index_with_docs_index = {**self.inverted_idx, **self.docs_index}
-        utils.save_obj(self.inverted_idx, fn)
+        utils.save_obj(self.inverted_idx, "idx_bench")
         utils.save_obj(self.inverted_idx, f"{fn}_docs_idx")
 
     # feel free to change the signature and/or implementation of this function 

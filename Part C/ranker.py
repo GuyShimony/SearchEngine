@@ -33,7 +33,8 @@ class Ranker:
         top_sorted_relevant_docs = sorted(total_doc_scores.items(), key=lambda item: item[1], reverse=True)
         number_of_relevant_docs_found = len(top_sorted_relevant_docs)
         # trial and error - retrieve top % of the docs
-        k = round(0.2 * number_of_relevant_docs_found)
+        if k is None:
+            k = round(0.2 * number_of_relevant_docs_found)
         return Ranker.retrieve_top_k(top_sorted_relevant_docs, k)
 
     @staticmethod
