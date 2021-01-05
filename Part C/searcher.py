@@ -41,10 +41,10 @@ class Searcher:
         relevant_docs, Ranker.query_weight = self._relevant_docs_from_posting(query_as_list)
         ranked_doc_ids = Ranker.rank_relevant_docs(relevant_docs, self._indexer.get_docs_count())
         n_relevant = len(ranked_doc_ids)
-        ranked_doc_ids = [doc_id for doc_id, rank in ranked_doc_ids]
+        # ranked_doc_ids = [doc_id for doc_id, rank in ranked_doc_ids]
 
-        return n_relevant, ranked_doc_ids
-        # return n_relevant, ranked_doc_ids, relevant_docs
+        # return n_relevant, ranked_doc_ids
+        return n_relevant, ranked_doc_ids, relevant_docs
 
     # feel free to change the signature and/or implementation of this function 
     # or drop altogether.

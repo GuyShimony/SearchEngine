@@ -90,6 +90,7 @@ class SearchEngine:
     def calculate_doc_weight(self):
         # TODO: Think about a way to loop through each doc once
         for word in self._indexer.inverted_idx:
+
             for doc_id in self._indexer.inverted_idx[word]['posting_list']:
                 normalized_term_tf = self._indexer.inverted_idx[word]["posting_list"][doc_id][0]
                 # term_tf = merged_dict[key]['docs'][i][1]
