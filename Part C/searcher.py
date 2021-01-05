@@ -16,8 +16,8 @@ class Searcher:
         self._model = model
         self.number_of_docs = 0
         self.upper_limit = 2000
-        self.inverted_index = self._indexer.inverted_idx
-        self.docs_index = self._indexer.docs_index
+        self.inverted_index = self._indexer.get_inverted_index()
+        self.docs_index = self._indexer.get_docs_index()
         Ranker.avdl = self._indexer.total_docs_len / self._indexer.get_docs_count()
 
 

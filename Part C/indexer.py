@@ -103,7 +103,10 @@ class Indexer:
         Input:
               fn - file name of pickled index.
         """
+        # TODO: find if we need to save the docs index with the inverted_index in the same file
+        #index_with_docs_index = {**self.inverted_idx, **self.docs_index}
         utils.save_obj(self.inverted_idx, fn)
+        utils.save_obj(self.inverted_idx, f"{fn}_docs_idx")
 
     # feel free to change the signature and/or implementation of this function 
     # or drop altogether.
@@ -150,5 +153,19 @@ class Indexer:
     def get_inverted_index(self):
         return self.inverted_idx
 
+    def get_docs_index(self):
+        return self.docs_index
+
     def get_docs_count(self):
         return self.docs_counter
+
+    def __getitem__(self, term_and_item):
+        if term_and_item[0] in self.inverted_idx:
+            return self.inverted_idx[term_and_item[0]][term_and_item[1]]
+
+        elif [term_and_item[0]] in self.docs_index:
+            return self.docs_index[[term_and_item[0]]][term_and_item[1]]
+
+        else:
+            #  The item is not in either the idx and docs_index
+            return None
