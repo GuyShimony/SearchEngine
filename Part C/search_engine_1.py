@@ -117,8 +117,12 @@ def main():
     df = pd.read_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 
+    to_return = pd.DataFrame(columns=["query","tweet_id"])
     for r in res:
+        to_return = to_return.append({"query":3, "tweet_id":r[0]}, ignore_index=True)
+
         print(r, docs[r[0]])
         print(df[df.tweet_id == r[0]].full_text)
-
+    
+    to_return.to_csv("results.csv")
     print(n_res)
