@@ -21,8 +21,12 @@ def load_obj(name):
     :param name: name of the pickle file
     :return: loaded pickle file
     """
-    with open(name + '.pkl', 'rb') as f:
-        return pickle.load(f)
+    if ".pkl" in name:
+        with open(name, 'rb') as f:
+            return pickle.load(f)
+    else:
+        with open(name + '.pkl', 'rb') as f:
+            return pickle.load(f)
 
 
 __fid_ptrn = re.compile(

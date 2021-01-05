@@ -88,7 +88,8 @@ class SearchEngine:
 
     def calculate_doc_weight(self):
         # TODO: Think about a way to loop through each doc once
-        inverted_index = self._indexer.get_inverted_index()
+        #inverted_index = self._indexer.get_inverted_index()
+        inverted_index = self._indexer.inverted_idx
         docs_index = self._indexer.get_docs_index()
 
         for word in inverted_index:
@@ -113,16 +114,16 @@ def main():
 
     se = SearchEngine(config)
     se.build_index_from_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
-    n_res, res, docs = se.search('Microsoft co-founder Bill Gates said "only the people who have all the vaccines will still be able to move freely".	vaccines move freely')
+    n_res, res = se.search('wearing masks proven ineffective')
     df = pd.read_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 
     to_return = pd.DataFrame(columns=["query","tweet_id"])
     for r in res:
-        to_return = to_return.append({"query":5, "tweet_id":r[0]}, ignore_index=True)
+        to_return = to_return.append({"query":1, "tweet_id":r[0]}, ignore_index=True)
 
-        print(r, docs[r[0]])
+       # print(r, docs[r[0]])
         print(df[df.tweet_id == r[0]].full_text)
 
-    to_return.to_csv("results5.csv", index=False)
+    to_return.to_csv("results6.csv", index=False)
     print(n_res)
