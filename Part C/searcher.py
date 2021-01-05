@@ -2,6 +2,7 @@ from ranker import Ranker
 import utils
 import math
 
+
 # DO NOT MODIFY CLASS NAME
 class Searcher:
     # DO NOT MODIFY THIS SIGNATURE
@@ -19,8 +20,6 @@ class Searcher:
         self.inverted_index = self._indexer.get_inverted_index()
         self.docs_index = self._indexer.get_docs_index()
         Ranker.avdl = self._indexer.total_docs_len / self._indexer.get_docs_count()
-
-
 
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
@@ -80,10 +79,11 @@ class Searcher:
                 for doc_id in self._indexer.get_term_posting_list(term):
                     normalized_tf = self.inverted_index[term]["posting_list"][doc_id][0]
                     term_df = self.inverted_index[term]["df"]
-                    #term_tf = round(0.6 * (tf / max_tf) + 0.4 * (tf / doc_len),3) # Maybe try again max_tf with doc len
+                    # term_tf = round(0.6 * (tf / max_tf) + 0.4 * (tf / doc_len),3) # Maybe try again max_tf with doc len
                     doc_len = self.docs_index[doc_id][2]
                     # term_tf = round((tf / doc_len), 3) # Maybe try again max_tf with doc len
-                    term_tf_idf = self.inverted_index[term]["posting_list"][doc_id][1]  # normalized by max_tf and doc's length
+                    term_tf_idf = self.inverted_index[term]["posting_list"][doc_id][
+                        1]  # normalized by max_tf and doc's length
 
                     if doc_id not in relevant_docs.keys():
                         curses_per_doc = self.docs_index[doc_id][4]
@@ -93,8 +93,10 @@ class Searcher:
 
                         # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,
                         #                            document length, ..
-                        relevant_docs[doc_id] = [1, [term], max_tf, doc_len, curses_per_doc, [term_tf_idf], [normalized_tf],
-                                                 [term_df], doc_weight_squared] # curses_per_doc was deleted from index 4
+                        relevant_docs[doc_id] = [1, [term], max_tf, doc_len, curses_per_doc, [term_tf_idf],
+                                                 [normalized_tf],
+                                                 [term_df],
+                                                 doc_weight_squared]  # curses_per_doc was deleted from index 4
                         if self.number_of_docs > self.upper_limit:
                             break
 
@@ -106,7 +108,7 @@ class Searcher:
                         relevant_docs[doc_id][7].append(term_df)
 
             except Exception as e:
-                #pass
+                # pass
                 print('term {} not found in inverted index'.format(term))
 
         return relevant_docs, query_weight
