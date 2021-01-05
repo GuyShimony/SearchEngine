@@ -1,16 +1,14 @@
 from reader import ReadFile
 from parser_module import Parse
+from stemmer import Stemmer
 import os
 import string
 
 preprocessed_file = "preprocessoed.txt"
-reader = ReadFile(r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-15-2020")
+reader = ReadFile(r"C:\Users\Owner\Desktop\SearchEngine\Data\date=08-05-2020")
 parser = Parse()
-
-documents_list = reader.read_file("covid19_07-15.snappy.parquet")
-
-if os.path.exists(preprocessed_file):
-    os.remove(preprocessed_file)
+stemmer = Stemmer()
+documents_list = reader.read_file("covid19_08-05.snappy.parquet")
 
 with open(preprocessed_file, "a+") as f:
     for idx, document in enumerate(documents_list):
@@ -18,6 +16,7 @@ with open(preprocessed_file, "a+") as f:
         parsed_document = parser.parse_doc(document)
         doc = ""
         for i, word in enumerate(parsed_document.term_doc_dictionary):
+            word = stemmer.stem_term(word)
             if i == len(parsed_document.term_doc_dictionary) - 1:
                 doc = doc.replace('\n', "")
                 doc+="\n"
