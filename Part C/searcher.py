@@ -41,6 +41,7 @@ class Searcher:
         relevant_docs, Ranker.query_weight = self._relevant_docs_from_posting(query_as_list)
         ranked_doc_ids = Ranker.rank_relevant_docs(relevant_docs, self._indexer.get_docs_count())
         n_relevant = len(ranked_doc_ids)
+        ranked_doc_ids = [doc_id for doc_id, rank in ranked_doc_ids]
 
         return n_relevant, ranked_doc_ids
         # return n_relevant, ranked_doc_ids, relevant_docs
@@ -74,38 +75,41 @@ class Searcher:
         query_weight = 0
         for term in Ranker.query_terms:
             try:
+                if term == 'bioweapon':
+                    print("fuck")
 
                 query_weight += math.pow(Ranker.query_terms[term], 2)
+                try:
+                    for doc_id in self._indexer.get_term_posting_list(term):
+                        normalized_tf = self.inverted_index[term]["posting_list"][doc_id][0]
+                        term_df = self.inverted_index[term]["df"]
+                        # term_tf = round(0.6 * (tf / max_tf) + 0.4 * (tf / doc_len),3) # Maybe try again max_tf with doc len
+                        doc_len = self.docs_index[doc_id][2]
+                        # term_tf = round((tf / doc_len), 3) # Maybe try again max_tf with doc len
+                        term_tf_idf = self.inverted_index[term]["posting_list"][doc_id][
+                            1]  # normalized by max_tf and doc's length
 
-                for doc_id in self._indexer.get_term_posting_list(term):
-                    normalized_tf = self.inverted_index[term]["posting_list"][doc_id][0]
-                    term_df = self.inverted_index[term]["df"]
-                    # term_tf = round(0.6 * (tf / max_tf) + 0.4 * (tf / doc_len),3) # Maybe try again max_tf with doc len
-                    doc_len = self.docs_index[doc_id][2]
-                    # term_tf = round((tf / doc_len), 3) # Maybe try again max_tf with doc len
-                    term_tf_idf = self.inverted_index[term]["posting_list"][doc_id][
-                        1]  # normalized by max_tf and doc's length
+                        if doc_id not in relevant_docs.keys():
+                            curses_per_doc = self.docs_index[doc_id][4]
+                            # already calculated per doc, need to get and insert only once
+                            max_tf = self.docs_index[doc_id][1]
+                            doc_weight_squared = self.docs_index[doc_id][0]
 
-                    if doc_id not in relevant_docs.keys():
-                        curses_per_doc = self.docs_index[doc_id][4]
-                        # already calculated per doc, need to get and insert only once
-                        max_tf = self.docs_index[doc_id][1]
-                        doc_weight_squared = self.docs_index[doc_id][0]
+                            # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,
+                            #                            document length, ..
+                            relevant_docs[doc_id] = [1, [term], max_tf, doc_len, curses_per_doc, [term_tf_idf],
+                                                     [normalized_tf],
+                                                     [term_df],
+                                                     doc_weight_squared]  # curses_per_doc was deleted from index 4
 
-                        # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,
-                        #                            document length, ..
-                        relevant_docs[doc_id] = [1, [term], max_tf, doc_len, curses_per_doc, [term_tf_idf],
-                                                 [normalized_tf],
-                                                 [term_df],
-                                                 doc_weight_squared]  # curses_per_doc was deleted from index 4
-
-                    else:
-                        relevant_docs[doc_id][0] += 1
-                        relevant_docs[doc_id][1].append(term)
-                        relevant_docs[doc_id][5].append(term_tf_idf)
-                        relevant_docs[doc_id][6].append(normalized_tf)
-                        relevant_docs[doc_id][7].append(term_df)
-
+                        else:
+                            relevant_docs[doc_id][0] += 1
+                            relevant_docs[doc_id][1].append(term)
+                            relevant_docs[doc_id][5].append(term_tf_idf)
+                            relevant_docs[doc_id][6].append(normalized_tf)
+                            relevant_docs[doc_id][7].append(term_df)
+                except Exception as e:
+                    print("DSF")
             except Exception as e:
                 # pass
                 print('term {} not found in inverted index'.format(term))

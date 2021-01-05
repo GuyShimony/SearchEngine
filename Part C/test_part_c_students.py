@@ -28,7 +28,6 @@ if __name__ == '__main__':
     def invalid_tweet_id(tid):
         if not isinstance(tid, str):
             tid = str(tid)
-
         if tid_ptrn.fullmatch(tid) is None:
             return True
         return False
@@ -125,6 +124,7 @@ if __name__ == '__main__':
                         q_id = row['query_id']
                         q_keywords = row['keywords']
                         start_time = time.time()
+                        print(q_keywords)
                         q_n_res, q_res = engine.search(q_keywords)
                         end_time = time.time()
                         q_time = end_time - start_time
@@ -144,7 +144,6 @@ if __name__ == '__main__':
                         if q_time > 10:
                             logging.error(f"Query {q_id} with keywords '{q_keywords}' took more than 10 seconds.")
 
-                print(queries_results)
                 queries_results = pd.DataFrame(queries_results, columns=['query', 'tweet'])
 
                 # merge query results with labels benchmark
@@ -205,4 +204,5 @@ if __name__ == '__main__':
         logging.error(e, exc_info=True)
 
     run_time = datetime.now() - start
+    print("Run Time: ", run_time)
     logging.debug(f'Total runtime was: {run_time}')
