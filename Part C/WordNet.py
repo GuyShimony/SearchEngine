@@ -1,6 +1,4 @@
-
-
-
+from nltk.corpus import wordnet
 
 dict_from_pars, entities, is_retweet = self.parser.parse_sentence(query)
         query_terms = list(dict_from_pars.keys()) + list(entities.keys())
