@@ -83,7 +83,7 @@ class SearchEngine:
             a list of tweet_ids where the first element is the most relavant
             and the last is the least relevant result.
         """
-        query = SpellCheck.spellCheck(query)
+       # query = SpellCheck.spellCheck(query)
         searcher = Searcher(self._parser, self._indexer, model=self._model)
         return searcher.search(query)
 

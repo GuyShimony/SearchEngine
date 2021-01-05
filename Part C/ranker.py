@@ -28,8 +28,8 @@ class Ranker:
         for doc in total_doc_scores:
             inner_product_score = Ranker.inner_product(doc)
             #  total_doc_scores[doc] = 0.8 * document_scores_cosin[doc] + 0.2 * inner_product_score
-            total_doc_scores[doc] = 0.8 * document_scores_BM25[doc] + 0.1 * document_scores_cosin[
-                doc] + 0.1 * inner_product_score
+            total_doc_scores[doc] = 0.7 * document_scores_BM25[doc] + 0.25 * document_scores_cosin[
+                doc] + 0.05 * inner_product_score
         top_sorted_relevant_docs = sorted(total_doc_scores.items(), key=lambda item: item[1], reverse=True)
         number_of_relevant_docs_found = len(top_sorted_relevant_docs)
         # trial and error - retrieve top % of the docs
@@ -98,7 +98,7 @@ class Ranker:
                 term_df = common_terms_df[index]
                 term_idf = math.log2(corpus_size / term_df)
                 numerator = term_tf * (term_tf * (k + 1))
-                denominator = term_tf  # + (k * (1 - b + (b * doc_len / Ranker.avdl)))
+                denominator = term_tf  + (k * (1 - b + (b * doc_len / Ranker.avdl)))
                 doc_score += (term_idf * (numerator / denominator))
             document_scores_BM25[doc_id] = doc_score
         return document_scores_BM25

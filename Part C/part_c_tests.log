@@ -1,243 +1,243 @@
-ERROR 2021-01-05 20:39:14,442: report_part_c.docx does not exist.
-INFO 2021-01-05 20:39:14,457: Successfully loaded benchmark labels data.
-INFO 2021-01-05 20:39:14,457: Successfully loaded queries data.
-INFO 2021-01-05 20:39:15,544: Successfully imported module search_engine_1.
-DEBUG 2021-01-05 20:39:20,341: Building the index in search_engine_1 for benchmark data took 4.231971 seconds.
-DEBUG 2021-01-05 20:39:20,341: search_engine_1 successfully returned 7 results for the query 'bioweapon'.
-DEBUG 2021-01-05 20:39:20,403: search_engine_1 successfully returned 203 results for query number 1.
-INFO 2021-01-05 20:39:20,403: 203 total valid tweets
-DEBUG 2021-01-05 20:39:20,528: search_engine_1 successfully returned 1010 results for query number 2.
-INFO 2021-01-05 20:39:20,528: 1010 total valid tweets
-DEBUG 2021-01-05 20:39:20,559: search_engine_1 successfully returned 1016 results for query number 3.
-INFO 2021-01-05 20:39:20,559: 1016 total valid tweets
-DEBUG 2021-01-05 20:39:20,575: search_engine_1 successfully returned 165 results for query number 4.
-INFO 2021-01-05 20:39:20,575: 165 total valid tweets
-DEBUG 2021-01-05 20:39:20,575: search_engine_1 successfully returned 75 results for query number 5.
-INFO 2021-01-05 20:39:20,575: 75 total valid tweets
-DEBUG 2021-01-05 20:39:20,622: search_engine_1 successfully returned 1025 results for query number 6.
-INFO 2021-01-05 20:39:20,622: 1025 total valid tweets
-DEBUG 2021-01-05 20:39:20,637: search_engine_1 successfully returned 60 results for query number 7.
-INFO 2021-01-05 20:39:20,637: 60 total valid tweets
-DEBUG 2021-01-05 20:39:20,747: search_engine_1 successfully returned 974 results for query number 8.
-INFO 2021-01-05 20:39:20,747: 974 total valid tweets
-DEBUG 2021-01-05 20:39:20,778: search_engine_1 successfully returned 457 results for query number 9.
-INFO 2021-01-05 20:39:20,778: 457 total valid tweets
-DEBUG 2021-01-05 20:39:20,825: search_engine_1 successfully returned 1048 results for query number 10.
-INFO 2021-01-05 20:39:20,825: 1048 total valid tweets
-DEBUG 2021-01-05 20:39:20,950: search_engine_1 successfully returned 1016 results for query number 11.
-INFO 2021-01-05 20:39:20,965: 1016 total valid tweets
-DEBUG 2021-01-05 20:39:21,012: search_engine_1 successfully returned 1057 results for query number 12.
-INFO 2021-01-05 20:39:21,012: 1057 total valid tweets
-DEBUG 2021-01-05 20:39:21,059: search_engine_1 successfully returned 955 results for query number 13.
-INFO 2021-01-05 20:39:21,059: 955 total valid tweets
-DEBUG 2021-01-05 20:39:21,090: search_engine_1 successfully returned 1017 results for query number 14.
-INFO 2021-01-05 20:39:21,090: 1017 total valid tweets
-DEBUG 2021-01-05 20:39:21,090: search_engine_1 successfully returned 24 results for query number 15.
-INFO 2021-01-05 20:39:21,090: 24 total valid tweets
-DEBUG 2021-01-05 20:39:21,200: search_engine_1 successfully returned 437 results for query number 16.
-INFO 2021-01-05 20:39:21,200: 437 total valid tweets
-DEBUG 2021-01-05 20:39:21,215: search_engine_1 successfully returned 480 results for query number 17.
-INFO 2021-01-05 20:39:21,215: 480 total valid tweets
-DEBUG 2021-01-05 20:39:21,215: search_engine_1 successfully returned 71 results for query number 18.
-INFO 2021-01-05 20:39:21,215: 71 total valid tweets
-DEBUG 2021-01-05 20:39:21,231: search_engine_1 successfully returned 344 results for query number 19.
-INFO 2021-01-05 20:39:21,231: 344 total valid tweets
-DEBUG 2021-01-05 20:39:21,247: search_engine_1 successfully returned 361 results for query number 20.
-INFO 2021-01-05 20:39:21,247: 361 total valid tweets
-DEBUG 2021-01-05 20:39:21,278: search_engine_1 successfully returned 992 results for query number 21.
-INFO 2021-01-05 20:39:21,294: 992 total valid tweets
-DEBUG 2021-01-05 20:39:21,419: search_engine_1 successfully returned 1059 results for query number 22.
-INFO 2021-01-05 20:39:21,419: 1059 total valid tweets
-DEBUG 2021-01-05 20:39:21,481: search_engine_1 successfully returned 1008 results for query number 23.
-INFO 2021-01-05 20:39:21,481: 1008 total valid tweets
-DEBUG 2021-01-05 20:39:21,528: search_engine_1 successfully returned 1154 results for query number 24.
-INFO 2021-01-05 20:39:21,528: 1154 total valid tweets
-DEBUG 2021-01-05 20:39:21,669: search_engine_1 successfully returned 1010 results for query number 25.
-INFO 2021-01-05 20:39:21,669: 1010 total valid tweets
-DEBUG 2021-01-05 20:39:21,669: search_engine_1 successfully returned 305 results for query number 26.
-INFO 2021-01-05 20:39:21,669: 305 total valid tweets
-DEBUG 2021-01-05 20:39:21,684: search_engine_1 successfully returned 368 results for query number 27.
-INFO 2021-01-05 20:39:21,684: 368 total valid tweets
-DEBUG 2021-01-05 20:39:21,731: search_engine_1 successfully returned 982 results for query number 28.
-INFO 2021-01-05 20:39:21,731: 982 total valid tweets
-DEBUG 2021-01-05 20:39:21,778: search_engine_1 successfully returned 971 results for query number 29.
-INFO 2021-01-05 20:39:21,778: 971 total valid tweets
-DEBUG 2021-01-05 20:39:21,794: search_engine_1 successfully returned 343 results for query number 30.
-INFO 2021-01-05 20:39:21,794: 343 total valid tweets
-DEBUG 2021-01-05 20:39:21,794: search_engine_1 successfully returned 108 results for query number 31.
-INFO 2021-01-05 20:39:21,794: 108 total valid tweets
-DEBUG 2021-01-05 20:39:21,934: search_engine_1 successfully returned 1003 results for query number 32.
-INFO 2021-01-05 20:39:21,934: 1003 total valid tweets
-DEBUG 2021-01-05 20:39:21,981: search_engine_1 successfully returned 1013 results for query number 33.
-INFO 2021-01-05 20:39:21,981: 1013 total valid tweets
-DEBUG 2021-01-05 20:39:22,012: search_engine_1 successfully returned 363 results for query number 34.
-INFO 2021-01-05 20:39:22,012: 363 total valid tweets
-DEBUG 2021-01-05 20:39:22,012: search_engine_1 successfully returned 333 results for query number 35.
-INFO 2021-01-05 20:39:22,012: 333 total valid tweets
-DEBUG 2021-01-05 20:39:34,465: search_engine_1 results have MAP value of 0.6637877209921168.
-DEBUG 2021-01-05 20:39:34,496: search_engine_1 results produced average precision of 0.6165400712626564.
-DEBUG 2021-01-05 20:39:34,496: search_engine_1 results produced average precision@5 of 0.6228571428571429.
-DEBUG 2021-01-05 20:39:34,496: search_engine_1 results produced average precision@10 of 0.6514285714285715.
-DEBUG 2021-01-05 20:39:34,496: search_engine_1 results produced average precision@50 of 0.6385873015873017.
-DEBUG 2021-01-05 20:39:34,496: search_engine_1 results produced average recall of 0.7422201583272291.
-INFO 2021-01-05 20:39:34,511: Successfully imported module search_engine_2.
-DEBUG 2021-01-05 20:39:39,183: Building the index in search_engine_2 for benchmark data took 4.150584600000002 seconds.
-DEBUG 2021-01-05 20:39:39,402: search_engine_2 successfully returned 7 results for the query 'bioweapon'.
-DEBUG 2021-01-05 20:39:40,902: search_engine_2 successfully returned 146 results for query number 1.
-INFO 2021-01-05 20:39:40,902: 146 total valid tweets
-DEBUG 2021-01-05 20:39:41,167: search_engine_2 successfully returned 162 results for query number 2.
-INFO 2021-01-05 20:39:41,167: 162 total valid tweets
-DEBUG 2021-01-05 20:39:41,448: search_engine_2 successfully returned 1016 results for query number 3.
-INFO 2021-01-05 20:39:41,448: 1016 total valid tweets
-DEBUG 2021-01-05 20:39:41,683: search_engine_2 successfully returned 165 results for query number 4.
-INFO 2021-01-05 20:39:41,683: 165 total valid tweets
-DEBUG 2021-01-05 20:39:41,902: search_engine_2 successfully returned 75 results for query number 5.
-INFO 2021-01-05 20:39:41,902: 75 total valid tweets
-DEBUG 2021-01-05 20:39:42,136: search_engine_2 successfully returned 230 results for query number 6.
-INFO 2021-01-05 20:39:42,151: 230 total valid tweets
-DEBUG 2021-01-05 20:39:42,370: search_engine_2 successfully returned 60 results for query number 7.
-INFO 2021-01-05 20:39:42,370: 60 total valid tweets
-DEBUG 2021-01-05 20:39:42,636: search_engine_2 successfully returned 974 results for query number 8.
-INFO 2021-01-05 20:39:42,636: 974 total valid tweets
-DEBUG 2021-01-05 20:39:42,995: search_engine_2 successfully returned 457 results for query number 9.
-INFO 2021-01-05 20:39:42,995: 457 total valid tweets
-DEBUG 2021-01-05 20:39:43,245: search_engine_2 successfully returned 1048 results for query number 10.
-INFO 2021-01-05 20:39:43,245: 1048 total valid tweets
-DEBUG 2021-01-05 20:39:43,480: search_engine_2 successfully returned 159 results for query number 11.
-INFO 2021-01-05 20:39:43,480: 159 total valid tweets
-DEBUG 2021-01-05 20:39:44,011: search_engine_2 successfully returned 1057 results for query number 12.
-INFO 2021-01-05 20:39:44,026: 1057 total valid tweets
-DEBUG 2021-01-05 20:39:44,651: search_engine_2 successfully returned 955 results for query number 13.
-INFO 2021-01-05 20:39:44,651: 955 total valid tweets
-DEBUG 2021-01-05 20:39:44,917: search_engine_2 successfully returned 1017 results for query number 14.
-INFO 2021-01-05 20:39:44,917: 1017 total valid tweets
-DEBUG 2021-01-05 20:39:45,136: search_engine_2 successfully returned 24 results for query number 15.
-INFO 2021-01-05 20:39:45,136: 24 total valid tweets
-DEBUG 2021-01-05 20:39:45,386: search_engine_2 successfully returned 437 results for query number 16.
-INFO 2021-01-05 20:39:45,386: 437 total valid tweets
-DEBUG 2021-01-05 20:39:45,636: search_engine_2 successfully returned 480 results for query number 17.
-INFO 2021-01-05 20:39:45,636: 480 total valid tweets
-DEBUG 2021-01-05 20:39:45,854: search_engine_2 successfully returned 54 results for query number 18.
-INFO 2021-01-05 20:39:45,854: 54 total valid tweets
-DEBUG 2021-01-05 20:39:46,104: search_engine_2 successfully returned 344 results for query number 19.
-INFO 2021-01-05 20:39:46,104: 344 total valid tweets
-DEBUG 2021-01-05 20:39:46,339: search_engine_2 successfully returned 361 results for query number 20.
-INFO 2021-01-05 20:39:46,339: 361 total valid tweets
-DEBUG 2021-01-05 20:39:46,682: search_engine_2 successfully returned 992 results for query number 21.
-INFO 2021-01-05 20:39:46,682: 992 total valid tweets
-DEBUG 2021-01-05 20:39:47,229: search_engine_2 successfully returned 1059 results for query number 22.
-INFO 2021-01-05 20:39:47,245: 1059 total valid tweets
-DEBUG 2021-01-05 20:39:47,776: search_engine_2 successfully returned 1008 results for query number 23.
-INFO 2021-01-05 20:39:47,776: 1008 total valid tweets
-DEBUG 2021-01-05 20:39:48,151: search_engine_2 successfully returned 1154 results for query number 24.
-INFO 2021-01-05 20:39:48,151: 1154 total valid tweets
-DEBUG 2021-01-05 20:39:48,698: search_engine_2 successfully returned 1010 results for query number 25.
-INFO 2021-01-05 20:39:48,698: 1010 total valid tweets
-DEBUG 2021-01-05 20:39:48,932: search_engine_2 successfully returned 305 results for query number 26.
-INFO 2021-01-05 20:39:48,932: 305 total valid tweets
-DEBUG 2021-01-05 20:39:49,229: search_engine_2 successfully returned 363 results for query number 27.
-INFO 2021-01-05 20:39:49,229: 363 total valid tweets
-DEBUG 2021-01-05 20:39:49,838: search_engine_2 successfully returned 982 results for query number 28.
-INFO 2021-01-05 20:39:49,854: 982 total valid tweets
-DEBUG 2021-01-05 20:39:50,213: search_engine_2 successfully returned 971 results for query number 29.
-INFO 2021-01-05 20:39:50,213: 971 total valid tweets
-DEBUG 2021-01-05 20:39:50,448: search_engine_2 successfully returned 343 results for query number 30.
-INFO 2021-01-05 20:39:50,448: 343 total valid tweets
-DEBUG 2021-01-05 20:39:51,995: search_engine_2 successfully returned 108 results for query number 31.
-INFO 2021-01-05 20:39:51,995: 108 total valid tweets
-DEBUG 2021-01-05 20:39:52,541: search_engine_2 successfully returned 1003 results for query number 32.
-INFO 2021-01-05 20:39:52,541: 1003 total valid tweets
-DEBUG 2021-01-05 20:39:53,104: search_engine_2 successfully returned 1013 results for query number 33.
-INFO 2021-01-05 20:39:53,104: 1013 total valid tweets
-DEBUG 2021-01-05 20:39:53,432: search_engine_2 successfully returned 363 results for query number 34.
-INFO 2021-01-05 20:39:53,432: 363 total valid tweets
-DEBUG 2021-01-05 20:39:53,666: search_engine_2 successfully returned 333 results for query number 35.
-INFO 2021-01-05 20:39:53,666: 333 total valid tweets
-DEBUG 2021-01-05 20:40:05,440: search_engine_2 results have MAP value of 0.6432314517867115.
-DEBUG 2021-01-05 20:40:05,487: search_engine_2 results produced average precision of 0.6093939967267146.
-DEBUG 2021-01-05 20:40:05,487: search_engine_2 results produced average precision@5 of 0.5828571428571429.
-DEBUG 2021-01-05 20:40:05,487: search_engine_2 results produced average precision@10 of 0.62.
-DEBUG 2021-01-05 20:40:05,487: search_engine_2 results produced average precision@50 of 0.6309682539682541.
-DEBUG 2021-01-05 20:40:05,487: search_engine_2 results produced average recall of 0.6683730186527311.
-INFO 2021-01-05 20:40:05,487: Successfully imported module search_engine_best.
-DEBUG 2021-01-05 20:40:10,354: Building the index in search_engine_best for benchmark data took 4.383701099999996 seconds.
-DEBUG 2021-01-05 20:40:10,354: search_engine_best successfully returned 7 results for the query 'bioweapon'.
-DEBUG 2021-01-05 20:40:10,417: search_engine_best successfully returned 203 results for query number 1.
-INFO 2021-01-05 20:40:10,417: 203 total valid tweets
-DEBUG 2021-01-05 20:40:10,558: search_engine_best successfully returned 1010 results for query number 2.
-INFO 2021-01-05 20:40:10,558: 1010 total valid tweets
-DEBUG 2021-01-05 20:40:10,604: search_engine_best successfully returned 1016 results for query number 3.
-INFO 2021-01-05 20:40:10,604: 1016 total valid tweets
-DEBUG 2021-01-05 20:40:10,620: search_engine_best successfully returned 165 results for query number 4.
-INFO 2021-01-05 20:40:10,620: 165 total valid tweets
-DEBUG 2021-01-05 20:40:10,620: search_engine_best successfully returned 75 results for query number 5.
-INFO 2021-01-05 20:40:10,620: 75 total valid tweets
-DEBUG 2021-01-05 20:40:10,667: search_engine_best successfully returned 1025 results for query number 6.
-INFO 2021-01-05 20:40:10,667: 1025 total valid tweets
-DEBUG 2021-01-05 20:40:10,667: search_engine_best successfully returned 60 results for query number 7.
-INFO 2021-01-05 20:40:10,667: 60 total valid tweets
-DEBUG 2021-01-05 20:40:10,714: search_engine_best successfully returned 974 results for query number 8.
-INFO 2021-01-05 20:40:10,714: 974 total valid tweets
-DEBUG 2021-01-05 20:40:10,839: search_engine_best successfully returned 457 results for query number 9.
-INFO 2021-01-05 20:40:10,839: 457 total valid tweets
-DEBUG 2021-01-05 20:40:10,886: search_engine_best successfully returned 1048 results for query number 10.
-INFO 2021-01-05 20:40:10,886: 1048 total valid tweets
-DEBUG 2021-01-05 20:40:10,932: search_engine_best successfully returned 1016 results for query number 11.
-INFO 2021-01-05 20:40:10,932: 1016 total valid tweets
-DEBUG 2021-01-05 20:40:11,073: search_engine_best successfully returned 1057 results for query number 12.
-INFO 2021-01-05 20:40:11,073: 1057 total valid tweets
-DEBUG 2021-01-05 20:40:11,120: search_engine_best successfully returned 955 results for query number 13.
-INFO 2021-01-05 20:40:11,120: 955 total valid tweets
-DEBUG 2021-01-05 20:40:11,167: search_engine_best successfully returned 1017 results for query number 14.
-INFO 2021-01-05 20:40:11,167: 1017 total valid tweets
-DEBUG 2021-01-05 20:40:11,167: search_engine_best successfully returned 24 results for query number 15.
-INFO 2021-01-05 20:40:11,167: 24 total valid tweets
-DEBUG 2021-01-05 20:40:11,182: search_engine_best successfully returned 437 results for query number 16.
-INFO 2021-01-05 20:40:11,182: 437 total valid tweets
-DEBUG 2021-01-05 20:40:11,198: search_engine_best successfully returned 480 results for query number 17.
-INFO 2021-01-05 20:40:11,214: 480 total valid tweets
-DEBUG 2021-01-05 20:40:11,214: search_engine_best successfully returned 71 results for query number 18.
-INFO 2021-01-05 20:40:11,214: 71 total valid tweets
-DEBUG 2021-01-05 20:40:11,323: search_engine_best successfully returned 344 results for query number 19.
-INFO 2021-01-05 20:40:11,323: 344 total valid tweets
-DEBUG 2021-01-05 20:40:11,339: search_engine_best successfully returned 361 results for query number 20.
-INFO 2021-01-05 20:40:11,339: 361 total valid tweets
-DEBUG 2021-01-05 20:40:11,386: search_engine_best successfully returned 992 results for query number 21.
-INFO 2021-01-05 20:40:11,386: 992 total valid tweets
-DEBUG 2021-01-05 20:40:11,432: search_engine_best successfully returned 1059 results for query number 22.
-INFO 2021-01-05 20:40:11,432: 1059 total valid tweets
-DEBUG 2021-01-05 20:40:11,573: search_engine_best successfully returned 1008 results for query number 23.
-INFO 2021-01-05 20:40:11,573: 1008 total valid tweets
-DEBUG 2021-01-05 20:40:11,620: search_engine_best successfully returned 1154 results for query number 24.
-INFO 2021-01-05 20:40:11,620: 1154 total valid tweets
-DEBUG 2021-01-05 20:40:11,667: search_engine_best successfully returned 1010 results for query number 25.
-INFO 2021-01-05 20:40:11,667: 1010 total valid tweets
-DEBUG 2021-01-05 20:40:11,682: search_engine_best successfully returned 305 results for query number 26.
-INFO 2021-01-05 20:40:11,682: 305 total valid tweets
-DEBUG 2021-01-05 20:40:11,698: search_engine_best successfully returned 368 results for query number 27.
-INFO 2021-01-05 20:40:11,698: 368 total valid tweets
-DEBUG 2021-01-05 20:40:11,839: search_engine_best successfully returned 982 results for query number 28.
-INFO 2021-01-05 20:40:11,839: 982 total valid tweets
-DEBUG 2021-01-05 20:40:11,886: search_engine_best successfully returned 971 results for query number 29.
-INFO 2021-01-05 20:40:11,886: 971 total valid tweets
-DEBUG 2021-01-05 20:40:11,901: search_engine_best successfully returned 343 results for query number 30.
-INFO 2021-01-05 20:40:11,901: 343 total valid tweets
-DEBUG 2021-01-05 20:40:11,901: search_engine_best successfully returned 108 results for query number 31.
-INFO 2021-01-05 20:40:11,917: 108 total valid tweets
-DEBUG 2021-01-05 20:40:11,948: search_engine_best successfully returned 1003 results for query number 32.
-INFO 2021-01-05 20:40:11,948: 1003 total valid tweets
-DEBUG 2021-01-05 20:40:12,104: search_engine_best successfully returned 1013 results for query number 33.
-INFO 2021-01-05 20:40:12,104: 1013 total valid tweets
-DEBUG 2021-01-05 20:40:12,120: search_engine_best successfully returned 363 results for query number 34.
-INFO 2021-01-05 20:40:12,120: 363 total valid tweets
-DEBUG 2021-01-05 20:40:12,136: search_engine_best successfully returned 333 results for query number 35.
-INFO 2021-01-05 20:40:12,136: 333 total valid tweets
-DEBUG 2021-01-05 20:40:25,822: search_engine_best results have MAP value of 0.6637877209921168.
-DEBUG 2021-01-05 20:40:25,853: search_engine_best results produced average precision of 0.6165400712626564.
-DEBUG 2021-01-05 20:40:25,853: search_engine_best results produced average precision@5 of 0.6228571428571429.
-DEBUG 2021-01-05 20:40:25,853: search_engine_best results produced average precision@10 of 0.6514285714285715.
-DEBUG 2021-01-05 20:40:25,853: search_engine_best results produced average precision@50 of 0.6385873015873017.
-DEBUG 2021-01-05 20:40:25,853: search_engine_best results produced average recall of 0.7422201583272291.
-INFO 2021-01-05 20:40:25,853: idx_bench.pkl found!
-INFO 2021-01-05 20:40:26,135: Successfully loaded idx_bench.pkl using search_engine_best.
-DEBUG 2021-01-05 20:40:26,135: Total runtime was: 0:01:11.692990
+ERROR 2021-01-05 22:48:49,794: report_part_c.docx does not exist.
+INFO 2021-01-05 22:48:49,810: Successfully loaded benchmark labels data.
+INFO 2021-01-05 22:48:49,826: Successfully loaded queries data.
+INFO 2021-01-05 22:48:51,529: Successfully imported module search_engine_1.
+DEBUG 2021-01-05 22:49:00,406: Building the index in search_engine_1 for benchmark data took 8.015699999999999 seconds.
+DEBUG 2021-01-05 22:49:00,406: search_engine_1 successfully returned 8 results for the query 'bioweapon'.
+DEBUG 2021-01-05 22:49:00,515: search_engine_1 successfully returned 205 results for query number 1.
+INFO 2021-01-05 22:49:00,515: 205 total valid tweets
+DEBUG 2021-01-05 22:49:00,703: search_engine_1 successfully returned 442 results for query number 2.
+INFO 2021-01-05 22:49:00,703: 442 total valid tweets
+DEBUG 2021-01-05 22:49:00,718: search_engine_1 successfully returned 476 results for query number 3.
+INFO 2021-01-05 22:49:00,718: 476 total valid tweets
+DEBUG 2021-01-05 22:49:00,734: search_engine_1 successfully returned 165 results for query number 4.
+INFO 2021-01-05 22:49:00,734: 165 total valid tweets
+DEBUG 2021-01-05 22:49:00,734: search_engine_1 successfully returned 198 results for query number 5.
+INFO 2021-01-05 22:49:00,734: 198 total valid tweets
+DEBUG 2021-01-05 22:49:00,765: search_engine_1 successfully returned 504 results for query number 6.
+INFO 2021-01-05 22:49:00,765: 504 total valid tweets
+DEBUG 2021-01-05 22:49:00,765: search_engine_1 successfully returned 130 results for query number 7.
+INFO 2021-01-05 22:49:00,765: 130 total valid tweets
+DEBUG 2021-01-05 22:49:00,796: search_engine_1 successfully returned 470 results for query number 8.
+INFO 2021-01-05 22:49:00,796: 470 total valid tweets
+DEBUG 2021-01-05 22:49:00,859: search_engine_1 successfully returned 549 results for query number 9.
+INFO 2021-01-05 22:49:00,859: 549 total valid tweets
+DEBUG 2021-01-05 22:49:00,875: search_engine_1 successfully returned 472 results for query number 10.
+INFO 2021-01-05 22:49:00,875: 472 total valid tweets
+DEBUG 2021-01-05 22:49:00,906: search_engine_1 successfully returned 452 results for query number 11.
+INFO 2021-01-05 22:49:00,906: 452 total valid tweets
+DEBUG 2021-01-05 22:49:01,109: search_engine_1 successfully returned 657 results for query number 12.
+INFO 2021-01-05 22:49:01,109: 657 total valid tweets
+DEBUG 2021-01-05 22:49:01,203: search_engine_1 successfully returned 656 results for query number 13.
+INFO 2021-01-05 22:49:01,203: 656 total valid tweets
+DEBUG 2021-01-05 22:49:01,249: search_engine_1 successfully returned 432 results for query number 14.
+INFO 2021-01-05 22:49:01,249: 432 total valid tweets
+DEBUG 2021-01-05 22:49:01,249: search_engine_1 successfully returned 26 results for query number 15.
+INFO 2021-01-05 22:49:01,249: 26 total valid tweets
+DEBUG 2021-01-05 22:49:01,281: search_engine_1 successfully returned 476 results for query number 16.
+INFO 2021-01-05 22:49:01,281: 476 total valid tweets
+DEBUG 2021-01-05 22:49:01,312: search_engine_1 successfully returned 565 results for query number 17.
+INFO 2021-01-05 22:49:01,312: 565 total valid tweets
+DEBUG 2021-01-05 22:49:01,328: search_engine_1 successfully returned 71 results for query number 18.
+INFO 2021-01-05 22:49:01,328: 71 total valid tweets
+DEBUG 2021-01-05 22:49:01,343: search_engine_1 successfully returned 347 results for query number 19.
+INFO 2021-01-05 22:49:01,343: 347 total valid tweets
+DEBUG 2021-01-05 22:49:01,359: search_engine_1 successfully returned 365 results for query number 20.
+INFO 2021-01-05 22:49:01,359: 365 total valid tweets
+DEBUG 2021-01-05 22:49:01,375: search_engine_1 successfully returned 388 results for query number 21.
+INFO 2021-01-05 22:49:01,375: 388 total valid tweets
+DEBUG 2021-01-05 22:49:01,406: search_engine_1 successfully returned 653 results for query number 22.
+INFO 2021-01-05 22:49:01,406: 653 total valid tweets
+DEBUG 2021-01-05 22:49:01,578: search_engine_1 successfully returned 651 results for query number 23.
+INFO 2021-01-05 22:49:01,578: 651 total valid tweets
+DEBUG 2021-01-05 22:49:01,624: search_engine_1 successfully returned 649 results for query number 24.
+INFO 2021-01-05 22:49:01,640: 649 total valid tweets
+DEBUG 2021-01-05 22:49:01,687: search_engine_1 successfully returned 668 results for query number 25.
+INFO 2021-01-05 22:49:01,687: 668 total valid tweets
+DEBUG 2021-01-05 22:49:01,703: search_engine_1 successfully returned 502 results for query number 26.
+INFO 2021-01-05 22:49:01,703: 502 total valid tweets
+DEBUG 2021-01-05 22:49:01,734: search_engine_1 successfully returned 554 results for query number 27.
+INFO 2021-01-05 22:49:01,734: 554 total valid tweets
+DEBUG 2021-01-05 22:49:01,781: search_engine_1 successfully returned 667 results for query number 28.
+INFO 2021-01-05 22:49:01,781: 667 total valid tweets
+DEBUG 2021-01-05 22:49:01,796: search_engine_1 successfully returned 379 results for query number 29.
+INFO 2021-01-05 22:49:01,796: 379 total valid tweets
+DEBUG 2021-01-05 22:49:01,999: search_engine_1 successfully returned 433 results for query number 30.
+INFO 2021-01-05 22:49:01,999: 433 total valid tweets
+DEBUG 2021-01-05 22:49:01,999: search_engine_1 successfully returned 110 results for query number 31.
+INFO 2021-01-05 22:49:01,999: 110 total valid tweets
+DEBUG 2021-01-05 22:49:02,046: search_engine_1 successfully returned 631 results for query number 32.
+INFO 2021-01-05 22:49:02,046: 631 total valid tweets
+DEBUG 2021-01-05 22:49:02,093: search_engine_1 successfully returned 707 results for query number 33.
+INFO 2021-01-05 22:49:02,109: 707 total valid tweets
+DEBUG 2021-01-05 22:49:02,124: search_engine_1 successfully returned 444 results for query number 34.
+INFO 2021-01-05 22:49:02,124: 444 total valid tweets
+DEBUG 2021-01-05 22:49:02,140: search_engine_1 successfully returned 351 results for query number 35.
+INFO 2021-01-05 22:49:02,140: 351 total valid tweets
+DEBUG 2021-01-05 22:49:13,452: search_engine_1 results have MAP value of 0.6334490830124153.
+DEBUG 2021-01-05 22:49:13,499: search_engine_1 results produced average precision of 0.6267280946346329.
+DEBUG 2021-01-05 22:49:13,499: search_engine_1 results produced average precision@5 of 0.5028571428571429.
+DEBUG 2021-01-05 22:49:13,499: search_engine_1 results produced average precision@10 of 0.5371428571428571.
+DEBUG 2021-01-05 22:49:13,499: search_engine_1 results produced average precision@50 of 0.6053135100193924.
+DEBUG 2021-01-05 22:49:13,499: search_engine_1 results produced average recall of 0.5990867428194223.
+INFO 2021-01-05 22:49:13,514: Successfully imported module search_engine_2.
+DEBUG 2021-01-05 22:49:23,127: Building the index in search_engine_2 for benchmark data took 8.983278600000002 seconds.
+DEBUG 2021-01-05 22:49:23,127: search_engine_2 successfully returned 8 results for the query 'bioweapon'.
+DEBUG 2021-01-05 22:49:23,142: search_engine_2 successfully returned 205 results for query number 1.
+INFO 2021-01-05 22:49:23,158: 205 total valid tweets
+DEBUG 2021-01-05 22:49:23,189: search_engine_2 successfully returned 442 results for query number 2.
+INFO 2021-01-05 22:49:23,205: 442 total valid tweets
+DEBUG 2021-01-05 22:49:23,267: search_engine_2 successfully returned 476 results for query number 3.
+INFO 2021-01-05 22:49:23,267: 476 total valid tweets
+DEBUG 2021-01-05 22:49:23,283: search_engine_2 successfully returned 165 results for query number 4.
+INFO 2021-01-05 22:49:23,283: 165 total valid tweets
+DEBUG 2021-01-05 22:49:23,299: search_engine_2 successfully returned 198 results for query number 5.
+INFO 2021-01-05 22:49:23,314: 198 total valid tweets
+DEBUG 2021-01-05 22:49:23,346: search_engine_2 successfully returned 504 results for query number 6.
+INFO 2021-01-05 22:49:23,346: 504 total valid tweets
+DEBUG 2021-01-05 22:49:23,361: search_engine_2 successfully returned 130 results for query number 7.
+INFO 2021-01-05 22:49:23,361: 130 total valid tweets
+DEBUG 2021-01-05 22:49:23,377: search_engine_2 successfully returned 470 results for query number 8.
+INFO 2021-01-05 22:49:23,392: 470 total valid tweets
+DEBUG 2021-01-05 22:49:23,549: search_engine_2 successfully returned 549 results for query number 9.
+INFO 2021-01-05 22:49:23,549: 549 total valid tweets
+DEBUG 2021-01-05 22:49:23,580: search_engine_2 successfully returned 472 results for query number 10.
+INFO 2021-01-05 22:49:23,580: 472 total valid tweets
+DEBUG 2021-01-05 22:49:23,596: search_engine_2 successfully returned 452 results for query number 11.
+INFO 2021-01-05 22:49:23,596: 452 total valid tweets
+DEBUG 2021-01-05 22:49:23,642: search_engine_2 successfully returned 657 results for query number 12.
+INFO 2021-01-05 22:49:23,642: 657 total valid tweets
+DEBUG 2021-01-05 22:49:23,689: search_engine_2 successfully returned 656 results for query number 13.
+INFO 2021-01-05 22:49:23,689: 656 total valid tweets
+DEBUG 2021-01-05 22:49:23,721: search_engine_2 successfully returned 432 results for query number 14.
+INFO 2021-01-05 22:49:23,721: 432 total valid tweets
+DEBUG 2021-01-05 22:49:23,721: search_engine_2 successfully returned 26 results for query number 15.
+INFO 2021-01-05 22:49:23,721: 26 total valid tweets
+DEBUG 2021-01-05 22:49:23,877: search_engine_2 successfully returned 476 results for query number 16.
+INFO 2021-01-05 22:49:23,877: 476 total valid tweets
+DEBUG 2021-01-05 22:49:23,924: search_engine_2 successfully returned 565 results for query number 17.
+INFO 2021-01-05 22:49:23,924: 565 total valid tweets
+DEBUG 2021-01-05 22:49:23,924: search_engine_2 successfully returned 71 results for query number 18.
+INFO 2021-01-05 22:49:23,924: 71 total valid tweets
+DEBUG 2021-01-05 22:49:23,955: search_engine_2 successfully returned 347 results for query number 19.
+INFO 2021-01-05 22:49:23,955: 347 total valid tweets
+DEBUG 2021-01-05 22:49:23,971: search_engine_2 successfully returned 365 results for query number 20.
+INFO 2021-01-05 22:49:23,971: 365 total valid tweets
+DEBUG 2021-01-05 22:49:23,986: search_engine_2 successfully returned 388 results for query number 21.
+INFO 2021-01-05 22:49:23,986: 388 total valid tweets
+DEBUG 2021-01-05 22:49:24,033: search_engine_2 successfully returned 653 results for query number 22.
+INFO 2021-01-05 22:49:24,033: 653 total valid tweets
+DEBUG 2021-01-05 22:49:24,064: search_engine_2 successfully returned 651 results for query number 23.
+INFO 2021-01-05 22:49:24,080: 651 total valid tweets
+DEBUG 2021-01-05 22:49:24,111: search_engine_2 successfully returned 649 results for query number 24.
+INFO 2021-01-05 22:49:24,111: 649 total valid tweets
+DEBUG 2021-01-05 22:49:24,283: search_engine_2 successfully returned 668 results for query number 25.
+INFO 2021-01-05 22:49:24,283: 668 total valid tweets
+DEBUG 2021-01-05 22:49:24,314: search_engine_2 successfully returned 502 results for query number 26.
+INFO 2021-01-05 22:49:24,314: 502 total valid tweets
+DEBUG 2021-01-05 22:49:24,345: search_engine_2 successfully returned 554 results for query number 27.
+INFO 2021-01-05 22:49:24,345: 554 total valid tweets
+DEBUG 2021-01-05 22:49:24,377: search_engine_2 successfully returned 667 results for query number 28.
+INFO 2021-01-05 22:49:24,377: 667 total valid tweets
+DEBUG 2021-01-05 22:49:24,408: search_engine_2 successfully returned 379 results for query number 29.
+INFO 2021-01-05 22:49:24,408: 379 total valid tweets
+DEBUG 2021-01-05 22:49:24,439: search_engine_2 successfully returned 433 results for query number 30.
+INFO 2021-01-05 22:49:24,439: 433 total valid tweets
+DEBUG 2021-01-05 22:49:24,439: search_engine_2 successfully returned 110 results for query number 31.
+INFO 2021-01-05 22:49:24,439: 110 total valid tweets
+DEBUG 2021-01-05 22:49:24,486: search_engine_2 successfully returned 631 results for query number 32.
+INFO 2021-01-05 22:49:24,486: 631 total valid tweets
+DEBUG 2021-01-05 22:49:24,689: search_engine_2 successfully returned 707 results for query number 33.
+INFO 2021-01-05 22:49:24,689: 707 total valid tweets
+DEBUG 2021-01-05 22:49:24,720: search_engine_2 successfully returned 444 results for query number 34.
+INFO 2021-01-05 22:49:24,720: 444 total valid tweets
+DEBUG 2021-01-05 22:49:24,767: search_engine_2 successfully returned 351 results for query number 35.
+INFO 2021-01-05 22:49:24,767: 351 total valid tweets
+DEBUG 2021-01-05 22:49:36,150: search_engine_2 results have MAP value of 0.6336244947563187.
+DEBUG 2021-01-05 22:49:36,181: search_engine_2 results produced average precision of 0.6267404101634558.
+DEBUG 2021-01-05 22:49:36,181: search_engine_2 results produced average precision@5 of 0.5028571428571429.
+DEBUG 2021-01-05 22:49:36,181: search_engine_2 results produced average precision@10 of 0.5371428571428571.
+DEBUG 2021-01-05 22:49:36,181: search_engine_2 results produced average precision@50 of 0.6058849385908208.
+DEBUG 2021-01-05 22:49:36,181: search_engine_2 results produced average recall of 0.5992391094314163.
+INFO 2021-01-05 22:49:36,181: Successfully imported module search_engine_best.
+DEBUG 2021-01-05 22:49:43,962: Building the index in search_engine_best for benchmark data took 7.2592922999999985 seconds.
+DEBUG 2021-01-05 22:49:43,962: search_engine_best successfully returned 8 results for the query 'bioweapon'.
+DEBUG 2021-01-05 22:49:43,962: search_engine_best successfully returned 205 results for query number 1.
+INFO 2021-01-05 22:49:43,962: 205 total valid tweets
+DEBUG 2021-01-05 22:49:44,150: search_engine_best successfully returned 442 results for query number 2.
+INFO 2021-01-05 22:49:44,150: 442 total valid tweets
+DEBUG 2021-01-05 22:49:44,181: search_engine_best successfully returned 476 results for query number 3.
+INFO 2021-01-05 22:49:44,181: 476 total valid tweets
+DEBUG 2021-01-05 22:49:44,181: search_engine_best successfully returned 165 results for query number 4.
+INFO 2021-01-05 22:49:44,181: 165 total valid tweets
+DEBUG 2021-01-05 22:49:44,196: search_engine_best successfully returned 198 results for query number 5.
+INFO 2021-01-05 22:49:44,196: 198 total valid tweets
+DEBUG 2021-01-05 22:49:44,212: search_engine_best successfully returned 504 results for query number 6.
+INFO 2021-01-05 22:49:44,212: 504 total valid tweets
+DEBUG 2021-01-05 22:49:44,228: search_engine_best successfully returned 130 results for query number 7.
+INFO 2021-01-05 22:49:44,228: 130 total valid tweets
+DEBUG 2021-01-05 22:49:44,243: search_engine_best successfully returned 470 results for query number 8.
+INFO 2021-01-05 22:49:44,243: 470 total valid tweets
+DEBUG 2021-01-05 22:49:44,275: search_engine_best successfully returned 549 results for query number 9.
+INFO 2021-01-05 22:49:44,275: 549 total valid tweets
+DEBUG 2021-01-05 22:49:44,290: search_engine_best successfully returned 472 results for query number 10.
+INFO 2021-01-05 22:49:44,290: 472 total valid tweets
+DEBUG 2021-01-05 22:49:44,322: search_engine_best successfully returned 452 results for query number 11.
+INFO 2021-01-05 22:49:44,322: 452 total valid tweets
+DEBUG 2021-01-05 22:49:44,509: search_engine_best successfully returned 657 results for query number 12.
+INFO 2021-01-05 22:49:44,509: 657 total valid tweets
+DEBUG 2021-01-05 22:49:44,540: search_engine_best successfully returned 656 results for query number 13.
+INFO 2021-01-05 22:49:44,540: 656 total valid tweets
+DEBUG 2021-01-05 22:49:44,556: search_engine_best successfully returned 432 results for query number 14.
+INFO 2021-01-05 22:49:44,571: 432 total valid tweets
+DEBUG 2021-01-05 22:49:44,571: search_engine_best successfully returned 26 results for query number 15.
+INFO 2021-01-05 22:49:44,571: 26 total valid tweets
+DEBUG 2021-01-05 22:49:44,603: search_engine_best successfully returned 476 results for query number 16.
+INFO 2021-01-05 22:49:44,603: 476 total valid tweets
+DEBUG 2021-01-05 22:49:44,665: search_engine_best successfully returned 565 results for query number 17.
+INFO 2021-01-05 22:49:44,665: 565 total valid tweets
+DEBUG 2021-01-05 22:49:44,665: search_engine_best successfully returned 71 results for query number 18.
+INFO 2021-01-05 22:49:44,665: 71 total valid tweets
+DEBUG 2021-01-05 22:49:44,696: search_engine_best successfully returned 347 results for query number 19.
+INFO 2021-01-05 22:49:44,696: 347 total valid tweets
+DEBUG 2021-01-05 22:49:44,712: search_engine_best successfully returned 365 results for query number 20.
+INFO 2021-01-05 22:49:44,712: 365 total valid tweets
+DEBUG 2021-01-05 22:49:44,743: search_engine_best successfully returned 388 results for query number 21.
+INFO 2021-01-05 22:49:44,743: 388 total valid tweets
+DEBUG 2021-01-05 22:49:44,790: search_engine_best successfully returned 653 results for query number 22.
+INFO 2021-01-05 22:49:44,790: 653 total valid tweets
+DEBUG 2021-01-05 22:49:44,993: search_engine_best successfully returned 651 results for query number 23.
+INFO 2021-01-05 22:49:44,993: 651 total valid tweets
+DEBUG 2021-01-05 22:49:45,040: search_engine_best successfully returned 649 results for query number 24.
+INFO 2021-01-05 22:49:45,040: 649 total valid tweets
+DEBUG 2021-01-05 22:49:45,087: search_engine_best successfully returned 668 results for query number 25.
+INFO 2021-01-05 22:49:45,087: 668 total valid tweets
+DEBUG 2021-01-05 22:49:45,103: search_engine_best successfully returned 502 results for query number 26.
+INFO 2021-01-05 22:49:45,103: 502 total valid tweets
+DEBUG 2021-01-05 22:49:45,150: search_engine_best successfully returned 554 results for query number 27.
+INFO 2021-01-05 22:49:45,150: 554 total valid tweets
+DEBUG 2021-01-05 22:49:45,321: search_engine_best successfully returned 667 results for query number 28.
+INFO 2021-01-05 22:49:45,321: 667 total valid tweets
+DEBUG 2021-01-05 22:49:45,337: search_engine_best successfully returned 379 results for query number 29.
+INFO 2021-01-05 22:49:45,337: 379 total valid tweets
+DEBUG 2021-01-05 22:49:45,368: search_engine_best successfully returned 433 results for query number 30.
+INFO 2021-01-05 22:49:45,368: 433 total valid tweets
+DEBUG 2021-01-05 22:49:45,368: search_engine_best successfully returned 110 results for query number 31.
+INFO 2021-01-05 22:49:45,368: 110 total valid tweets
+DEBUG 2021-01-05 22:49:45,415: search_engine_best successfully returned 631 results for query number 32.
+INFO 2021-01-05 22:49:45,415: 631 total valid tweets
+DEBUG 2021-01-05 22:49:45,462: search_engine_best successfully returned 707 results for query number 33.
+INFO 2021-01-05 22:49:45,462: 707 total valid tweets
+DEBUG 2021-01-05 22:49:45,493: search_engine_best successfully returned 444 results for query number 34.
+INFO 2021-01-05 22:49:45,493: 444 total valid tweets
+DEBUG 2021-01-05 22:49:45,509: search_engine_best successfully returned 351 results for query number 35.
+INFO 2021-01-05 22:49:45,509: 351 total valid tweets
+DEBUG 2021-01-05 22:49:56,358: search_engine_best results have MAP value of 0.6334490830124153.
+DEBUG 2021-01-05 22:49:56,405: search_engine_best results produced average precision of 0.6267280946346329.
+DEBUG 2021-01-05 22:49:56,405: search_engine_best results produced average precision@5 of 0.5028571428571429.
+DEBUG 2021-01-05 22:49:56,405: search_engine_best results produced average precision@10 of 0.5371428571428571.
+DEBUG 2021-01-05 22:49:56,405: search_engine_best results produced average precision@50 of 0.6053135100193924.
+DEBUG 2021-01-05 22:49:56,405: search_engine_best results produced average recall of 0.5990867428194223.
+INFO 2021-01-05 22:49:56,405: idx_bench.pkl found!
+INFO 2021-01-05 22:49:56,827: Successfully loaded idx_bench.pkl using search_engine_best.
+DEBUG 2021-01-05 22:49:56,827: Total runtime was: 0:01:07.032600

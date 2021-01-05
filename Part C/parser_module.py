@@ -10,7 +10,7 @@ from document import Document
 
 class Parse:
 
-    def __init__(self, stemming=False, lemmatization=False):
+    def __init__(self, stemming=True, lemmatization=False):
         self.stop_words = frozenset(stopwords.words('english'))
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
         self.punctuation_dict = dict(
@@ -49,14 +49,14 @@ class Parse:
         self.coronavirus_dictionary = {
             #  Custom coronavirus rule -> Switch any coronavirus term form to 'coronavirus'
             #  Used to better IR coronavirus related docs
-            "covid": "coronavirus",
-            "COVID": "coronavirus",
-            "covid-19": "coronavirus",
-            "COVID-19": "coronavirus",
-            "Covid-19": "coronavirus",
-            "covid19": "coronavirus",
-            "covid_19": "coronavirus",
-            "coronavirus": "coronavirus"
+            # "covid": "coronavirus",
+            # "COVID": "coronavirus",
+            # "covid-19": "coronavirus",
+            # "COVID-19": "coronavirus",
+            # "Covid-19": "coronavirus",
+            # "covid19": "coronavirus",
+            # "covid_19": "coronavirus",
+            # "coronavirus": "coronavirus"
         }
         self.USA_dictionary = {
             #  Custom coronavirus rule -> Switch any usa / america term form to 'USA'

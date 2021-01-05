@@ -1,18 +1,22 @@
 from nltk.corpus import wordnet
 
-dict_from_pars, entities, is_retweet = self.parser.parse_sentence(query)
-        query_terms = list(dict_from_pars.keys()) + list(entities.keys())
-        if len(query_terms) < 6:  # there is no need to expand if its more
-            terms_expand = set()
-            for term in dict_from_pars.keys():  # we didn't want to expand entities
-                if term == "covid" or term.lower() == "trump": # those are common words
-                    continue
-                if len(wordnet.synsets(term)) > 0:
-                    for lm in wordnet.synsets(term)[0].lemmas():
-                        if lm.name() not in dict_from_pars and lm.name() not in terms_expand and not ("_" in lm.name()):
-                            terms_expand.add(lm.name())
 
-            query_terms += list(terms_expand)
+class WordNet:
+
+    @staticmethod
+    def weights(query_string):
+
+        query_dict = query_string.split()
+        # query_terms = list(dict_from_pars.keys()) + list(entities.keys())
+        for term in query_dict.keys():  # we didn't want to expand entities
+            if term == "covid" or term.lower() == "trump": # those are common words
+                continue
+            if len(wordnet.synsets(term)) > 0:
+                for lm in wordnet.synsets(term)[0].lemmas():
+                    if lm.name() not in dict_from_pars and lm.name() not in terms_expand and not ("_" in lm.name()):
+                        terms_expand.add(lm.name())
+
+        query_terms += list(terms_expand)
 
 
 

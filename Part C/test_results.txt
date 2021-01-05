@@ -1,0 +1,56 @@
+no coronavirus dict, 1 * cosine
+
+DEBUG 2021-01-05 20:58:32,597: search_engine_best results produced average precision of 0.6371236397568119.
+DEBUG 2021-01-05 20:58:32,597: search_engine_best results produced average precision@5 of 0.6971428571428572.
+DEBUG 2021-01-05 20:58:32,597: search_engine_best results produced average precision@10 of 0.6914285714285714.
+DEBUG 2021-01-05 20:58:32,597: search_engine_best results produced average precision@50 of 0.6887142857142857.
+DEBUG 2021-01-05 20:58:32,597: search_engine_best results produced average recall of 0.6845740699349134.
+
+
+no corona dict, no usa dict, 1 * cosine
+
+DEBUG 2021-01-05 21:01:57,059: search_engine_best results have MAP value of 0.7058873770848888.
+DEBUG 2021-01-05 21:01:57,106: search_engine_best results produced average precision of 0.6371301815708671.
+DEBUG 2021-01-05 21:01:57,106: search_engine_best results produced average precision@5 of 0.6971428571428572.
+DEBUG 2021-01-05 21:01:57,106: search_engine_best results produced average precision@10 of 0.6914285714285714.
+DEBUG 2021-01-05 21:01:57,106: search_engine_best results produced average precision@50 of 0.6875714285714286.
+DEBUG 2021-01-05 21:01:57,106: search_engine_best results produced average recall of 0.684427953896875.
+
+no corona dict,  1 * BM25
+
+DEBUG 2021-01-05 21:04:26,941: search_engine_best results have MAP value of 0.6767184277507549.
+DEBUG 2021-01-05 21:04:26,972: search_engine_best results produced average precision of 0.6312118923990874.
+DEBUG 2021-01-05 21:04:26,972: search_engine_best results produced average precision@5 of 0.6228571428571428.
+DEBUG 2021-01-05 21:04:26,972: search_engine_best results produced average precision@10 of 0.6514285714285715.
+DEBUG 2021-01-05 21:04:26,972: search_engine_best results produced average precision@50 of 0.6454444444444445.
+DEBUG 2021-01-05 21:04:26,972: search_engine_best results produced average recall of 0.6720217758347538.
+
+no corona dict,  0.5 * cosine , 0.5 * inner
+
+DEBUG 2021-01-05 21:06:46,006: search_engine_best results have MAP value of 0.7059737772568943.
+DEBUG 2021-01-05 21:06:46,052: search_engine_best results produced average precision of 0.6371236397568119.
+DEBUG 2021-01-05 21:06:46,052: search_engine_best results produced average precision@5 of 0.6971428571428572.
+DEBUG 2021-01-05 21:06:46,052: search_engine_best results produced average precision@10 of 0.6914285714285714.
+DEBUG 2021-01-05 21:06:46,052: search_engine_best results produced average precision@50 of 0.6887142857142857.
+DEBUG 2021-01-05 21:06:46,052: search_engine_best results produced average recall of 0.6845740699349134.
+
+no corona dict,  0.1 * cosine , 0.9 * inner
+
+DEBUG 2021-01-05 21:09:26,624: search_engine_best results have MAP value of 0.7059737772568943.
+DEBUG 2021-01-05 21:09:26,656: search_engine_best results produced average precision of 0.6371236397568119.
+DEBUG 2021-01-05 21:09:26,656: search_engine_best results produced average precision@5 of 0.6971428571428572.
+DEBUG 2021-01-05 21:09:26,671: search_engine_best results produced average precision@10 of 0.6914285714285714.
+DEBUG 2021-01-05 21:09:26,671: search_engine_best results produced average precision@50 of 0.6887142857142857.
+DEBUG 2021-01-05 21:09:26,671: search_engine_best results produced average recall of 0.6845740699349134.
+
+no corona dict,  0.7 * BM25 , 0.25 * cosine , 0.05 * inner, with normalizer for BM25
+
+DEBUG 2021-01-05 22:49:56,358: search_engine_best results have MAP value of 0.6334490830124153.
+DEBUG 2021-01-05 22:49:56,405: search_engine_best results produced average precision of 0.6267280946346329.
+DEBUG 2021-01-05 22:49:56,405: search_engine_best results produced average precision@5 of 0.5028571428571429.
+DEBUG 2021-01-05 22:49:56,405: search_engine_best results produced average precision@10 of 0.5371428571428571.
+DEBUG 2021-01-05 22:49:56,405: search_engine_best results produced average precision@50 of 0.6053135100193924.
+DEBUG 2021-01-05 22:49:56,405: search_engine_best results produced average recall of 0.5990867428194223.
+
+
+
