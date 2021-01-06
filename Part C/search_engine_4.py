@@ -117,6 +117,7 @@ class SearchEngine:
                 self.get_doc_distance(doc_id, word)
 
     def get_doc_distance(self, doc, word):
+        # TODO: ADD MEAN OF THE VECTOR AND TRY DISTANCE BETWEEN THE DOC MEAN AND THE QUERY MEAN
         if word not in self._model:
             return
         if len(self._indexer.docs_index[doc]) != 7:
@@ -133,16 +134,17 @@ def main():
 
     se = SearchEngine(config)
     se.build_index_from_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
-    n_res, res, docs = se.search('The seasonal flu kills more people every year in the U.S. than COVID-19 has to date.')
+    n_res, res, docs = se.search('Coronavirus is less dangerous than the flu	coronavirus less dangerous flu')
     df = pd.read_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 
     to_return = pd.DataFrame(columns=["query","tweet_id"])
 
     for r in res:
-        to_return = to_return.append({"query":1, "tweet_id":r}, ignore_index=True)
+        to_return = to_return.append({"query":3, "tweet_id":r}, ignore_index=True)
 
-        print(r, docs[r])
-        print(df[df.tweet_id == r].full_text)
+        print(r)
+        print([w for w in df[df.tweet_id == r].full_text.tolist()])
+
     to_return.to_csv("results6.csv", index=False)
     print(n_res)
