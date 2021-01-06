@@ -8,9 +8,6 @@ import utils
 import math
 
 import numpy as np
-from scipy import spatial
-import matplotlib.pyplot as plt
-from sklearn.manifold import TSNE
 
 # DO NOT CHANGE THE CLASS NAME
 class SearchEngine:
