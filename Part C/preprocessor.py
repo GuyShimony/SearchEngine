@@ -4,7 +4,7 @@ from stemmer import Stemmer
 import os
 import string
 
-preprocessed_file = "preprocessed.txt"
+preprocessed_file = "model/preprocessed.txt"
 corpus_path = r"C:\Users\Owner\Desktop\SearchEngine\Data"
 reader = ReadFile(corpus_path)
 parser = Parse()
