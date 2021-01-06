@@ -114,7 +114,7 @@ def main():
 
     se = SearchEngine(config)
     se.build_index_from_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
-    n_res, res = se.search('wearing masks proven ineffective')
+    n_res, res = se.search('The seasonal flu kills more people every year in the U.S. than COVID-19 has to date. 	flu kills more than covid')
     df = pd.read_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 
@@ -122,7 +122,7 @@ def main():
     for r in res:
         to_return = to_return.append({"query":1, "tweet_id":r[0]}, ignore_index=True)
 
-       # print(r, docs[r[0]])
+        #print(r, docs[r[0]])
         print(df[df.tweet_id == r[0]].full_text)
 
     to_return.to_csv("results6.csv", index=False)

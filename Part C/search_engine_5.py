@@ -3,10 +3,9 @@ from reader import ReadFile
 from configuration import ConfigClass
 from parser_module import Parse
 from indexer import Indexer
-from searcher_spell_checker import Searcher
+from searcher_word_net import Searcher
 import utils
 import math
-from SpellChecker import SpellCheck
 
 
 # DO NOT CHANGE THE CLASS NAME
@@ -58,6 +57,7 @@ class SearchEngine:
         Input:
             fn - file name of pickled index.
         """
+        # TODO: Check if the index needs to be in the memory in run time
         self._indexer.load_index(fn)
 
     # DO NOT MODIFY THIS SIGNATURE
@@ -83,45 +83,46 @@ class SearchEngine:
             a list of tweet_ids where the first element is the most relavant
             and the last is the least relevant result.
         """
-
-        #query = SpellCheck.spellCheck(query)
         searcher = Searcher(self._parser, self._indexer, model=self._model)
         return searcher.search(query)
 
     def calculate_doc_weight(self):
         # TODO: Think about a way to loop through each doc once
-        for word in self._indexer.inverted_idx:
+        #inverted_index = self._indexer.get_inverted_index()
+        inverted_index = self._indexer.inverted_idx
+        docs_index = self._indexer.get_docs_index()
 
-            for doc_id in self._indexer.inverted_idx[word]['posting_list']:
-                normalized_term_tf = self._indexer.inverted_idx[word]["posting_list"][doc_id][0]
-                # term_tf = merged_dict[key]['docs'][i][1]
-                doc_len = self._indexer.docs_index[doc_id][2]
-                term_df = self._indexer.inverted_idx[word]['df']
+        for word in inverted_index:
 
-                max_tf = self._indexer.docs_index[doc_id][1]
-                term_idf = math.log10(self.corpus_size / term_df)
+            for doc_id in self._indexer.get_term_posting_list(word):
+                normalized_term_tf = inverted_index[word]["posting_list"][doc_id][0]
+                doc_len = docs_index[doc_id][2]
+                term_df = inverted_index[word]['df']
+                max_tf = docs_index[doc_id][1]
+                term_idf = math.log2(self.corpus_size / term_df)
                 # calculate doc's total weight
                 # term_weight_squared = math.pow(0.8 * (term_tf / max_tf) * term_idf + 0.2 * (term_tf / doc_len) * term_idf,2)
                 term_weight = normalized_term_tf * term_idf
-                self._indexer.inverted_idx[word]["posting_list"][doc_id].append(term_weight)
+                inverted_index[word]["posting_list"][doc_id].append(term_weight)
                 term_weight_squared = math.pow(term_weight, 2)
-                self._indexer.docs_index[doc_id][0] += term_weight_squared
-                self._indexer.docs_index[doc_id][0] = round(self._indexer.docs_index[doc_id][0], 3)
+                docs_index[doc_id][0] += term_weight_squared
+                docs_index[doc_id][0] = round(docs_index[doc_id][0], 3)
 
 
 def main():
     config = ConfigClass()
 
     se = SearchEngine(config)
-    se.build_index_from_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
-    n_res, res = se.search('Coronaviros is less dangeros than the fla	coronavirus less dangerous flu')
-    df = pd.read_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
+    se.build_index_from_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
+    n_res, res = se.search('The seasonal flu kills more people every year in the U.S. than COVID-19 has to date. 	flu kills more than covid')
+    df = pd.read_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 
+    to_return = pd.DataFrame(columns=["query","tweet_id"])
     for r in res:
         to_return = to_return.append({"query":1, "tweet_id":r[0]}, ignore_index=True)
 
-       # print(r, docs[r[0]])
+        #print(r, docs[r[0]])
         print(df[df.tweet_id == r[0]].full_text)
 
     to_return.to_csv("results6.csv", index=False)

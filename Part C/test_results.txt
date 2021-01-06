@@ -52,5 +52,41 @@ DEBUG 2021-01-05 22:49:56,405: search_engine_best results produced average preci
 DEBUG 2021-01-05 22:49:56,405: search_engine_best results produced average precision@50 of 0.6053135100193924.
 DEBUG 2021-01-05 22:49:56,405: search_engine_best results produced average recall of 0.5990867428194223.
 
+no corona dict,  0 * BM25 , 0.6 * cosine , 0.4 * inner, added numbers in big letters to dict
 
+DEBUG 2021-01-06 20:44:30,604: search_engine_best results have MAP value of 0.6908813175321971.
+DEBUG 2021-01-06 20:44:30,651: search_engine_best results produced average precision of 0.6377408639150234.
+DEBUG 2021-01-06 20:44:30,651: search_engine_best results produced average precision@5 of 0.6685714285714286.
+DEBUG 2021-01-06 20:44:30,651: search_engine_best results produced average precision@10 of 0.6914285714285714.
+DEBUG 2021-01-06 20:44:30,651: search_engine_best results produced average precision@50 of 0.6716538461538462.
+DEBUG 2021-01-06 20:44:30,651: search_engine_best results produced average recall of 0.7312235053742406.
+
+
+no corona dict,  0 * BM25 , 1 * cosine , 0 * inner, added numbers in big letters to dict stemming
+
+DEBUG 2021-01-06 20:49:00,166: search_engine_best results have MAP value of 0.6908813175321971.
+DEBUG 2021-01-06 20:49:00,250: search_engine_best results produced average precision of 0.6377408639150234.
+DEBUG 2021-01-06 20:49:00,250: search_engine_best results produced average precision@5 of 0.6685714285714286.
+DEBUG 2021-01-06 20:49:00,250: search_engine_best results produced average precision@10 of 0.6914285714285714.
+DEBUG 2021-01-06 20:49:00,250: search_engine_best results produced average precision@50 of 0.6716538461538462.
+DEBUG 2021-01-06 20:49:00,250: search_engine_best results produced average recall of 0.7312235053742406.
+
+
+no corona dict,  0 * BM25 , 0 * cosine , 1 * inner, added numbers in big letters to dict stemming
+
+DEBUG 2021-01-06 20:52:01,466: search_engine_best results have MAP value of 0.6695989681821698.
+DEBUG 2021-01-06 20:52:01,538: search_engine_best results produced average precision of 0.594478424289428.
+DEBUG 2021-01-06 20:52:01,538: search_engine_best results produced average precision@5 of 0.64.
+DEBUG 2021-01-06 20:52:01,538: search_engine_best results produced average precision@10 of 0.6707142857142858.
+DEBUG 2021-01-06 20:52:01,539: search_engine_best results produced average precision@50 of 0.6273176025472376.
+DEBUG 2021-01-06 20:52:01,539: search_engine_best results produced average recall of 0.40516279877457567.
+
+0 * BM25 , 0.8 * cosine , 0.2 * inner, added numbers in big letters to dict, without twitter.com web and status
+
+DEBUG 2021-01-06 20:58:12,539: search_engine_best results have MAP value of 0.7065723097868928.
+DEBUG 2021-01-06 20:58:12,585: search_engine_best results produced average precision of 0.6402333766860779.
+DEBUG 2021-01-06 20:58:12,585: search_engine_best results produced average precision@5 of 0.6971428571428572.
+DEBUG 2021-01-06 20:58:12,585: search_engine_best results produced average precision@10 of 0.6914285714285714.
+DEBUG 2021-01-06 20:58:12,585: search_engine_best results produced average precision@50 of 0.6892857142857143.
+DEBUG 2021-01-06 20:58:12,585: search_engine_best results produced average recall of 0.6731900978342429.
 

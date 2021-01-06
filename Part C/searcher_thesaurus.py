@@ -1,14 +1,15 @@
 from ranker import Ranker
 import utils
 import math
+from Thesaurus import Thesaurus1
 
 
 # DO NOT MODIFY CLASS NAME
 class Searcher:
     # DO NOT MODIFY THIS SIGNATURE
-    # You can change the internal implementation as you see fit. The model 
-    # parameter allows you to pass in a precomputed model that is already in 
-    # memory for the searcher to use such as LSI, LDA, Word2vec models. 
+    # You can change the internal implementation as you see fit. The model
+    # parameter allows you to pass in a precomputed model that is already in
+    # memory for the searcher to use such as LSI, LDA, Word2vec models.
     # MAKE SURE YOU DON'T LOAD A MODEL INTO MEMORY HERE AS THIS IS RUN AT QUERY TIME.
     def __init__(self, parser, indexer, model=None):
         self._parser = parser
@@ -24,29 +25,30 @@ class Searcher:
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
     def search(self, query, k=None):
-        """ 
-        Executes a query over an existing index and returns the number of 
+        """
+        Executes a query over an existing index and returns the number of
         relevant docs and an ordered list of search results (tweet ids).
         Input:
             query - string.
             k - number of top results to return, default to everything.
         Output:
-            A tuple containing the number of relevant search results, and 
-            a list of tweet_ids where the first element is the most relavant 
+            A tuple containing the number of relevant search results, and
+            a list of tweet_ids where the first element is the most relavant
             and the last is the least relevant result.
         """
         query_as_list = self._parser.parse_sentence(query)
 
+        query_as_list = Thesaurus1.synonyms(query_as_list)
         # relevant_docs = self._relevant_docs_from_posting(query_as_list)
         relevant_docs, Ranker.query_weight = self._relevant_docs_from_posting(query_as_list)
         ranked_doc_ids = Ranker.rank_relevant_docs(relevant_docs, self._indexer.get_docs_count())
         n_relevant = len(ranked_doc_ids)
         ranked_doc_ids = [doc_id for doc_id, rank in ranked_doc_ids]
 
-        # return n_relevant, ranked_doc_ids
-        return n_relevant, ranked_doc_ids#, relevant_docs
+        return n_relevant, ranked_doc_ids
+        # return n_relevant, ranked_doc_ids, relevant_docs
 
-    # feel free to change the signature and/or implementation of this function 
+    # feel free to change the signature and/or implementation of this function
     # or drop altogether.
     def _relevant_docs_from_posting(self, query_as_list):
         """

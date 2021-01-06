@@ -4,29 +4,35 @@ from nltk.corpus import wordnet
 class WordNet:
 
     @staticmethod
-    def weights(query_string):
-
-        query_dict = query_string.split()
-        # query_terms = list(dict_from_pars.keys()) + list(entities.keys())
+    def weights(words_to_check):
+        query_terms = []
+        query_dict = words_to_check
         for term in query_dict.keys():  # we didn't want to expand entities
-            if term == "covid" or term.lower() == "trump": # those are common words
+            if term.lower() == "coronavirus" or term.lower() == "covid": # those are common words
                 continue
-            if len(wordnet.synsets(term)) > 0:
-                for lm in wordnet.synsets(term)[0].lemmas():
-                    if lm.name() not in dict_from_pars and lm.name() not in terms_expand and not ("_" in lm.name()):
-                        terms_expand.add(lm.name())
+            term_similar_words = wordnet.synsets(term)
+            if not term_similar_words:
+                continue
+            terms_expand = set()
+            i = 0
+            while i<3:
+                expantion_word = term_similar_words[0].lemmas()[i].name()
+            for lemma in term_similar_words[0].lemmas():
+                expantion_word =
+                if lm.name() not in query_dict and lm.name() not in terms_expand:
+                    terms_expand.add(lm.name())
 
-        query_terms += list(terms_expand)
+            query_terms += list(terms_expand)
 
 
 
 
 
 
-for i, term in enumerate(query_terms):
-            if term in entities:
-                query_wights.append(1*entities[term])
-            elif term in dict_from_pars:
-                query_wights.append(1*dict_from_pars[term])
-            else: # from expand
-                query_wights.append(0.2)
+# for i, term in enumerate(query_terms):
+#             if term in entities:
+#                 query_wights.append(1*entities[term])
+#             elif term in dict_from_pars:
+#                 query_wights.append(1*dict_from_pars[term])
+#             else: # from expand
+#                 query_wights.append(0.2)

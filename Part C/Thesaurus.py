@@ -1,5 +1,5 @@
 from thesaurus_api import *
-from py_thesaurus import Thesaurus
+#from py_thesaurus import Thesaurus
 
 
 class Thesaurus1:
@@ -7,8 +7,8 @@ class Thesaurus1:
     @staticmethod
     def synonyms(string_to_evaluate):
 
-        new_instance = Thesaurus('young')
-        mor = new_instance.get_synonym()
+      #  new_instance = Thesaurus('young')
+    #    mor = new_instance.get_synonym()
         synonym_word_string = ""
         words_to_evaluate = string_to_evaluate.split()
         check = Word('box')

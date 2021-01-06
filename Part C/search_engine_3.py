@@ -3,7 +3,7 @@ from reader import ReadFile
 from configuration import ConfigClass
 from parser_module import Parse
 from indexer import Indexer
-from searcher import Searcher
+from searcher_thesaurus import Searcher
 import utils
 import math
 from Thesaurus import Thesaurus1
@@ -83,7 +83,7 @@ class SearchEngine:
             a list of tweet_ids where the first element is the most relavant
             and the last is the least relevant result.
         """
-        query = Thesaurus1.synonyms(query)
+       # query = Thesaurus1.synonyms(query)
         searcher = Searcher(self._parser, self._indexer, model=self._model)
         return searcher.search(query)
 

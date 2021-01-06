@@ -10,7 +10,7 @@ from document import Document
 
 class Parse:
 
-    def __init__(self, stemming=True, lemmatization=False):
+    def __init__(self, stemming=False, lemmatization=False):
         self.stop_words = frozenset(stopwords.words('english'))
         self.url_tokenizer = RegexpTokenizer("[\w'+.]+")
         self.punctuation_dict = dict(
@@ -31,10 +31,16 @@ class Parse:
         self.number_dictionary = {
             "thousand": [1000, "K"],
             "thousands": [1000, "K"],
+            "Thousand": [1000, "K"],
+            "Thousands": [1000, "K"],
             "million": [1000000, "M"],
+            "Million": [1000000, "M"],
             "millions": [1000000, "M"],
+            "Millions": [1000000, "M"],
             "billion": [1000000000, "B"],
-            "billions": [1000000000, "B"]
+            "Billion": [1000000000, "B"],
+            "billions": [1000000000, "B"],
+            "Billions": [1000000000, "B"]
         }
         self.percent_dictionary = {
             "percent": ["%"],
@@ -61,13 +67,13 @@ class Parse:
         self.USA_dictionary = {
             #  Custom coronavirus rule -> Switch any usa / america term form to 'USA'
             #  Used to better IR usa related docs
-            "u.s": "USA",
-            "u.s.": "USA",
-            "usa": "USA",
-            "u.s.a": "USA",
-            "america": "USA"
+            # "u.s": "USA",
+            # "u.s.": "USA",
+            # "usa": "USA",
+            # "u.s.a": "USA",
+            # "america": "USA"
         }
-        self.excluded_data = ["t.co", "https", "http", "html", "t"]
+        self.excluded_data = ["t.co", "https", "http", "html", "t", "twitter.com","web","status"]
 
     def parse_sentence(self, text):
         """

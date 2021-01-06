@@ -124,7 +124,7 @@ if __name__ == '__main__':
                         q_id = row['query_id']
                         q_keywords = row['keywords']
                         start_time = time.time()
-                        print(q_keywords)
+                      #  print(q_keywords)
                         q_n_res, q_res = engine.search(q_keywords)
                         end_time = time.time()
                         q_time = end_time - start_time
