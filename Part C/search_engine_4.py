@@ -22,7 +22,7 @@ class SearchEngine:
         config.toLemm = False
         self._parser = Parse()
         self._indexer = Indexer(config)
-        self._model = self.load_precomputed_model("model")
+        self.load_precomputed_model("model")
         self.corpus_size = 0
 
     # DO NOT MODIFY THIS SIGNATURE
@@ -71,7 +71,7 @@ class SearchEngine:
         self._model = {}
         with open(f"{model_dir}\\vectors.txt", 'r') as f:
             for line in f:
-                values = line.split()
+                values = line.split(" ")
                 word = values[0]
 
                 vector = np.asarray(values[1:], "float32")
@@ -117,10 +117,12 @@ class SearchEngine:
                 self.get_doc_distance(doc_id, word)
 
     def get_doc_distance(self, doc, word):
+        if word not in self._model:
+            return
         if len(self._indexer.docs_index[doc]) != 6:
             self._indexer.docs_index[doc].append(self._model[word])
         else:
-            self._indexer.docs_index[doc] = self._indexer.docs_index[doc] + self._model[word]
+            self._indexer.docs_index[doc][6] = self._indexer.docs_index[doc][6] + self._model[word]
 
 
 
@@ -131,7 +133,7 @@ def main():
 
     se = SearchEngine(config)
     se.build_index_from_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
-    n_res, res, docs = se.search('Coronavirus is less dangerous than the flu	coronavirus less dangerous flu')
+    n_res, res, docs = se.search('The seasonal flu kills more people every year in the U.S. than COVID-19 has to date.')
     df = pd.read_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 
