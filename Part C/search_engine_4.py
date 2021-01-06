@@ -3,7 +3,7 @@ from reader import ReadFile
 from configuration import ConfigClass
 from parser_module import Parse
 from indexer import Indexer
-from searcher import Searcher
+from searcher_glove import Searcher
 import utils
 import math
 
@@ -119,7 +119,7 @@ class SearchEngine:
     def get_doc_distance(self, doc, word):
         if word not in self._model:
             return
-        if len(self._indexer.docs_index[doc]) != 6:
+        if len(self._indexer.docs_index[doc]) != 7:
             self._indexer.docs_index[doc].append(self._model[word])
         else:
             self._indexer.docs_index[doc][6] = self._indexer.docs_index[doc][6] + self._model[word]
@@ -137,8 +137,12 @@ def main():
     df = pd.read_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 
-    for r in res:
-        print(r, docs[r[0]])
-        print(df[df.tweet_id == r[0]].full_text)
+    to_return = pd.DataFrame(columns=["query","tweet_id"])
 
+    for r in res:
+        to_return = to_return.append({"query":1, "tweet_id":r}, ignore_index=True)
+
+        print(r, docs[r])
+        print(df[df.tweet_id == r].full_text)
+    to_return.to_csv("results6.csv", index=False)
     print(n_res)
