@@ -38,7 +38,7 @@ class Searcher:
         """
         query_as_list = self._parser.parse_sentence(query)
 
-        query_as_list = WordNet.weights(query_as_list)
+        query_as_list = WordNet.Expand(query_as_list)
         # relevant_docs = self._relevant_docs_from_posting(query_as_list)
         relevant_docs, Ranker.query_weight = self._relevant_docs_from_posting(query_as_list)
         ranked_doc_ids = Ranker.rank_relevant_docs(relevant_docs, self._indexer.get_docs_count())
@@ -46,7 +46,7 @@ class Searcher:
         ranked_doc_ids = [doc_id for doc_id, rank in ranked_doc_ids]
 
         return n_relevant, ranked_doc_ids
-        # return n_relevant, ranked_doc_ids, relevant_docs
+        #return n_relevant, ranked_doc_ids, relevant_docs
 
     # feel free to change the signature and/or implementation of this function
     # or drop altogether.

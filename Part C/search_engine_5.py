@@ -114,7 +114,7 @@ def main():
 
     se = SearchEngine(config)
     se.build_index_from_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
-    n_res, res = se.search('The seasonal flu kills more people every year in the U.S. than COVID-19 has to date. 	flu kills more than covid')
+    n_res, res, ima_shelha = se.search('The seasonal flu kills more people every year in the U.S. than COVID-19 has to date. 	flu kills more than covid')
     df = pd.read_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 

@@ -1,6 +1,4 @@
 import math
-from scipy import spatial
-import numpy as np
 
 # you can change whatever you want in this module, just make sure it doesn't
 # break the searcher module
@@ -8,7 +6,6 @@ class Ranker:
     query_terms = {}
     query_weight = 0
     avdl = 1
-    query_vector = None
 
     def __init__(self):
         pass
@@ -38,19 +35,7 @@ class Ranker:
         if k is None:
             k = round(0.2 * number_of_relevant_docs_found)
 
-        if Ranker.query_vector.any():
-            top_sorted_relevant_docs = Ranker.find_closest_embeddings(relevant_docs, total_doc_scores)
         return Ranker.retrieve_top_k(top_sorted_relevant_docs, k)
-
-
-    @staticmethod
-    def find_closest_embeddings(relavent_docs, total_doc_score):
-        try:
-            x = Ranker.query_vector
-            return sorted(relavent_docs.keys(),
-                          key=lambda doc: spatial.distance.euclidean(relavent_docs[doc][9], x) if relavent_docs[doc][9].any() else total_doc_score[doc])
-        except ValueError:
-            print("sadsa")
 
     @staticmethod
     def tf_idf(relevant_docs, number_of_documents):
