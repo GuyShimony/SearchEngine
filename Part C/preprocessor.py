@@ -44,5 +44,8 @@ with open(preprocessed_file, "a+") as f:
             for char in doc:
                 if char not in string.printable:
                     doc = doc.replace(char, "")
-            print(doc)
+
+                if word == "#" or "#_" in word:
+                    continue
+
             f.write(doc)
