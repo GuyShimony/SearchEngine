@@ -57,11 +57,11 @@ class Parse:
             #  Used to better IR coronavirus related docs
             # "covid": "coronavirus",
             # "COVID": "coronavirus",
-            # "covid-19": "coronavirus",
-            # "COVID-19": "coronavirus",
-            # "Covid-19": "coronavirus",
-            # "covid19": "coronavirus",
-            # "covid_19": "coronavirus",
+             "covid-19": "covidYear",
+             "COVID-19": "covidYear",
+             "Covid-19": "covidYear",
+             "covid19": "covidYear",
+             "covid_19": "covidYear",
             # "coronavirus": "coronavirus"
         }
         self.USA_dictionary = {

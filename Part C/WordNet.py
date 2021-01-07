@@ -17,7 +17,7 @@ class WordNet:
             lemma = term_similar_words[0].lemmas()
             lemma_len = len(lemma)
             # maximum of 3 expansion words will be added to the query
-            while i < 3 and i < lemma_len:
+            while i < 2 and i < lemma_len:
                 lemma_type = lemma[i]
                 if lemma_type:
                     expansion_word = lemma_type.name()

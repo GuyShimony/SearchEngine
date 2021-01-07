@@ -90,3 +90,20 @@ DEBUG 2021-01-06 20:58:12,585: search_engine_best results produced average preci
 DEBUG 2021-01-06 20:58:12,585: search_engine_best results produced average precision@50 of 0.6892857142857143.
 DEBUG 2021-01-06 20:58:12,585: search_engine_best results produced average recall of 0.6731900978342429.
 
+corona dict replacing 19 only with different covid,  0 * BM25 , 0.1 * cosine , 0.9 * inner
+
+DEBUG 2021-01-07 14:10:01,812: search_engine_best results have MAP value of 0.7293904569423206.
+DEBUG 2021-01-07 14:10:01,860: search_engine_best results produced average precision of 0.6718845312380937.
+DEBUG 2021-01-07 14:10:01,860: search_engine_best results produced average precision@5 of 0.7028571428571428.
+DEBUG 2021-01-07 14:10:01,860: search_engine_best results produced average precision@10 of 0.6914285714285714.
+DEBUG 2021-01-07 14:10:01,860: search_engine_best results produced average precision@50 of 0.7078888888888889.
+DEBUG 2021-01-07 14:10:01,860: search_engine_best results produced average recall of 0.5847679721982613.
+
+with covid instead of coronavirus
+
+DEBUG 2021-01-07 14:03:40,860: search_engine_best results have MAP value of 0.7016186077937734.
+DEBUG 2021-01-07 14:03:40,907: search_engine_best results produced average precision of 0.6325619417251329.
+DEBUG 2021-01-07 14:03:40,907: search_engine_best results produced average precision@5 of 0.6685714285714286.
+DEBUG 2021-01-07 14:03:40,907: search_engine_best results produced average precision@10 of 0.6914285714285714.
+DEBUG 2021-01-07 14:03:40,907: search_engine_best results produced average precision@50 of 0.6848730158730159.
+DEBUG 2021-01-07 14:03:40,907: search_engine_best results produced average recall of 0.7033191740062246.

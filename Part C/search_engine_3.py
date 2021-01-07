@@ -6,7 +6,6 @@ from indexer import Indexer
 from searcher_thesaurus import Searcher
 import utils
 import math
-from Thesaurus import Thesaurus1
 
 
 # DO NOT CHANGE THE CLASS NAME
@@ -112,9 +111,9 @@ def main():
     config = ConfigClass()
 
     se = SearchEngine(config)
-    se.build_index_from_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
+    se.build_index_from_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
     n_res, res, docs = se.search('Coronavirus is less dangerous than the flu	coronavirus less dangerous flu')
-    df = pd.read_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
+    df = pd.read_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 
     for r in res:
