@@ -136,6 +136,7 @@ venv
 inverted_idx.pkl
 *.pkl
 *.txt
+test_part_c_students.py
 
 # model files
 /model

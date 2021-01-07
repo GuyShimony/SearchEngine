@@ -64,15 +64,7 @@ class Parse:
              "covid_19": "covidYear",
             # "coronavirus": "coronavirus"
         }
-        self.USA_dictionary = {
-            #  Custom coronavirus rule -> Switch any usa / america term form to 'USA'
-            #  Used to better IR usa related docs
-            # "u.s": "USA",
-            # "u.s.": "USA",
-            # "usa": "USA",
-            # "u.s.a": "USA",
-            # "america": "USA"
-        }
+
         self.excluded_data = ["t.co", "https", "http", "html", "t", "twitter.com","web","status"]
 
     def parse_sentence(self, text):
@@ -108,7 +100,7 @@ class Parse:
             text = text.replace(word, "")
 
         text = self.covid_normelizer(text)
-        text = self.usa_normelizer(text)
+
 
         text_tokens_without_stopwords = {}
 
@@ -138,9 +130,6 @@ class Parse:
                         word = self.coronavirus_dictionary[word.lower()]
                         text_tokens_without_stopwords[word] += 1
 
-                    elif word.lower() in self.USA_dictionary:
-                        word = self.USA_dictionary[word.lower()]
-                        text_tokens_without_stopwords[word] += 1
 
                     else:
                         text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word] + 1
@@ -189,15 +178,12 @@ class Parse:
 
                 if word in self.coronavirus_dictionary:
                     text_tokens_without_stopwords[self.coronavirus_dictionary[word.lower()]] += 1
-                elif word in self.USA_dictionary:
-                    text_tokens_without_stopwords[self.USA_dictionary[word.lower()]] += 1
+
                 else:
                     text_tokens_without_stopwords[word] = text_tokens_without_stopwords[word.lower()] + 1
             except KeyError:
                 if word in self.coronavirus_dictionary:
                     text_tokens_without_stopwords[self.coronavirus_dictionary[word.lower()]] = 1
-                elif word in self.USA_dictionary:
-                    text_tokens_without_stopwords[self.USA_dictionary[word.lower()]] = 1
                 else:
                     text_tokens_without_stopwords[word] = 1
 
@@ -312,18 +298,6 @@ class Parse:
 
         return text
 
-    def usa_tokenizer(self, text):
-        return re.findall("[^@#][Uu][.]*[Ss][.]*[Aa]|[^@#a-tv-zA-TV-Z][U][.]*[S][.]*[^a-tv-zA-TV-Z]", text)
-
-    def usa_normelizer(self, text):
-        for word in self.usa_tokenizer(text):
-            try:
-                word = word.strip(" ")
-                text = text.replace(word, self.USA_dictionary[word.lower()])
-            except:
-                pass
-
-        return text
 
     def tweet_id_tokezizer(self, text):
         """

@@ -45,7 +45,7 @@ class Indexer:
                 number_of_curses += 1
 
         self.docs_index[document.tweet_id] = [0, max_tf, document.doc_length, terms_with_one_occurrence,
-                                              number_of_curses, np.zeros(40)]
+                                              number_of_curses, np.zeros(50)]
 
         self.total_docs_len += document.doc_length
 
@@ -105,9 +105,9 @@ class Indexer:
               fn - file name of pickled index.
         """
         # TODO: find if we need to save the docs index with the inverted_index in the same file
-        # index_with_docs_index = {**self.inverted_idx, **self.docs_index}
-        utils.save_obj(self.inverted_idx, "idx_bench")
-        utils.save_obj(self.docs_index, "bench_docs_idx")
+        index_with_docs_index = {**self.inverted_idx, **self.docs_index}
+        # utils.save_obj(self.inverted_idx, "idx_bench")
+        utils.save_obj(index_with_docs_index, "idx_bench")
 
     # feel free to change the signature and/or implementation of this function
     # or drop altogether.

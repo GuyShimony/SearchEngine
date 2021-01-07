@@ -9,6 +9,7 @@ import math
 
 import numpy as np
 
+
 # DO NOT CHANGE THE CLASS NAME
 class SearchEngine:
 
@@ -17,9 +18,8 @@ class SearchEngine:
     def __init__(self, config=None):
         self._config = config
 
-        config.set_output_path(r"Part C\test")
-        config.toStem = False
-        config.toLemm = False
+        self._config.toStem = False
+        self._config.toLemm = False
         self._parser = Parse()
         self._indexer = Indexer(config)
         self.load_precomputed_model("model")
@@ -68,16 +68,36 @@ class SearchEngine:
         This is where you would load models like word2vec, LSI, LDA, etc. and
         assign to self._model, which is passed on to the searcher at query time.
         """
+        if not model_dir:
+            model_dir = "model"
+
         self._model = {}
-        with open(f"{model_dir}\\vectors.txt", 'r') as f:
+        model_vacabulary = {}
+
+        #### LIMIT THE SIZE OF THE MODEL TO 100K WORDS ###########
+        with open(f"{model_dir}\\new_model\\vocab.txt", 'r') as f:
+            lines = f.readlines()
+            for i, line in enumerate(lines):
+                word_and_tf = line.strip("\n").split(' ')
+                if i == 100000:
+                    break
+                else:
+                    model_vacabulary[word_and_tf[0]] = word_and_tf[1]
+        #############################################################
+
+        # Load the model's embedding vectors
+        with open(f"{model_dir}\\new_model\\vectors.txt", 'r') as f:
             for line in f:
                 values = line.split(" ")
                 word = values[0]
 
                 vector = np.asarray(values[1:], "float32")
-                self._model[word] = vector
+                if model_vacabulary.get(word):
+                    self._model[word] = vector
+                else:
+                    continue
 
-
+        model_vacabulary.clear()
 
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
@@ -100,7 +120,6 @@ class SearchEngine:
         for word in self._indexer.inverted_idx:
             for doc_id in self._indexer.inverted_idx[word]['posting_list']:
                 normalized_term_tf = self._indexer.inverted_idx[word]["posting_list"][doc_id][0]
-                # term_tf = merged_dict[key]['docs'][i][1]
                 doc_len = self._indexer.docs_index[doc_id][2]
                 term_df = self._indexer.inverted_idx[word]['df']
 
@@ -117,21 +136,21 @@ class SearchEngine:
                 self.get_doc_distance(doc_id, word)
 
         for doc in self._indexer.docs_index:
-
             self._indexer.docs_index[doc][5] = self._indexer.docs_index[doc][5] / self._indexer.docs_index[doc][2]
 
-
     def get_doc_distance(self, doc, word):
-        # TODO: ADD MEAN OF THE VECTOR AND TRY DISTANCE BETWEEN THE DOC MEAN AND THE QUERY MEAN
-
+        """
+        The function will calculate the document vector composed of all the words embedding.
+        If the word does not recognized by the model
+        :param doc: String. Tweet id - the key to the docs_index
+        :param word: String. Word that lives in the document.
+        :return: None
+        """
         if self._indexer.docs_index[doc][5].any() and word in self._model:
             self._indexer.docs_index[doc][5] = self._indexer.docs_index[doc][5] + self._model[word]
 
         elif not self._indexer.docs_index[doc][5].any() and word in self._model:
             self._indexer.docs_index[doc][5] = self._model[word]
-
-
-
 
 
 def main():
@@ -143,10 +162,10 @@ def main():
     df = pd.read_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 
-    to_return = pd.DataFrame(columns=["query","tweet_id"])
+    to_return = pd.DataFrame(columns=["query", "tweet_id"])
 
     for r in res:
-        to_return = to_return.append({"query":3, "tweet_id":r}, ignore_index=True)
+        to_return = to_return.append({"query": 3, "tweet_id": r}, ignore_index=True)
 
         print(r)
         print([w for w in df[df.tweet_id == r].full_text.tolist()])
