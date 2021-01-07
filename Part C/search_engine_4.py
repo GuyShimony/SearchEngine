@@ -1,5 +1,4 @@
 import pandas as pd
-from reader import ReadFile
 from configuration import ConfigClass
 from parser_module import Parse
 from indexer_glove import Indexer
@@ -121,17 +120,14 @@ class SearchEngine:
         return searcher.search(query)
 
     def calculate_doc_weight(self):
-        # TODO: Think about a way to loop through each doc once
         for word in self._indexer.inverted_idx:
             for doc_id in self._indexer.inverted_idx[word]['posting_list']:
                 normalized_term_tf = self._indexer.inverted_idx[word]["posting_list"][doc_id][0]
-                doc_len = self._indexer.docs_index[doc_id][2]
                 term_df = self._indexer.inverted_idx[word]['df']
 
                 max_tf = self._indexer.docs_index[doc_id][1]
                 term_idf = math.log10(self.corpus_size / term_df)
                 # calculate doc's total weight
-                # term_weight_squared = math.pow(0.8 * (term_tf / max_tf) * term_idf + 0.2 * (term_tf / doc_len) * term_idf,2)
                 term_weight = normalized_term_tf * term_idf
                 self._indexer.inverted_idx[word]["posting_list"][doc_id].append(term_weight)
                 term_weight_squared = math.pow(term_weight, 2)
@@ -163,7 +159,7 @@ def main():
 
     se = SearchEngine(config)
     se.build_index_from_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
-    n_res, res, docs = se.search('Coronavirus is less dangerous than the flu	coronavirus less dangerous flu')
+    n_res, res, docs = se.search('Dr. Anthony Fauci wrote in a 2005 paper published in Virology Journal that hydroxychloroquine was effective in treating SARS.	fauci paper hydroxychloroquine sars')
     df = pd.read_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 

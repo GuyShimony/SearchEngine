@@ -1,6 +1,8 @@
 from ranker_glove import Ranker
 import numpy as np
 import math
+from WordNet import WordNet
+from scipy import spatial
 
 
 # DO NOT MODIFY CLASS NAME
@@ -36,6 +38,8 @@ class Searcher:
             and the last is the least relevant result.
         """
         query_as_list = self._parser.parse_sentence(query)
+        # query_as_list = WordNet.Expand(query_as_list)
+      #  query_as_list = self.expand(query_as_list)
         self.calculate_query_vector(query_as_list)
         # relevant_docs = self._relevant_docs_from_posting(query_as_list)
         relevant_docs, Ranker.query_weight = self._relevant_docs_from_posting(query_as_list)
@@ -55,6 +59,24 @@ class Searcher:
                 vector = self._model[word]
 
         Ranker.query_vector = vector / len(query)
+
+    def expand(self, query_as_list):
+        new_query_terms = []
+        for word in query_as_list:
+            if word not in self._model:
+                continue
+            new_query_terms = new_query_terms + self.find_closest_embeddings(self._model[word])[1:3]
+
+        for word in new_query_terms:
+            if word in query_as_list:
+                query_as_list[word] += 0.2
+            else:
+                query_as_list[word] = 0.2
+
+        return query_as_list
+
+    def find_closest_embeddings(self, embedding):
+        return sorted(self._model.keys(), key=lambda word: spatial.distance.euclidean(self._model[word], embedding))
 
     # feel free to change the signature and/or implementation of this function
     # or drop altogether.
