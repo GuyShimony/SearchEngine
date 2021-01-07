@@ -38,8 +38,8 @@ class Ranker:
         if k is None:
             k = round(0.2 * number_of_relevant_docs_found)
         
-     #   k = Ranker.get_k_threshold(total_doc_scores)
-      #  relevant_docs = dict(list(relevant_docs.items())[:k])
+        # k = Ranker.get_k_threshold(total_doc_scores)
+        # relevant_docs = dict(list(relevant_docs.items())[:k])
 
         if Ranker.query_vector.any():
             top_sorted_relevant_docs = Ranker.find_closest_embeddings(relevant_docs, total_doc_scores)
@@ -54,10 +54,10 @@ class Ranker:
         return len(new_top_ranked)
 
     @staticmethod
-    def get_threshold(scores, n_std):
+    def get_threshold(scores, n_std = 0):
         mean = np.mean(scores)
         std = np.std(scores)
-        return mean
+        return mean + (std * n_std)
 
     @staticmethod
     def find_closest_embeddings(relavent_docs, total_doc_score):
