@@ -105,7 +105,7 @@ class Indexer:
               fn - file name of pickled index.
         """
         index_with_docs_index = [self.inverted_idx, self.docs_index]
-        utils.save_objects(index_with_docs_index, "idx_bench")
+        utils.save_objects(index_with_docs_index, "indexes")
 
     # feel free to change the signature and/or implementation of this function
     # or drop altogether.
