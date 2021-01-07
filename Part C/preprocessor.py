@@ -18,7 +18,14 @@ files_to_process = [
     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-10-2020\covid19_07-10.snappy.parquet",
     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-11-2020\covid19_07-11.snappy.parquet",
     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-12-2020\covid19_07-12.snappy.parquet",
-    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-13-2020\covid19_07-13.snappy.parquet"]
+    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-13-2020\covid19_07-13.snappy.parquet",
+    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-15-2020\covid19_07-15.snappy.parquet",
+    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-16-2020\covid19_07-16.snappy.parquet",
+    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-17-2020\covid19_07-17.snappy.parquet",
+    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-18-2020\covid19_07-18.snappy.parquet",
+    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-19-2020\covid19_07-19.snappy.parquet",
+    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-20-2020\covid19_07-20.snappy.parquet",
+]
 
 for file in files_to_process:
     documents_list += reader.read_file(file)
@@ -44,5 +51,8 @@ with open(preprocessed_file, "a+") as f:
             for char in doc:
                 if char not in string.printable:
                     doc = doc.replace(char, "")
-            print(doc)
+
+                if word == "#" or "#_" in word:
+                    continue
+
             f.write(doc)

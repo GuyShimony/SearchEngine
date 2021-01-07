@@ -1,4 +1,6 @@
 import math
+from scipy import spatial
+import numpy as np
 
 # you can change whatever you want in this module, just make sure it doesn't
 # break the searcher module
@@ -35,8 +37,37 @@ class Ranker:
         # trial and error - retrieve top % of the docs
         if k is None:
             k = round(0.2 * number_of_relevant_docs_found)
+        
+     #   k = Ranker.get_k_threshold(total_doc_scores)
+      #  relevant_docs = dict(list(relevant_docs.items())[:k])
+
+        if Ranker.query_vector.any():
+            top_sorted_relevant_docs = Ranker.find_closest_embeddings(relevant_docs, total_doc_scores)
 
         return Ranker.retrieve_top_k(top_sorted_relevant_docs, k)
+
+
+    @staticmethod
+    def get_k_threshold(top_ranked):
+        threshold = Ranker.get_threshold(list(top_ranked.values()), 1)
+        new_top_ranked = list(filter(lambda doc: doc[1] > threshold, top_ranked.items()))
+        return len(new_top_ranked)
+
+    @staticmethod
+    def get_threshold(scores, n_std):
+        mean = np.mean(scores)
+        std = np.std(scores)
+        return mean
+
+    @staticmethod
+    def find_closest_embeddings(relavent_docs, total_doc_score):
+        try:
+            x = Ranker.query_vector
+            return sorted(relavent_docs.keys(),
+                          key=lambda doc: spatial.distance.euclidean(relavent_docs[doc][9], x) if relavent_docs[doc][
+                              9].any() else 0)
+        except ValueError:
+            print("sadsa")
 
     @staticmethod
     def tf_idf(relevant_docs, number_of_documents):

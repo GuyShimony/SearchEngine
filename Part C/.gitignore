@@ -136,3 +136,6 @@ venv
 inverted_idx.pkl
 *.pkl
 *.txt
+
+# model files
+/model

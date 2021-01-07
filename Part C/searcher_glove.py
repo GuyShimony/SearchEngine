@@ -21,7 +21,6 @@ class Searcher:
         self.docs_index = self._indexer.get_docs_index()
         Ranker.avdl = self._indexer.total_docs_len / self._indexer.get_docs_count()
 
-
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
     def search(self, query, k=None):
@@ -42,10 +41,10 @@ class Searcher:
         relevant_docs, Ranker.query_weight = self._relevant_docs_from_posting(query_as_list)
         ranked_doc_ids = Ranker.rank_relevant_docs(relevant_docs, self._indexer.get_docs_count())
         n_relevant = len(ranked_doc_ids)
-        #ranked_doc_ids = [doc_id for doc_id, rank in ranked_doc_ids]
+        # ranked_doc_ids = [doc_id for doc_id, rank in ranked_doc_ids]
 
-        # return n_relevant, ranked_doc_ids
-        return n_relevant, ranked_doc_ids, relevant_docs
+        return n_relevant, ranked_doc_ids
+        # return n_relevant, ranked_doc_ids, relevant_docs
 
     def calculate_query_vector(self, query):
         vector = np.zeros(1)
@@ -55,7 +54,8 @@ class Searcher:
             elif word in self._model:
                 vector = self._model[word]
 
-        Ranker.query_vector = vector
+        Ranker.query_vector = vector / len(query)
+
     # feel free to change the signature and/or implementation of this function
     # or drop altogether.
     def _relevant_docs_from_posting(self, query_as_list):
@@ -104,11 +104,12 @@ class Searcher:
 
                         # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,
                         #                            document length, ..
+
                         relevant_docs[doc_id] = [1, [term], max_tf, doc_len, curses_per_doc, [term_tf_idf],
                                                  [normalized_tf],
                                                  [term_df],
                                                  doc_weight_squared,
-                                                 self.docs_index[doc_id][6]]  # curses_per_doc was deleted from index 4
+                                                 self.docs_index[doc_id][5]]  # curses_per_doc was deleted from index 4
 
                     else:
                         relevant_docs[doc_id][0] += 1
@@ -116,8 +117,7 @@ class Searcher:
                         relevant_docs[doc_id][5].append(term_tf_idf)
                         relevant_docs[doc_id][6].append(normalized_tf)
                         relevant_docs[doc_id][7].append(term_df)
-                        if relevant_docs[doc_id][9].any() and  self.docs_index[doc_id][6].any():
-                            relevant_docs[doc_id][9] = relevant_docs[doc_id][9] + self.docs_index[doc_id][6]
+
 
             except Exception as e:
                 # pass
