@@ -13,6 +13,32 @@ def append_obj(obj, name):
     with open(name + '.pkl', 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
+def save_objects(objs, name):
+    """
+    This function create a new pickle file and add more than 1 object to the file.
+    :param obj: object to save
+    :param name: name of the pickle file.
+    :return: -
+    """
+    f = open(name + ".pkl", 'wb')
+    for obj in objs:
+        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+
+def load_objects(name):
+    """
+       This function loads all the objects in the pickle file
+       :param name: name of the pickle file.
+       :return: - List of objects
+       """
+    data = []
+    with open(name + ".pkl", 'rb') as fr:
+        try:
+            while True:
+                data.append(pickle.load(fr))
+        except EOFError:
+            return data
+
+
 def save_obj(obj, name):
     """
     This function save an object as a pickle.
