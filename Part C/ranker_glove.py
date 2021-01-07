@@ -1,7 +1,6 @@
 import math
 from scipy import spatial
 import numpy as np
-
 # you can change whatever you want in this module, just make sure it doesn't
 # break the searcher module
 class Ranker:
@@ -30,13 +29,13 @@ class Ranker:
         for doc in total_doc_scores:
             inner_product_score = Ranker.inner_product(doc)
             #  total_doc_scores[doc] = 0.8 * document_scores_cosin[doc] + 0.2 * inner_product_score
-            total_doc_scores[doc] = 0 * document_scores_BM25[doc] + 0.2 * document_scores_cosin[
-                doc] + 0.8 * inner_product_score
+            total_doc_scores[doc] = 0.8 * document_scores_BM25[doc] + 0 * document_scores_cosin[
+                doc] + 0.2 * inner_product_score
         top_sorted_relevant_docs = sorted(total_doc_scores.items(), key=lambda item: item[1], reverse=True)
         number_of_relevant_docs_found = len(top_sorted_relevant_docs)
         # trial and error - retrieve top % of the docs
         if k is None:
-            k = round(0.2 * number_of_relevant_docs_found)
+            k = round(0.1 * number_of_relevant_docs_found)
         
         # k = Ranker.get_k_threshold(total_doc_scores)
         # relevant_docs = dict(list(relevant_docs.items())[:k])
@@ -49,25 +48,29 @@ class Ranker:
 
     @staticmethod
     def get_k_threshold(top_ranked):
-        threshold = Ranker.get_threshold(list(top_ranked.values()), 1)
+        threshold = Ranker.get_threshold(list(top_ranked.values()), 0.1)
         new_top_ranked = list(filter(lambda doc: doc[1] > threshold, top_ranked.items()))
         return len(new_top_ranked)
 
     @staticmethod
-    def get_threshold(scores, n_std = 0):
+    def get_threshold(scores, n_std = 0.0):
         mean = np.mean(scores)
         std = np.std(scores)
         return mean + (std * n_std)
 
     @staticmethod
     def find_closest_embeddings(relavent_docs, total_doc_score):
-        try:
-            x = Ranker.query_vector
-            return sorted(relavent_docs.keys(),
-                          key=lambda doc: spatial.distance.euclidean(relavent_docs[doc][9], x) if relavent_docs[doc][
-                              9].any() else 0)
-        except ValueError:
-            print("sadsa")
+
+        return sorted(relavent_docs.keys(),
+                      key=lambda doc: Ranker.ge_tfidf_cosine(relavent_docs[doc][9], total_doc_score[doc]))
+
+    @staticmethod
+    def get_cosine(v1, v2):
+        return np.dot(v1, v2)/(np.linalg.norm(v1) * np.linalg.norm(v2))
+
+    @staticmethod
+    def ge_tfidf_cosine(doc_vector, doc_tf_tidf):
+        return 0.9 * spatial.distance.euclidean(doc_vector, Ranker.query_vector) + 0.1 * doc_tf_tidf
 
     @staticmethod
     def tf_idf(relevant_docs, number_of_documents):

@@ -3,6 +3,15 @@ import requests
 import zipfile
 import re
 
+def append_obj(obj, name):
+    """
+    This function add an object to an existing pickle file.
+    :param obj: object to save
+    :param name: name of the pickle file.
+    :return: -
+    """
+    with open(name + '.pkl', 'wb') as f:
+        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
 def save_obj(obj, name):
     """
