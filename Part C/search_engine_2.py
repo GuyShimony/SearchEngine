@@ -17,13 +17,17 @@ class SearchEngine:
     def __init__(self, config=None):
         self._config = config
 
-        config.set_output_path(r"Part C\test")
-        config.toStem = False
-        config.toLemm = False
+        if self._config:
+            self._config.set_output_path(r"Part C\test")
+            if hasattr(self._config, 'toStem'):
+                self._config.toStem = False
+            if hasattr(self._config, 'toLemm'):
+                self._config.toLemm = False
         self._parser = Parse()
         self._indexer = Indexer(config)
         self._model = None
         self.corpus_size = 0
+        self.load_precomputed_model()
 
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
@@ -68,7 +72,8 @@ class SearchEngine:
         This is where you would load models like word2vec, LSI, LDA, etc. and
         assign to self._model, which is passed on to the searcher at query time.
         """
-        pass
+        self._model = SpellCheck
+
 
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.

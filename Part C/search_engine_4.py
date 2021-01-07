@@ -18,8 +18,12 @@ class SearchEngine:
     def __init__(self, config=None):
         self._config = config
 
-        self._config.toStem = False
-        self._config.toLemm = False
+        if self._config:
+            self._config.set_output_path(r"Part C\test")
+            if hasattr(self._config, 'toStem'):
+                self._config.toStem = False
+            if hasattr(self._config, 'toLemm'):
+                self._config.toLemm = False
         self._parser = Parse()
         self._indexer = Indexer(config)
         self.load_precomputed_model("model")
