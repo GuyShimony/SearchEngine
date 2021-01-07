@@ -79,7 +79,7 @@ class SearchEngine:
         model_vacabulary = {}
 
         #### LIMIT THE SIZE OF THE MODEL TO 100K WORDS ###########
-        with open(f"{model_dir}\\new_model\\vocab.txt", 'r') as f:
+        with open(f"{model_dir}\\old_model\\vocab.txt", 'r') as f:
             lines = f.readlines()
             for i, line in enumerate(lines):
                 word_and_tf = line.strip("\n").split(' ')
@@ -90,12 +90,13 @@ class SearchEngine:
         #############################################################
 
         # Load the model's embedding vectors
-        with open(f"{model_dir}\\new_model\\vectors.txt", 'r') as f:
+        with open(f"{model_dir}\\old_model\\vectors.txt", 'r') as f:
             for line in f:
                 values = line.split(" ")
                 word = values[0]
 
                 vector = np.asarray(values[1:], "float32")
+
                 if model_vacabulary.get(word):
                     self._model[word] = vector
                 else:
