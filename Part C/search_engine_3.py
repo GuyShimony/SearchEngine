@@ -6,6 +6,7 @@ from indexer import Indexer
 from searcher_thesaurus import Searcher
 import utils
 import math
+from Thesaurus import Thesaurus
 
 
 # DO NOT CHANGE THE CLASS NAME
@@ -26,7 +27,7 @@ class SearchEngine:
         self._indexer = Indexer(config)
         self._model = None
         self.corpus_size = 0
-
+        self.load_precomputed_model()
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
     def build_index_from_parquet(self, fn):
@@ -70,7 +71,7 @@ class SearchEngine:
         This is where you would load models like word2vec, LSI, LDA, etc. and
         assign to self._model, which is passed on to the searcher at query time.
         """
-        pass
+        self._model = Thesaurus
 
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
@@ -85,7 +86,6 @@ class SearchEngine:
             a list of tweet_ids where the first element is the most relavant
             and the last is the least relevant result.
         """
-       # query = Thesaurus1.synonyms(query)
         searcher = Searcher(self._parser, self._indexer, model=self._model)
         return searcher.search(query)
 
@@ -115,12 +115,12 @@ def main():
 
     se = SearchEngine(config)
     se.build_index_from_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
-    n_res, res, docs = se.search('Coronavirus is less dangerous than the flu	coronavirus less dangerous flu')
+    n_res, res = se.search('Coronavirus is less dangerous than the flu	coronavirus less dangerous flu')
     df = pd.read_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 
     for r in res:
-        print(r, docs[r[0]])
-        print(df[df.tweet_id == r[0]].full_text)
+        #print(r, docs[r[0]])
+        print(df[df.tweet_id == r].full_text)
 
     print(n_res)

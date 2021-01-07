@@ -57,15 +57,15 @@ class Parse:
             #  Used to better IR coronavirus related docs
             # "covid": "coronavirus",
             # "COVID": "coronavirus",
-             "covid-19": "covidYear",
-             "COVID-19": "covidYear",
-             "Covid-19": "covidYear",
-             "covid19": "covidYear",
-             "covid_19": "covidYear",
+            "covid-19": "covidYear",
+            "COVID-19": "covidYear",
+            "Covid-19": "covidYear",
+            "covid19": "covidYear",
+            "covid_19": "covidYear",
             # "coronavirus": "coronavirus"
         }
 
-        self.excluded_data = ["t.co", "https", "http", "html", "t", "twitter.com","web","status"]
+        self.excluded_data = ["t.co", "https", "http", "html", "t", "twitter.com", "web", "status", "etc"]
 
     def parse_sentence(self, text):
         """
@@ -78,12 +78,22 @@ class Parse:
         # added rules: 1. coronavirus, 2. usa, 3. dates, 4. number+identifier, 5. curses into *, 6. emojis,
         # 7. word with / (hello/world -> hello world), 8. remove bold words, 9. lemmatization 10. tweet id removal
 
+
+        # dont parse retweet
+        # entities after hashtag
+        # entities different module
+        #parse url - > dont save any part
+        # short cuts 's dont do not don't (add as stopwords.. ) aint
+        # letters for entities split and add all parts separately
+
         if text is None or text == '[]':
             return {}  # Return an empty dict
         try:
             # Preprocessing - remove all 'RT' (retweet mention doesnt aid in the retrieval process)
             # only if RT is appeared alone .. not as part of a word
             text = text.replace(" RT ", "")
+            # if RT exist ---> skip
+            #return {}
             text = text[0:3].replace("RT ", "") + text[3:]  # Remove RT at the beginning of the tweet
             text = text.replace("[", "").replace("]", "")
         except AttributeError:
@@ -93,14 +103,12 @@ class Parse:
         for w in self.tweet_id_tokezizer(text):
             text = text.replace(w, "")  # Remove tweet id from text
 
-
         # Apply all the tokenizing rules on the text #
         special_text_tokens = self.special_cases_tokenizer(text)
         for word in special_text_tokens:
             text = text.replace(word, "")
 
         text = self.covid_normelizer(text)
-
 
         text_tokens_without_stopwords = {}
 
@@ -283,10 +291,10 @@ class Parse:
             full_text = full_text.replace(short, extended)
 
         return full_text
-    
+
     def covid_tokenizer(self, text):
         return re.findall("[^@#][Cc][Oo][Vv][Ii][Dd][-]*[19]*|"
-                          "[^@#][Cc][Oo][Rr][Oo][Nn][Aa][Vv][Ii][Rr][Uu][Ss]",text)
+                          "[^@#][Cc][Oo][Rr][Oo][Nn][Aa][Vv][Ii][Rr][Uu][Ss]", text)
 
     def covid_normelizer(self, text):
         for word in self.covid_tokenizer(text):
@@ -297,7 +305,6 @@ class Parse:
                 pass
 
         return text
-
 
     def tweet_id_tokezizer(self, text):
         """
@@ -405,7 +412,7 @@ class Parse:
             if word in self.excluded_data:
                 continue
 
-            elif 'www' in word: # Take the domain without the www.
+            elif 'www' in word:  # Take the domain without the www.
                 words_list.append(word[4:])
 
             else:
@@ -454,7 +461,7 @@ class Parse:
                     word = number_word[:-6] + "M"
                 else:
                     word = number_word[:-9] + "B"
-                if sign: # For the percentage
+                if sign:  # For the percentage
                     word += sign
 
                 if word_last:

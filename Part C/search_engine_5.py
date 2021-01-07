@@ -6,6 +6,7 @@ from indexer import Indexer
 from searcher_word_net import Searcher
 import utils
 import math
+from WordNet import WordNet
 
 
 # DO NOT CHANGE THE CLASS NAME
@@ -25,6 +26,7 @@ class SearchEngine:
         self._indexer = Indexer(config)
         self._model = None
         self.corpus_size = 0
+        self.load_precomputed_model()
 
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
@@ -70,7 +72,7 @@ class SearchEngine:
         This is where you would load models like word2vec, LSI, LDA, etc. and
         assign to self._model, which is passed on to the searcher at query time.
         """
-        pass
+        self._model = WordNet
 
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
@@ -116,7 +118,7 @@ def main():
 
     se = SearchEngine(config)
     se.build_index_from_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
-    n_res, res, ima_shelha = se.search('The seasonal flu kills more people every year in the U.S. than COVID-19 has to date. 	flu kills more than covid')
+    n_res, res = se.search('The seasonal flu kills more people every year in the U.S. than COVID-19 has to date. 	flu kills more than covid')
     df = pd.read_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 
@@ -125,7 +127,7 @@ def main():
         to_return = to_return.append({"query":1, "tweet_id":r[0]}, ignore_index=True)
 
         #print(r, docs[r[0]])
-        print(df[df.tweet_id == r[0]].full_text)
+        print(df[df.tweet_id == r].full_text)
 
     to_return.to_csv("results6.csv", index=False)
     print(n_res)

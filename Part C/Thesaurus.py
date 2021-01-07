@@ -1,30 +1,28 @@
 from nltk.corpus import lin_thesaurus as thesaurus
-#from py_thesaurus import Thesaurus
 
 
 class Thesaurus:
 
     @staticmethod
     def synonyms(words_to_check):
+        query_terms = []
 
         for word in words_to_check:
-            synonym_word = thesaurus.synonyms(word)
+            synonym_words = thesaurus.synonyms(word)
+            if not synonym_words:
+                continue
+            # take noun words only if exist
+            noun_synonyms = synonym_words[1]
+            if len(noun_synonyms[1]) > 0:
+                # take highest fit noun word
+                noun_word = list(noun_synonyms[1])[0]
+                query_terms.append(noun_word)
+        Thesaurus.add_to_dict(words_to_check, query_terms)
+        return words_to_check
 
-    # @staticmethod
-    # def synonyms(string_to_evaluate):
-    #
-    #   #  new_instance = Thesaurus('young')
-    # #    mor = new_instance.get_synonym()
-    #     synonym_word_string = ""
-    #     words_to_evaluate = string_to_evaluate.split()
-    #     check = Word('box')
-    #     check1 = check.synonyms()
-    #     for word in words_to_evaluate:
-    #         word_def = Word(word)
-    #         synonym_word = word_def.synonyms()
-    #         if synonym_word:
-    #             print("DGDFG")
-    #             synonym_word_string = synonym_word_string + " " + synonym_word
-    #         else:
-    #             synonym_word_string = " " + string_to_evaluate
-    #     return synonym_word_string[1:]
+    @staticmethod
+    def add_to_dict(query_dict, synonyms_to_add):
+        # each word will be added
+        # if the word already exists in the query dict it won't be sent to method , "all new words appear once"
+        for synonym in synonyms_to_add:
+            query_dict[synonym] = 0.2  # give new added words a smaller weight

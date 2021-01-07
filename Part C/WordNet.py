@@ -34,4 +34,4 @@ class WordNet:
         # each word will be added
         # if the word already exists in the query dict it won't be sent to method , "all new words appear once"
         for synonym in synonyms_to_add:
-            query_dict[synonym] = 0.3 #give new added words a smaller weight
+            query_dict[synonym] = 0.2 #give new added words a smaller weight

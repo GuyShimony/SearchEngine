@@ -118,16 +118,16 @@ def main():
     config = ConfigClass()
 
     se = SearchEngine(config)
-    se.build_index_from_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
+    se.build_index_from_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
     n_res, res = se.search('Coronaviros is less dangeros than the fla	coronavirus less dangerous flu')
-    df = pd.read_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
+    df = pd.read_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 
     for r in res:
-        to_return = to_return.append({"query":1, "tweet_id":r[0]}, ignore_index=True)
+    #    to_return = to_return.append({"query":1, "tweet_id":r[0]}, ignore_index=True)
 
        # print(r, docs[r[0]])
-        print(df[df.tweet_id == r[0]].full_text)
+        print(df[df.tweet_id == r].full_text)
 
-    to_return.to_csv("results6.csv", index=False)
+  #  to_return.to_csv("results6.csv", index=False)
     print(n_res)
