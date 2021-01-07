@@ -23,6 +23,8 @@ files_to_process = [
     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-16-2020\covid19_07-16.snappy.parquet",
     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-17-2020\covid19_07-17.snappy.parquet",
     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-18-2020\covid19_07-18.snappy.parquet",
+    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-19-2020\covid19_07-19.snappy.parquet",
+    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-20-2020\covid19_07-20.snappy.parquet",
 ]
 
 for file in files_to_process:
