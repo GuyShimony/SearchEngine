@@ -2,7 +2,7 @@ import pandas as pd
 from reader import ReadFile
 from configuration import ConfigClass
 from parser_module import Parse
-from indexer import Indexer
+from indexer_glove import Indexer
 from searcher_glove import Searcher
 import utils
 import math
@@ -116,14 +116,19 @@ class SearchEngine:
 
                 self.get_doc_distance(doc_id, word)
 
+        for doc in self._indexer.docs_index:
+
+            self._indexer.docs_index[doc][5] = self._indexer.docs_index[doc][5] / self._indexer.docs_index[doc][2]
+
+
     def get_doc_distance(self, doc, word):
         # TODO: ADD MEAN OF THE VECTOR AND TRY DISTANCE BETWEEN THE DOC MEAN AND THE QUERY MEAN
-        if word not in self._model:
-            return
-        if len(self._indexer.docs_index[doc]) != 7:
-            self._indexer.docs_index[doc].append(self._model[word])
-        else:
-            self._indexer.docs_index[doc][6] = self._indexer.docs_index[doc][6] + self._model[word]
+
+        if self._indexer.docs_index[doc][5].any() and word in self._model:
+            self._indexer.docs_index[doc][5] = self._indexer.docs_index[doc][5] + self._model[word]
+
+        elif not self._indexer.docs_index[doc][5].any() and word in self._model:
+            self._indexer.docs_index[doc][5] = self._model[word]
 
 
 

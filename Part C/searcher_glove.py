@@ -43,8 +43,8 @@ class Searcher:
         n_relevant = len(ranked_doc_ids)
         # ranked_doc_ids = [doc_id for doc_id, rank in ranked_doc_ids]
 
-        # return n_relevant, ranked_doc_ids
-        return n_relevant, ranked_doc_ids, relevant_docs
+        return n_relevant, ranked_doc_ids
+        # return n_relevant, ranked_doc_ids, relevant_docs
 
     def calculate_query_vector(self, query):
         vector = np.zeros(1)
@@ -54,7 +54,7 @@ class Searcher:
             elif word in self._model:
                 vector = self._model[word]
 
-        Ranker.query_vector = vector
+        Ranker.query_vector = vector / len(query)
 
     # feel free to change the signature and/or implementation of this function
     # or drop altogether.
@@ -104,14 +104,12 @@ class Searcher:
 
                         # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,
                         #                            document length, ..
-                        vector = np.zeros(50)
-                        if len(self.docs_index[doc_id]) == 7:
-                            vector = self.docs_index[doc_id][6]
+
                         relevant_docs[doc_id] = [1, [term], max_tf, doc_len, curses_per_doc, [term_tf_idf],
                                                  [normalized_tf],
                                                  [term_df],
                                                  doc_weight_squared,
-                                                 vector]  # curses_per_doc was deleted from index 4
+                                                 self.docs_index[doc_id][5]]  # curses_per_doc was deleted from index 4
 
                     else:
                         relevant_docs[doc_id][0] += 1
