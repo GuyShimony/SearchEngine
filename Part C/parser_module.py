@@ -92,8 +92,6 @@ class Parse:
             # Preprocessing - remove all 'RT' (retweet mention doesnt aid in the retrieval process)
             # only if RT is appeared alone .. not as part of a word
             text = text.replace(" RT ", "")
-            # if RT exist ---> skip
-            #return {}
             text = text[0:3].replace("RT ", "") + text[3:]  # Remove RT at the beginning of the tweet
             text = text.replace("[", "").replace("]", "")
         except AttributeError:
