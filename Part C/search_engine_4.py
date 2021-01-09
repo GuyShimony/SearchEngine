@@ -6,6 +6,7 @@ from searcher_glove import Searcher
 import os
 import math
 from multiprocessing import Queue, Process
+from threading import Thread
 import numpy as np
 
 
@@ -47,29 +48,6 @@ class SearchEngine:
             number_of_documents += 1
             # index the document data
             self._indexer.add_new_doc(parsed_document)
-        # number_of_cores = os.cpu_count() - 4
-        # n_groups = len(documents_list) % number_of_cores
-        # start = 0
-        # end = int(len(documents_list) / n_groups)
-        # buckets = []
-        # for i in range(n_groups):
-        #     if end >= len(documents_list):
-        #         buckets.append(documents_list[start:])
-        #         break
-        #
-        #     buckets.append(documents_list[start:end])
-        #     start += end
-        #     end += end
-        #
-        # processes = []
-        # indexes = Queue()
-        # for bucket in buckets:
-        #     processes.append(Process(target=self.task, args=(indexes,bucket)))
-        # for p in processes:
-        #     p.start()
-        #
-        # for p in processes:
-        #     p.join()
 
         self._indexer.save_index(self._config.get_output_path())  # Save the inverted_index to disk
         self.corpus_size = self._indexer.get_docs_count()
