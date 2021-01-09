@@ -70,6 +70,8 @@ class SearchEngine:
         """
         if not model_dir:
             model_dir = "model"
+        if self._config.get_model_dir():
+            model_dir = self._config.get_model_dir()
 
         self._model = {}
         model_vacabulary = {}

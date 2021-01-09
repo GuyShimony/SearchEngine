@@ -12,6 +12,7 @@ class ConfigClass:
         # in subsequent submissions to avoid the slow downloading of the large 
         # model file with every submission.
         self._download_model = False
+        self._model_dir = None
 
         self.corpusPath = ''
         self.savedFileMainFolder = ''
@@ -50,6 +51,9 @@ class ConfigClass:
         """
         return os.getcwd()
 
-
-
+    def get_model_dir(self):
+        """
+        Get the model dir
+        """
+        return self._model_dir
 
