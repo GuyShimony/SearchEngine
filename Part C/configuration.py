@@ -17,7 +17,7 @@ class ConfigClass:
         self.savedFileMainFolder = ''
         self.saveFilesWithStem = self.savedFileMainFolder + "/WithStem"
         self.saveFilesWithoutStem = self.savedFileMainFolder + "/WithoutStem"
-        #self.toStem = False
+        self.toStem = False
         self.toLemm = False
 
         # Used for tests
