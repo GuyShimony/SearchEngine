@@ -21,6 +21,7 @@ class Searcher:
         self.inverted_index = self._indexer.get_inverted_index()
         self.docs_index = self._indexer.get_docs_index()
         Ranker.avdl = self._indexer.total_docs_len / self._indexer.get_docs_count()
+
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
     def search(self, query, k=None):
@@ -40,7 +41,6 @@ class Searcher:
             query_as_list = self.expand(query_as_list)
 
         self.calculate_query_vector(query_as_list)
-        # relevant_docs = self._relevant_docs_from_posting(query_as_list)
         relevant_docs, Ranker.query_weight = self._relevant_docs_from_posting(query_as_list)
         ranked_doc_ids = Ranker.rank_relevant_docs(relevant_docs, self._indexer.get_docs_count(), k)
         n_relevant = len(ranked_doc_ids)
@@ -77,12 +77,14 @@ class Searcher:
             if word not in self._model:
                 continue
 
+            #  To remove stop-words and other non-relevant words each sequence of expands words are parsed
             expanded = "".join(f"{w} " for w in self.find_closest_embeddings(self._model[word], 2))
             new_query_terms = new_query_terms + list(self._parser.parse_sentence(expanded).keys())
 
+        #  If the expanded word already exist in the doc we add a weight to its TF to make it more relevant
         for word in new_query_terms:
             if word in query_as_list:
-                query_as_list[word] += 0
+                query_as_list[word] += 0.1
             else:
                 query_as_list[word] = 1
 

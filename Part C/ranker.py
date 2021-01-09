@@ -1,5 +1,6 @@
 import math
 
+
 # you can change whatever you want in this module, just make sure it doesn't
 # break the searcher module
 class Ranker:
@@ -22,34 +23,32 @@ class Ranker:
         total_doc_scores = {}
         for rel_doc in relevant_docs:
             total_doc_scores[rel_doc] = 0
-        document_scores_cosin = Ranker.cosine_sim(relevant_docs)
-        document_scores_BM25 = Ranker.BM25(relevant_docs, corpus_size)
+
+        #  CALCULATE EACH DOC SCORE ACCORDING TO WEIGHTS ON ALL THE SIM FUNCTION: INNER, COSINE, BM25
         for doc in total_doc_scores:
+            cosine_score = Ranker.cosine_doc_score(relevant_docs[doc])
+            BM25_score = Ranker.BM25_doc_score(relevant_docs[doc], corpus_size)
             inner_product_score = Ranker.inner_product(doc)
-            #  total_doc_scores[doc] = 0.8 * document_scores_cosin[doc] + 0.2 * inner_product_score
-            total_doc_scores[doc] = 0 * document_scores_BM25[doc] + 0.1 * document_scores_cosin[
-                doc] + 0.9 * inner_product_score
+            total_doc_scores[doc] = 0.9 * BM25_score + 0.1 * inner_product_score  # + 0 * cosine_score
+        ################################################################################################
+
         top_sorted_relevant_docs = sorted(total_doc_scores.items(), key=lambda item: item[1], reverse=True)
         number_of_relevant_docs_found = len(top_sorted_relevant_docs)
         # trial and error - retrieve top % of the docs
         if k is None:
-            k = round(0.2 * number_of_relevant_docs_found)
+            k = round(0.9 * number_of_relevant_docs_found)
 
         return Ranker.retrieve_top_k(top_sorted_relevant_docs, k)
 
-    @staticmethod
-    def tf_idf(relevant_docs, number_of_documents):
-
-        document_scores = {}
-        for document_id in relevant_docs:
-            score = 0
-            for term_tf, term_df in zip(relevant_docs[document_id][6], relevant_docs[document_id][7]):
-                score += term_tf * math.log10(number_of_documents / term_df)  # tfi * idf
-                document_scores[document_id] = score
-        return document_scores
+        # ----------------------SIMILARITY RELATED FUNCTIONS---------------------------------
 
     @staticmethod
     def inner_product(relevant_doc):
+        """
+        The method will calculate the inner product similarity of a document and a query
+        :param relevant_doc: List. all the document information
+        :return: float. Document inner product score
+        """
         inner_product = 0
         for query_term in Ranker.query_terms:
             if query_term in relevant_doc[1]:
@@ -60,48 +59,64 @@ class Ranker:
         return inner_product
 
     @staticmethod
-    def cosine_sim(relevant_docs):
-        document_scores_cosin = {}
-        # numerator -> inner product
-        for relevant_doc in relevant_docs:
-            inner_product = 0
-            for term_index in range(len(relevant_docs[relevant_doc][1])):
-                term = relevant_docs[relevant_doc][1][term_index]
-                term_weight_doc = relevant_docs[relevant_doc][5][term_index]
-                term_weight_query = Ranker.query_terms[term]
-                inner_product += term_weight_doc * term_weight_query
+    def BM25_doc_score(doc, corpus_size, k=3, b=0.6):
+        """
+        BM25 Similarity function - return the similarity between the query and document
+        :param doc: List - all the document information
+        :param corpus_size: int - the corpus size
+        :param k: float or int - the bm25 k
+        :param b: float - the bm25 b
+        :return: float - the bm25's document score
+        """
+        common_terms = doc[1]
+        common_terms_tf = doc[6]
+        common_terms_df = doc[7]
 
-            # denominator left -> term per doc weight squared
-            doc_weight = relevant_docs[relevant_doc][8]
-            # denominator right -> term per query weight squared
+        doc_score = 0
+        doc_len = doc[3]
 
-            cosin_denominator = math.sqrt(doc_weight * Ranker.query_weight)
-            cosin_score = inner_product / cosin_denominator
-            document_scores_cosin[relevant_doc] = cosin_score
+        for index, term in enumerate(common_terms):
+            term_tf = common_terms_tf[index]
+            term_df = common_terms_df[index]
+            term_idf = math.log2(corpus_size / term_df)
+            numerator = term_tf * (term_tf * (k + 1))
+            denominator = term_tf + (k * (1 - b + (b * doc_len / Ranker.avdl)))
+            doc_score += (term_idf * (numerator / denominator))
 
-        return document_scores_cosin
+        return doc_score
 
     @staticmethod
-    def BM25(relevant_docs, corpus_size, k=1.5, b=0.75):
-        # common terms for query and each document are found in the docs_idx[1]
-        document_scores_BM25 = {}
-        for doc_id in relevant_docs:
-            common_terms = relevant_docs[doc_id][1]
-            common_terms_tf = relevant_docs[doc_id][6]
-            common_terms_df = relevant_docs[doc_id][7]
+    def cosine_doc_score(doc):
+        # numerator -> inner product
+        inner_product = 0
+        for term_index in range(len(doc[1])):
+            term = doc[1][term_index]
+            term_weight_doc = doc[5][term_index]
+            term_weight_query = Ranker.query_terms[term]
+            inner_product += term_weight_doc * term_weight_query
 
-            doc_score = 0
-            doc_len = relevant_docs[doc_id][3]
+        # denominator left -> term per doc weight squared
+        doc_weight = doc[8]
+        # denominator right -> term per query weight squared
 
-            for index, term in enumerate(common_terms):
-                term_tf = common_terms_tf[index]
-                term_df = common_terms_df[index]
-                term_idf = math.log2(corpus_size / term_df)
-                numerator = term_tf * (term_tf * (k + 1))
-                denominator = term_tf  + (k * (1 - b + (b * doc_len / Ranker.avdl)))
-                doc_score += (term_idf * (numerator / denominator))
-            document_scores_BM25[doc_id] = doc_score
-        return document_scores_BM25
+        cosin_denominator = math.sqrt(doc_weight * Ranker.query_weight)
+        cosin_score = inner_product / cosin_denominator
+
+        return cosin_score
+
+    # --------------------K RELATED FUNCTIONS----------------------------
+
+    @staticmethod
+    def retrieve_top_k(sorted_relevant_doc, k=1):
+        """
+        return a list of top K tweets based on their ranking from highest to lowest
+        :param sorted_relevant_doc: list of all candidates docs.
+        :param k: Number of top document to return
+        :return: list of relevant document
+        """
+        return sorted_relevant_doc[:k]
+
+    # --------------------K RELATED FUNCTIONS----------------------------
 
     @staticmethod
     def retrieve_top_k(sorted_relevant_doc, k=1):

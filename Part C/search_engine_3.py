@@ -1,10 +1,8 @@
 import pandas as pd
-from reader import ReadFile
-from configuration import ConfigClass
 from parser_module import Parse
 from indexer import Indexer
 from searcher_thesaurus import Searcher
-import utils
+
 import math
 from Thesaurus import Thesaurus
 
@@ -18,16 +16,17 @@ class SearchEngine:
         self._config = config
 
         if self._config:
-            self._config.set_output_path(r"Part C\test")
-            if hasattr(self._config, 'toStem'):
+            if not hasattr(self._config, 'toStem'):
                 self._config.toStem = False
-            if hasattr(self._config, 'toLemm'):
+            if not hasattr(self._config, 'toLemm'):
                 self._config.toLemm = False
+
         self._parser = Parse()
         self._indexer = Indexer(config)
         self._model = None
         self.corpus_size = 0
         self.load_precomputed_model()
+
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
     def build_index_from_parquet(self, fn):
@@ -48,7 +47,6 @@ class SearchEngine:
             number_of_documents += 1
             # index the document data
             self._indexer.add_new_doc(parsed_document)
-        print('Finished parsing and indexing.')
         self._indexer.save_index(self._config.get_output_path())  # Save the inverted_index to disk
         self.corpus_size = self._indexer.get_docs_count()
         self.calculate_doc_weight()
@@ -90,37 +88,19 @@ class SearchEngine:
         return searcher.search(query)
 
     def calculate_doc_weight(self):
-        # TODO: Think about a way to loop through each doc once
+        """
+        The method calculates the TF-IDF for each document
+        :return:
+        """
         for word in self._indexer.inverted_idx:
-
             for doc_id in self._indexer.inverted_idx[word]['posting_list']:
                 normalized_term_tf = self._indexer.inverted_idx[word]["posting_list"][doc_id][0]
-                # term_tf = merged_dict[key]['docs'][i][1]
-                doc_len = self._indexer.docs_index[doc_id][2]
                 term_df = self._indexer.inverted_idx[word]['df']
-
-                max_tf = self._indexer.docs_index[doc_id][1]
                 term_idf = math.log10(self.corpus_size / term_df)
                 # calculate doc's total weight
-                # term_weight_squared = math.pow(0.8 * (term_tf / max_tf) * term_idf + 0.2 * (term_tf / doc_len) * term_idf,2)
                 term_weight = normalized_term_tf * term_idf
                 self._indexer.inverted_idx[word]["posting_list"][doc_id].append(term_weight)
                 term_weight_squared = math.pow(term_weight, 2)
                 self._indexer.docs_index[doc_id][0] += term_weight_squared
                 self._indexer.docs_index[doc_id][0] = round(self._indexer.docs_index[doc_id][0], 3)
 
-
-def main():
-    config = ConfigClass()
-
-    se = SearchEngine(config)
-    se.build_index_from_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
-    n_res, res = se.search('Coronavirus is less dangerous than the flu	coronavirus less dangerous flu')
-    df = pd.read_parquet(r'C:\Users\FirstUser\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
-                         engine="pyarrow")
-
-    for r in res:
-        #print(r, docs[r[0]])
-        print(df[df.tweet_id == r].full_text)
-
-    print(n_res)

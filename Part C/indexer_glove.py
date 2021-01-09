@@ -94,7 +94,7 @@ class Indexer:
         Input:
             fn - file name of pickled index.
         """
-        return utils.load_obj(fn)
+        return utils.load_objects("indexes")[0]
 
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.

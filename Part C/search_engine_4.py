@@ -5,7 +5,6 @@ from indexer_glove import Indexer
 from searcher_glove import Searcher
 import os
 import math
-from task import Task
 from multiprocessing import Queue, Process
 import numpy as np
 
@@ -19,10 +18,9 @@ class SearchEngine:
         self._config = config
 
         if self._config:
-            self._config.set_output_path(r"Part C\test")
-            if hasattr(self._config, 'toStem'):
+            if not hasattr(self._config, 'toStem'):
                 self._config.toStem = False
-            if hasattr(self._config, 'toLemm'):
+            if not hasattr(self._config, 'toLemm'):
                 self._config.toLemm = False
         self._parser = Parse()
         self._indexer = Indexer(config)
@@ -73,7 +71,6 @@ class SearchEngine:
         # for p in processes:
         #     p.join()
 
-        print('Finished parsing and indexing.')
         self._indexer.save_index(self._config.get_output_path())  # Save the inverted_index to disk
         self.corpus_size = self._indexer.get_docs_count()
         self.calculate_doc_weight()
@@ -144,6 +141,10 @@ class SearchEngine:
         return searcher.search(query)
 
     def calculate_doc_weight(self):
+        """
+        The method calculates the TF-IDF for each document
+        :return:
+        """
         for word in self._indexer.inverted_idx:
             for doc_id in self._indexer.inverted_idx[word]['posting_list']:
                 normalized_term_tf = self._indexer.inverted_idx[word]["posting_list"][doc_id][0]
