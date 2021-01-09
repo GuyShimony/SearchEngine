@@ -35,7 +35,7 @@ class Ranker:
         number_of_relevant_docs_found = len(top_sorted_relevant_docs)
         # trial and error - retrieve top % of the docs
         if k is None:
-            k = round(0.875 * number_of_relevant_docs_found)
+            k = round(1 * number_of_relevant_docs_found)
         
         # k = Ranker.get_k_threshold(total_doc_scores)
         # relevant_docs = dict(list(relevant_docs.items())[:k])
@@ -60,7 +60,6 @@ class Ranker:
 
     @staticmethod
     def find_closest_embeddings(relavent_docs, total_doc_score):
-
         return sorted(relavent_docs.keys(),
                       key=lambda doc: Ranker.get_tfidf_cosine_score(relavent_docs[doc][9], total_doc_score[doc]))
 
@@ -70,7 +69,7 @@ class Ranker:
 
     @staticmethod
     def get_tfidf_cosine_score(doc_vector, doc_tf_tidf):
-        return 0.8 * spatial.distance.euclidean(doc_vector, Ranker.query_vector) + 0.2 * doc_tf_tidf
+        return 0.7 * spatial.distance.euclidean(doc_vector, Ranker.query_vector) + 0.3 * doc_tf_tidf
 
 
     @staticmethod
@@ -118,7 +117,7 @@ class Ranker:
         return document_scores_cosin
 
     @staticmethod
-    def BM25(relevant_docs, corpus_size, k=1.5, b=1):
+    def BM25(relevant_docs, corpus_size, k=3, b=0.2):
         # common terms for query and each document are found in the docs_idx[1]
         document_scores_BM25 = {}
         for doc_id in relevant_docs:

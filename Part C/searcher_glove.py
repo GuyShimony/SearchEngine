@@ -2,7 +2,7 @@ from ranker_glove import Ranker
 import numpy as np
 import math
 from scipy import spatial
-
+from WordNet import WordNet
 
 # DO NOT MODIFY CLASS NAME
 class Searcher:
@@ -21,7 +21,6 @@ class Searcher:
         self.inverted_index = self._indexer.get_inverted_index()
         self.docs_index = self._indexer.get_docs_index()
         Ranker.avdl = self._indexer.total_docs_len / self._indexer.get_docs_count()
-
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
     def search(self, query, k=None):
@@ -38,7 +37,7 @@ class Searcher:
         """
         query_as_list = self._parser.parse_sentence(query)
         if len(query_as_list) < 5:
-             query_as_list = self.expand(query_as_list)
+            query_as_list = self.expand(query_as_list)
 
         self.calculate_query_vector(query_as_list)
         # relevant_docs = self._relevant_docs_from_posting(query_as_list)
@@ -48,7 +47,7 @@ class Searcher:
         # ranked_doc_ids = [doc_id for doc_id, rank in ranked_doc_ids]
 
         return n_relevant, ranked_doc_ids
-        # return n_relevant, ranked_doc_ids, relevant_docs
+        return n_relevant, ranked_doc_ids, relevant_docs
 
     def calculate_query_vector(self, query):
         """
@@ -79,12 +78,11 @@ class Searcher:
                 continue
 
             expanded = "".join(f"{w} " for w in self.find_closest_embeddings(self._model[word], 2))
-
             new_query_terms = new_query_terms + list(self._parser.parse_sentence(expanded).keys())
 
         for word in new_query_terms:
             if word in query_as_list:
-                query_as_list[word] += 0.
+                query_as_list[word] += 0
             else:
                 query_as_list[word] = 1
 
