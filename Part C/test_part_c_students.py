@@ -40,6 +40,7 @@ if __name__ == '__main__':
 
     start = datetime.now()
     try:
+        QQQ = 13
         # is the report there?
         test_file_exists('report_part_c.docx')
         # is benchmark data under 'data' folder?
@@ -53,6 +54,8 @@ if __name__ == '__main__':
             bench_lbls = pd.read_csv(bench_lbls_path,
                                      dtype={'query': int, 'tweet': str, 'y_true': int})
             q2n_relevant = bench_lbls.groupby('query')['y_true'].sum().to_dict()
+            q_Val = q2n_relevant.get(QQQ)
+            q2n_relevant = {QQQ: q_Val}
             logging.info("Successfully loaded benchmark labels data.")
 
         # is queries file under data?
@@ -61,6 +64,7 @@ if __name__ == '__main__':
             logging.error("Queries data not found ~> skipping some tests.")
         else:
             queries = pd.read_csv(os.path.join('data', 'queries_train.tsv'), sep='\t')
+            queries = queries.loc[queries['query_id'] == QQQ]
             logging.info("Successfully loaded queries data.")
 
         import configuration
@@ -83,7 +87,7 @@ if __name__ == '__main__':
                 logging.error('model.zip file does not exists.')
 
         # test for each search engine module
-        engine_modules = ['search_engine_' + name for name in ['1', '2', 'best']]
+        engine_modules = ['search_engine_' + name for name in ['1', '2', '3', '5']]
         for engine_module in engine_modules:
             try:
                 # does the module file exist?
