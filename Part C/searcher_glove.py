@@ -1,9 +1,8 @@
 from ranker_glove import Ranker
 import numpy as np
 import math
-from WordNet import WordNet
 from scipy import spatial
-
+from WordNet import WordNet
 
 # DO NOT MODIFY CLASS NAME
 class Searcher:
@@ -22,7 +21,6 @@ class Searcher:
         self.inverted_index = self._indexer.get_inverted_index()
         self.docs_index = self._indexer.get_docs_index()
         Ranker.avdl = self._indexer.total_docs_len / self._indexer.get_docs_count()
-
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
     def search(self, query, k=None):
@@ -38,19 +36,26 @@ class Searcher:
             and the last is the least relevant result.
         """
         query_as_list = self._parser.parse_sentence(query)
-        # query_as_list = WordNet.Expand(query_as_list)
-      #  query_as_list = self.expand(query_as_list)
+        if len(query_as_list) < 5:
+            query_as_list = self.expand(query_as_list)
+
         self.calculate_query_vector(query_as_list)
         # relevant_docs = self._relevant_docs_from_posting(query_as_list)
         relevant_docs, Ranker.query_weight = self._relevant_docs_from_posting(query_as_list)
-        ranked_doc_ids = Ranker.rank_relevant_docs(relevant_docs, self._indexer.get_docs_count())
+        ranked_doc_ids = Ranker.rank_relevant_docs(relevant_docs, self._indexer.get_docs_count(), k)
         n_relevant = len(ranked_doc_ids)
         # ranked_doc_ids = [doc_id for doc_id, rank in ranked_doc_ids]
 
         return n_relevant, ranked_doc_ids
-        # return n_relevant, ranked_doc_ids, relevant_docs
+        return n_relevant, ranked_doc_ids, relevant_docs
 
     def calculate_query_vector(self, query):
+        """
+        The method uses the model to calculate the embedded query vector.
+        The method set up the vector in the Ranker query_vector attribute.
+        :param query: Dict or List of words
+        :return: None
+        """
         vector = np.zeros(1)
         for word in query:
             if word in self._model and vector.any():
@@ -61,22 +66,36 @@ class Searcher:
         Ranker.query_vector = vector / len(query)
 
     def expand(self, query_as_list):
+        """
+        The method using the embedding GloVe model for query expansion. Each word in the original input is
+        Taken as input to the model and the 3 Nearest Neighbors are selected for the expansion.
+        :param query_as_list: Dict of words from the query and their TF
+        :return: Dict of query and expanded words with the new TF
+        """
         new_query_terms = []
         for word in query_as_list:
             if word not in self._model:
                 continue
-            new_query_terms = new_query_terms + self.find_closest_embeddings(self._model[word])[1:3]
+
+            expanded = "".join(f"{w} " for w in self.find_closest_embeddings(self._model[word], 2))
+            new_query_terms = new_query_terms + list(self._parser.parse_sentence(expanded).keys())
 
         for word in new_query_terms:
             if word in query_as_list:
-                query_as_list[word] += 0.2
+                query_as_list[word] += 0
             else:
-                query_as_list[word] = 0.2
+                query_as_list[word] = 1
 
         return query_as_list
 
-    def find_closest_embeddings(self, embedding):
-        return sorted(self._model.keys(), key=lambda word: spatial.distance.euclidean(self._model[word], embedding))
+    def find_closest_embeddings(self, embedding, K):
+        """
+        The implementation of the KNN algorithm.
+        Takes the K nearest neighbors
+        :param embedding:
+        :return:
+        """
+        return sorted(self._model.keys(), key=lambda word: spatial.distance.euclidean(self._model[word], embedding))[1:K]
 
     # feel free to change the signature and/or implementation of this function
     # or drop altogether.
@@ -112,9 +131,7 @@ class Searcher:
                 for doc_id in self._indexer.get_term_posting_list(term):
                     normalized_tf = self.inverted_index[term]["posting_list"][doc_id][0]
                     term_df = self.inverted_index[term]["df"]
-                    # term_tf = round(0.6 * (tf / max_tf) + 0.4 * (tf / doc_len),3) # Maybe try again max_tf with doc len
                     doc_len = self.docs_index[doc_id][2]
-                    # term_tf = round((tf / doc_len), 3) # Maybe try again max_tf with doc len
                     term_tf_idf = self.inverted_index[term]["posting_list"][doc_id][
                         1]  # normalized by max_tf and doc's length
 
@@ -142,7 +159,7 @@ class Searcher:
 
 
             except Exception as e:
-                # pass
+                pass
                 # print('term {} not found in inverted index during the search'.format(term))
-                raise e
+
         return relevant_docs, query_weight

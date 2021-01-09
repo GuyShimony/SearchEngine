@@ -3,9 +3,10 @@ from configuration import ConfigClass
 from parser_module import Parse
 from indexer_glove import Indexer
 from searcher_glove import Searcher
-import utils
+import os
 import math
-
+from task import Task
+from multiprocessing import Queue, Process
 import numpy as np
 
 
@@ -48,6 +49,30 @@ class SearchEngine:
             number_of_documents += 1
             # index the document data
             self._indexer.add_new_doc(parsed_document)
+        # number_of_cores = os.cpu_count() - 4
+        # n_groups = len(documents_list) % number_of_cores
+        # start = 0
+        # end = int(len(documents_list) / n_groups)
+        # buckets = []
+        # for i in range(n_groups):
+        #     if end >= len(documents_list):
+        #         buckets.append(documents_list[start:])
+        #         break
+        #
+        #     buckets.append(documents_list[start:end])
+        #     start += end
+        #     end += end
+        #
+        # processes = []
+        # indexes = Queue()
+        # for bucket in buckets:
+        #     processes.append(Process(target=self.task, args=(indexes,bucket)))
+        # for p in processes:
+        #     p.start()
+        #
+        # for p in processes:
+        #     p.join()
+
         print('Finished parsing and indexing.')
         self._indexer.save_index(self._config.get_output_path())  # Save the inverted_index to disk
         self.corpus_size = self._indexer.get_docs_count()
@@ -78,7 +103,7 @@ class SearchEngine:
         model_vacabulary = {}
 
         #### LIMIT THE SIZE OF THE MODEL TO 100K WORDS ###########
-        with open(f"{model_dir}\\old_model\\vocab.txt", 'r') as f:
+        with open(f"{model_dir}\\vocab.txt", 'r') as f:
             lines = f.readlines()
             for i, line in enumerate(lines):
                 word_and_tf = line.strip("\n").split(' ')
@@ -89,13 +114,12 @@ class SearchEngine:
         #############################################################
 
         # Load the model's embedding vectors
-        with open(f"{model_dir}\\old_model\\vectors.txt", 'r') as f:
+        with open(f"{model_dir}\\vectors.txt", 'r') as f:
             for line in f:
                 values = line.split(" ")
                 word = values[0]
 
                 vector = np.asarray(values[1:], "float32")
-
                 if model_vacabulary.get(word):
                     self._model[word] = vector
                 else:
@@ -153,13 +177,25 @@ class SearchEngine:
         elif not self._indexer.docs_index[doc][5].any() and word in self._model:
             self._indexer.docs_index[doc][5] = self._model[word]
 
+    def task(self, queue, document_list):
+        parser = Parse()
+        indexer = Indexer(self._config)
+        for idx, document in enumerate(document_list):
+            # parse the document
+            parsed_document = parser.parse_doc(document)
+            # index the document data
+            indexer.add_new_doc(parsed_document)
+
+        queue.put(indexer.get_inverted_index())
+
 
 def main():
     config = ConfigClass()
 
     se = SearchEngine(config)
     se.build_index_from_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
-    n_res, res, docs = se.search('Dr. Anthony Fauci wrote in a 2005 paper published in Virology Journal that hydroxychloroquine was effective in treating SARS.	fauci paper hydroxychloroquine sars')
+    n_res, res, docs = se.search(
+        'The coronavirus pandemic is a cover for a plan to implant trackable microchips and that the Microsoft co-founder Bill Gates is behind it	gates implant microchips')
     df = pd.read_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 

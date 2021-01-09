@@ -29,13 +29,13 @@ class Ranker:
         for doc in total_doc_scores:
             #  Calculate the TF-IDF based on sum of all sim functions
             inner_product_score = Ranker.inner_product(doc)
-            total_doc_scores[doc] = 0.95 * document_scores_BM25[doc] + 0 * document_scores_cosin[
-                doc] + 0.05 * inner_product_score
+            total_doc_scores[doc] = 0.9 * document_scores_BM25[doc] + 0 * document_scores_cosin[
+                doc] + 0.1 * inner_product_score
         top_sorted_relevant_docs = sorted(total_doc_scores.items(), key=lambda item: item[1], reverse=True)
         number_of_relevant_docs_found = len(top_sorted_relevant_docs)
         # trial and error - retrieve top % of the docs
         if k is None:
-            k = round(0.9 * number_of_relevant_docs_found)
+            k = round(1 * number_of_relevant_docs_found)
         
         # k = Ranker.get_k_threshold(total_doc_scores)
         # relevant_docs = dict(list(relevant_docs.items())[:k])
@@ -60,7 +60,6 @@ class Ranker:
 
     @staticmethod
     def find_closest_embeddings(relavent_docs, total_doc_score):
-
         return sorted(relavent_docs.keys(),
                       key=lambda doc: Ranker.get_tfidf_cosine_score(relavent_docs[doc][9], total_doc_score[doc]))
 
@@ -118,7 +117,7 @@ class Ranker:
         return document_scores_cosin
 
     @staticmethod
-    def BM25(relevant_docs, corpus_size, k=1.5, b=1):
+    def BM25(relevant_docs, corpus_size, k=3, b=0.2):
         # common terms for query and each document are found in the docs_idx[1]
         document_scores_BM25 = {}
         for doc_id in relevant_docs:

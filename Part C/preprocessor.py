@@ -12,19 +12,25 @@ stemmer = Stemmer()
 #documents_list = reader.read_file("covid19_08-05.snappy.parquet")
 
 documents_list = []
+# files_to_process = [
+#     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-08-2020\covid19_07-08.snappy.parquet",
+#     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-09-2020\covid19_07-09.snappy.parquet",
+#     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-10-2020\covid19_07-10.snappy.parquet",
+#     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-11-2020\covid19_07-11.snappy.parquet",
+#     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-12-2020\covid19_07-12.snappy.parquet",
+#     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-13-2020\covid19_07-13.snappy.parquet",
+#     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-15-2020\covid19_07-15.snappy.parquet",
+#     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-16-2020\covid19_07-16.snappy.parquet",
+#     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-18-2020\covid19_07-18.snappy.parquet",
+#     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-20-2020\covid19_07-20.snappy.parquet",
+#     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=08-04-2020\covid19_08-04.snappy.parquet",
+#     r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-27-2020\covid19_07-27.snappy.parquet",
+# ]
+
 files_to_process = [
-    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-08-2020\covid19_07-08.snappy.parquet",
-    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-09-2020\covid19_07-09.snappy.parquet",
-    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-10-2020\covid19_07-10.snappy.parquet",
-    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-11-2020\covid19_07-11.snappy.parquet",
-    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-12-2020\covid19_07-12.snappy.parquet",
-    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-13-2020\covid19_07-13.snappy.parquet",
-    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-15-2020\covid19_07-15.snappy.parquet",
-    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-16-2020\covid19_07-16.snappy.parquet",
-    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-18-2020\covid19_07-18.snappy.parquet",
-    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-20-2020\covid19_07-20.snappy.parquet",
-    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=08-04-2020\covid19_08-04.snappy.parquet",
-    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=07-27-2020\covid19_07-27.snappy.parquet",
+    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=08-07-2020\covid19_08-07.snappy.parquet",
+    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=08-06-2020\covid19_08-06.snappy.parquet",
+    r"C:\Users\Owner\Desktop\SearchEngine\Data\date=08-05-2020\covid19_08-05.snappy.parquet",
 ]
 
 for file in files_to_process:

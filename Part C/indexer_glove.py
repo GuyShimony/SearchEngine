@@ -45,7 +45,7 @@ class Indexer:
                 number_of_curses += 1
 
         self.docs_index[document.tweet_id] = [0, max_tf, document.doc_length, terms_with_one_occurrence,
-                                              number_of_curses, np.zeros(50)]
+                                              number_of_curses, np.zeros(55)]
 
         self.total_docs_len += document.doc_length
 
