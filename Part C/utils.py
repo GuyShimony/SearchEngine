@@ -30,6 +30,8 @@ def load_objects(name):
        :param name: name of the pickle file.
        :return: - List of objects
        """
+    if ".pkl" in name:
+        name = name.replace(".pkl", "")
     data = []
     with open(name + ".pkl", 'rb') as fr:
         try:
