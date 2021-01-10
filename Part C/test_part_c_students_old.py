@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
     start = datetime.now()
     try:
-        QQQ = 13
+        QQQ = 5
         # is the report there?
         test_file_exists('report_part_c.docx')
         # is benchmark data under 'data' folder?
@@ -54,8 +54,8 @@ if __name__ == '__main__':
             bench_lbls = pd.read_csv(bench_lbls_path,
                                      dtype={'query': int, 'tweet': str, 'y_true': int})
             q2n_relevant = bench_lbls.groupby('query')['y_true'].sum().to_dict()
-            q_Val = q2n_relevant.get(QQQ)
-            q2n_relevant = {QQQ: q_Val}
+            # q_Val = q2n_relevant.get(QQQ)
+            # q2n_relevant = {QQQ: q_Val}
             logging.info("Successfully loaded benchmark labels data.")
 
         # is queries file under data?
@@ -64,7 +64,7 @@ if __name__ == '__main__':
             logging.error("Queries data not found ~> skipping some tests.")
         else:
             queries = pd.read_csv(os.path.join('data', 'queries_train.tsv'), sep='\t')
-            queries = queries.loc[queries['query_id'] == QQQ]
+            # queries = queries.loc[queries['query_id'] == QQQ]
             logging.info("Successfully loaded queries data.")
 
         import configuration
@@ -87,7 +87,7 @@ if __name__ == '__main__':
                 logging.error('model.zip file does not exists.')
 
         # test for each search engine module
-        engine_modules = ['search_engine_' + name for name in ['1', '2', '3', '5']]
+        engine_modules = ['search_engine_' + name for name in ['4']]
         for engine_module in engine_modules:
             try:
                 # does the module file exist?
@@ -111,15 +111,15 @@ if __name__ == '__main__':
                 engine.load_precomputed_model(model_dir)
 
                 # test that we can run one query and get results in the format we expect
-                n_res, res = engine.search('bioweapon')
-                if n_res is None or res is None or n_res < 1 or len(res) < 1:
-                    logging.error('basic query for the word bioweapon returned no results')
-                else:
-                    logging.debug(f"{engine_module} successfully returned {n_res} results for the query 'bioweapon'.")
-                    invalid_tweet_ids = [doc_id for doc_id in res if invalid_tweet_id(doc_id)]
-                    if len(invalid_tweet_ids) > 0:
-                        logging.error("the query 'bioweapon' returned results that are not valid tweet ids: " + str(
-                            invalid_tweet_ids[:10]))
+                # n_res, res = engine.search('bioweapon')
+                # if n_res is None or res is None or n_res < 1 or len(res) < 1:
+                #     logging.error('basic query for the word bioweapon returned no results')
+                # else:
+                #     logging.debug(f"{engine_module} successfully returned {n_res} results for the query 'bioweapon'.")
+                #     invalid_tweet_ids = [doc_id for doc_id in res if invalid_tweet_id(doc_id)]
+                #     if len(invalid_tweet_ids) > 0:
+                #         logging.error("the query 'bioweapon' returned results that are not valid tweet ids: " + str(
+                #             invalid_tweet_ids[:10]))
 
                 # run multiple queries and test that no query takes > 10 seconds
                 queries_results = []
@@ -128,7 +128,7 @@ if __name__ == '__main__':
                         q_id = row['query_id']
                         q_keywords = row['keywords']
                         start_time = time.time()
-                      #  print(q_keywords)
+                        #print(q_keywords)
                         q_n_res, q_res = engine.search(q_keywords)
                         end_time = time.time()
                         q_time = end_time - start_time

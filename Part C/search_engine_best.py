@@ -6,6 +6,7 @@ import math
 import numpy as np
 import os
 
+
 # DO NOT CHANGE THE CLASS NAME
 class SearchEngine:
 
@@ -23,7 +24,7 @@ class SearchEngine:
         self._parser = Parse()
         self._indexer = Indexer(config)
         self._model = {}
-        self.load_precomputed_model("model")
+        self.load_precomputed_model(config.model_dir)
         self.corpus_size = 0
 
     # DO NOT MODIFY THIS SIGNATURE
@@ -70,8 +71,7 @@ class SearchEngine:
         assign to self._model, which is passed on to the searcher at query time.
         """
 
-        model_vector_path = os.path.join(model_dir, "vectors.txt")
-
+        model_vector_path = os.path.join(model_dir, "model.txt")
 
         # Load the model's embedding vectors
         # Each word is represented by a np.array
@@ -139,8 +139,3 @@ class SearchEngine:
 
         elif not self._indexer.docs_index[doc][5].any() and word in self._model:
             self._indexer.docs_index[doc][5] = self._model[word]
-
-
-
-
-

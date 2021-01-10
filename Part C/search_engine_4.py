@@ -26,7 +26,7 @@ class SearchEngine:
         self._parser = Parse()
         self._indexer = Indexer(config)
         self._model = {}
-        self.load_precomputed_model("model")
+        self.load_precomputed_model(config.model_dir)
         self.corpus_size = 0
 
     # DO NOT MODIFY THIS SIGNATURE
@@ -73,7 +73,7 @@ class SearchEngine:
         assign to self._model, which is passed on to the searcher at query time.
         """
 
-        model_vector_path = os.path.join(model_dir, "vectors.txt")
+        model_vector_path = os.path.join(model_dir, "model.txt")
 
         # Load the model's embedding vectors
         # Each word is represented by a np.array
