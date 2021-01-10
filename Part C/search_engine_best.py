@@ -4,7 +4,7 @@ from indexer_glove import Indexer
 from searcher_glove import Searcher
 import math
 import numpy as np
-
+import os
 
 # DO NOT CHANGE THE CLASS NAME
 class SearchEngine:
@@ -22,6 +22,7 @@ class SearchEngine:
 
         self._parser = Parse()
         self._indexer = Indexer(config)
+        self._model = {}
         self.load_precomputed_model("model")
         self.corpus_size = 0
 
@@ -68,39 +69,24 @@ class SearchEngine:
         This is where you would load models like word2vec, LSI, LDA, etc. and
         assign to self._model, which is passed on to the searcher at query time.
         """
-        if not model_dir:
-            model_dir = "model"
-        if self._config.get_model_dir():
-            model_dir = self._config.get_model_dir()
 
-        self._model = {}
-        model_vacabulary = {}
+        model_vector_path = os.path.join(model_dir, "vectors.txt")
 
-        #### LIMIT THE SIZE OF THE MODEL TO 100K WORDS ###########
-        with open(f"{model_dir}\\vocab.txt", 'r') as f:
-            lines = f.readlines()
-            for i, line in enumerate(lines):
-                word_and_tf = line.strip("\n").split(' ')
-                if i == 100000:
-                    break
-                else:
-                    model_vacabulary[word_and_tf[0]] = word_and_tf[1]
-        #############################################################
 
         # Load the model's embedding vectors
         # Each word is represented by a np.array
-        with open(f"{model_dir}\\vectors.txt", 'r') as f:
+        with open(model_vector_path, 'r') as f:
+            line_count = 0
             for line in f:
+                if line_count == 100000:
+                    break
                 values = line.split(" ")
                 word = values[0]
 
                 vector = np.asarray(values[1:], "float32")
-                if model_vacabulary.get(word):
-                    self._model[word] = vector
-                else:
-                    continue
+                self._model[word] = vector
 
-        model_vacabulary.clear()
+                line_count += 1
 
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.

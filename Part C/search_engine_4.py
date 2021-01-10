@@ -25,6 +25,7 @@ class SearchEngine:
                 self._config.toLemm = False
         self._parser = Parse()
         self._indexer = Indexer(config)
+        self._model = {}
         self.load_precomputed_model("model")
         self.corpus_size = 0
 
@@ -71,36 +72,23 @@ class SearchEngine:
         This is where you would load models like word2vec, LSI, LDA, etc. and
         assign to self._model, which is passed on to the searcher at query time.
         """
-        if not model_dir:
-            model_dir = "model"
 
-        self._model = {}
-        model_vacabulary = {}
-
-        #### LIMIT THE SIZE OF THE MODEL TO 100K WORDS ###########
-        with open(f"{model_dir}\\vocab.txt", 'r') as f:
-            lines = f.readlines()
-            for i, line in enumerate(lines):
-                word_and_tf = line.strip("\n").split(' ')
-                if i == 100000:
-                    break
-                else:
-                    model_vacabulary[word_and_tf[0]] = word_and_tf[1]
-        #############################################################
+        model_vector_path = os.path.join(model_dir, "vectors.txt")
 
         # Load the model's embedding vectors
-        with open(f"{model_dir}\\vectors.txt", 'r') as f:
+        # Each word is represented by a np.array
+        with open(model_vector_path, 'r') as f:
+            line_count = 0
             for line in f:
+                if line_count == 100000:
+                    break
                 values = line.split(" ")
                 word = values[0]
 
                 vector = np.asarray(values[1:], "float32")
-                if model_vacabulary.get(word):
-                    self._model[word] = vector
-                else:
-                    continue
+                self._model[word] = vector
 
-        model_vacabulary.clear()
+                line_count += 1
 
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
@@ -127,9 +115,7 @@ class SearchEngine:
             for doc_id in self._indexer.inverted_idx[word]['posting_list']:
                 normalized_term_tf = self._indexer.inverted_idx[word]["posting_list"][doc_id][0]
                 term_df = self._indexer.inverted_idx[word]['df']
-
-                max_tf = self._indexer.docs_index[doc_id][1]
-                term_idf = math.log10(self.corpus_size / term_df)
+                term_idf = math.log2(self.corpus_size / term_df)
                 # calculate doc's total weight
                 term_weight = normalized_term_tf * term_idf
                 self._indexer.inverted_idx[word]["posting_list"][doc_id].append(term_weight)
@@ -174,14 +160,14 @@ def main():
     se = SearchEngine(config)
     se.build_index_from_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet')
     n_res, res, docs = se.search(
-        'The coronavirus pandemic is a cover for a plan to implant trackable microchips and that the Microsoft co-founder Bill Gates is behind it	gates implant microchips')
+        'vaccines move freely')
     df = pd.read_parquet(r'C:\Users\Owner\Desktop\SearchEngine\Part C\data\benchmark_data_train.snappy.parquet',
                          engine="pyarrow")
 
     to_return = pd.DataFrame(columns=["query", "tweet_id"])
 
     for r in res:
-        to_return = to_return.append({"query": 3, "tweet_id": r}, ignore_index=True)
+        to_return = to_return.append({"query": 5, "tweet_id": r}, ignore_index=True)
 
         print(r)
         print([w for w in df[df.tweet_id == r].full_text.tolist()])

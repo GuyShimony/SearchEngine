@@ -1,5 +1,5 @@
 import math
-from scipy import spatial
+from scipy import spatial, stats
 import numpy as np
 
 
@@ -10,6 +10,7 @@ class Ranker:
     query_weight = 0
     avdl = 1
     query_vector = None
+    max_tfidf_score = 0
 
     def __init__(self):
         pass
@@ -24,43 +25,56 @@ class Ranker:
         :return: sorted list of documents by score
         """
         total_doc_scores = {}
-        for rel_doc in relevant_docs:
-            total_doc_scores[rel_doc] = 0
 
         #  CALCULATE EACH DOC SCORE ACCORDING TO WEIGHTS ON ALL THE SIM FUNCTION: INNER, COSINE, BM25
-        for doc in total_doc_scores:
-            cosine_score = Ranker.cosine_doc_score(relevant_docs[doc])
+        for doc in relevant_docs:
+            #  cosine_score = Ranker.cosine_doc_score(relevant_docs[doc])
             BM25_score = Ranker.BM25_doc_score(relevant_docs[doc], corpus_size)
             inner_product_score = Ranker.inner_product(doc)
-            total_doc_scores[doc] = 0.9 * BM25_score + 0.1 * inner_product_score  # + 0 * cosine_score
+            total_doc_scores[doc] = 0.1 * BM25_score + 0.9 * inner_product_score  # + 0 * cosine_score
+            if total_doc_scores[doc] > Ranker.max_tfidf_score:
+                Ranker.max_tfidf_score = total_doc_scores[doc]
         ################################################################################################
-
         number_of_relevant_docs_found = len(total_doc_scores)
         # trial and error - retrieve top % of the docs
         if k is None:
-            k = round(0.9 * number_of_relevant_docs_found)
+            k = number_of_relevant_docs_found
 
-        #  If the query is compsoed of words from the model try finding the closest doc in the embedding space
+        #  If the query is composed of words from the model try finding the closest doc in the embedding space
         #  Else just sort the docs according the tf-idf
         if Ranker.query_vector.any():
             top_sorted_relevant_docs = Ranker.find_closest_documents(relevant_docs, total_doc_scores)
+
         else:
             top_sorted_relevant_docs = sorted(total_doc_scores.items(), key=lambda item: item[1], reverse=True)
 
-        return Ranker.retrieve_top_k(top_sorted_relevant_docs, k)
+        return Ranker.retrieve_top_k(list(top_sorted_relevant_docs.keys()), k)
 
-    # -------------------------EMBEDDED RELATED FUNCITIONS-------------------------------------
+    # -------------------------EMBEDDED RELATED FUNCTIONS-------------------------------------
 
     @staticmethod
-    def find_closest_documents(relavent_docs, total_doc_score):
+    def find_closest_documents(relevant_docs, total_doc_score):
         """
         The method will sort all the relevant documents based on the total score
-        :param relavent_docs:Dict of all the relevant documents
+        :param relevant_docs:Dict of all the relevant documents
         :param total_doc_score: all the documents score based on TF-IDF
         :return: Sorted list of documents with combination of TF-IDF sim function and Euclidean distance
         """
-        return sorted(relavent_docs.keys(),
-                      key=lambda doc: Ranker.get_total_score(relavent_docs[doc][9], total_doc_score[doc]))
+        max_distance_score = 0
+        ranks = {}
+        for doc in relevant_docs:
+            doc_rank = Ranker.get_total_score(relevant_docs[doc][9], total_doc_score[doc])
+            if doc_rank > max_distance_score:
+                max_distance_score = doc_rank
+            ranks[doc] = doc_rank
+
+        top_sorted_relevant_docs = [
+            (doc, (0.95 * (ranks[doc] / max_distance_score) + (0.05 * (total_doc_score[doc] / Ranker.max_tfidf_score))))
+            for
+            doc, val in ranks.items()]
+
+        return dict(sorted(top_sorted_relevant_docs,
+                           key=lambda document: document[1], reverse=True))
 
     @staticmethod
     def get_total_score(doc_vector, doc_tfidf_score):
@@ -72,7 +86,7 @@ class Ranker:
         :param doc_tfidf_score: float - the score of the similarity functions with the tf-idf
         :return: int. The score of the document with the combined scores
         """
-        return 0.7 * spatial.distance.euclidean(doc_vector, Ranker.query_vector) + 0.3 * doc_tfidf_score
+        return 1 * (1 / (spatial.distance.euclidean(doc_vector, Ranker.query_vector)))  # - 0.3 * 1/doc_tfidf_score
 
     @staticmethod
     def get_cosine(v1, v2):
@@ -103,7 +117,7 @@ class Ranker:
         return inner_product
 
     @staticmethod
-    def BM25_doc_score(doc, corpus_size, k=3, b=0.6):
+    def BM25_doc_score(doc, corpus_size, k=1.5, b=0.8):
         """
         BM25 Similarity function - return the similarity between the query and document
         :param doc: List - all the document information
@@ -115,9 +129,8 @@ class Ranker:
         common_terms = doc[1]
         common_terms_tf = doc[6]
         common_terms_df = doc[7]
-
-        doc_score = 0
         doc_len = doc[3]
+        doc_score = 0
 
         for index, term in enumerate(common_terms):
             term_tf = common_terms_tf[index]
@@ -131,6 +144,11 @@ class Ranker:
 
     @staticmethod
     def cosine_doc_score(doc):
+        """
+        The method calculates the cosine similarity between two documents based on the tf-idf
+        :param doc: List - All the document information
+        :return: float - the cosine score
+        """
         # numerator -> inner product
         inner_product = 0
         for term_index in range(len(doc[1])):
@@ -161,15 +179,14 @@ class Ranker:
         return sorted_relevant_doc[:k]
 
     @staticmethod
-    def get_k_threshold(top_ranked):
+    def remove_anomalies(top_ranked, threshold):
         """
-        The method will get the K that wil represents the threshold of the data - mean + X*std
-        :param top_ranked: List of relevant documents
-        :return: int - The threshold K
+        The method will get the threshold  of the data - mean + X*std and remove all the tweets
+        with score lower than the threshold
+        :param top_ranked: Dict of relevant documents
+        :return: Dict - The tweets with higher score than the threshold mapped to their scores
         """
-        threshold = Ranker.get_threshold(list(top_ranked.values()), 0.1)
-        new_top_ranked = list(filter(lambda doc: doc[1] > threshold, top_ranked.items()))
-        return len(new_top_ranked)
+        return dict(filter(lambda doc: doc[1] > threshold, top_ranked.items()))
 
     @staticmethod
     def get_threshold(scores, n_std=0.0):
@@ -182,4 +199,4 @@ class Ranker:
          """
         mean = np.mean(scores)
         std = np.std(scores)
-        return mean + (std * n_std)
+        return mean - (std * n_std)

@@ -44,7 +44,7 @@ class Searcher:
         relevant_docs, Ranker.query_weight = self._relevant_docs_from_posting(query_as_list)
         ranked_doc_ids = Ranker.rank_relevant_docs(relevant_docs, self._indexer.get_docs_count(), k)
         n_relevant = len(ranked_doc_ids)
-        # ranked_doc_ids = [doc_id for doc_id, rank in ranked_doc_ids]
+       # ranked_doc_ids = [doc_id for doc_id, rank in ranked_doc_ids]
 
         return n_relevant, ranked_doc_ids
         return n_relevant, ranked_doc_ids, relevant_docs
@@ -142,7 +142,6 @@ class Searcher:
                         # already calculated per doc, need to get and insert only once
                         max_tf = self.docs_index[doc_id][1]
                         doc_weight_squared = self.docs_index[doc_id][0]
-
                         # doc id: (number of words from query appeared in doc , [frequency of query words] , max_tf ,
                         #                            document length, ..
 

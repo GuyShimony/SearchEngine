@@ -45,7 +45,7 @@ class Indexer:
                 number_of_curses += 1
 
         self.docs_index[document.tweet_id] = [0, max_tf, document.doc_length, terms_with_one_occurrence,
-                                              number_of_curses, np.zeros(55)]
+                                              number_of_curses, np.zeros(50)]
 
         self.total_docs_len += document.doc_length
 
@@ -94,7 +94,7 @@ class Indexer:
         Input:
             fn - file name of pickled index.
         """
-        return utils.load_objects("indexes")[0]
+        return utils.load_objects(fn)[0]
 
     # DO NOT MODIFY THIS SIGNATURE
     # You can change the internal implementation as you see fit.
@@ -105,7 +105,7 @@ class Indexer:
               fn - file name of pickled index.
         """
         index_with_docs_index = [self.inverted_idx, self.docs_index]
-        utils.save_objects(index_with_docs_index, "indexes")
+        utils.save_objects(index_with_docs_index, fn)
 
     # feel free to change the signature and/or implementation of this function
     # or drop altogether.
